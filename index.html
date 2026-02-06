@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Профессиональная система гадания на картах Таро онлайн">
+    <title>🔮 Tarot Professional System</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+    <div class="header-content">
+        <div class="logo">🔮 TAROT PRO</div>
+        <nav class="spread-controls">
+            <button onclick="App.doSpread('daily')" class="spread-btn">
+                <span class="btn-icon">☀️</span>
+                <span class="btn-text">Карта дня</span>
+            </button>
+            <button onclick="App.doSpread('threecards')" class="spread-btn">
+                <span class="btn-icon">🔮</span>
+                <span class="btn-text">Три карты</span>
+            </button>
+            <button onclick="App.doSpread('cross')" class="spread-btn">
+                <span class="btn-icon">✨</span>
+                <span class="btn-text">Крест</span>
+            </button>
+            <button onclick="App.doSpread('celtic')" class="spread-btn">
+                <span class="btn-icon">🍀</span>
+                <span class="btn-text">Кельтский крест</span>
+            </button>
+            <button onclick="App.doSpread('pyramid')" class="spread-btn">
+                <span class="btn-icon">💕</span>
+                <span class="btn-text">Любовь</span>
+            </button>
+            <button onclick="App.doSpread('choice')" class="spread-btn">
+                <span class="btn-icon">🔄</span>
+                <span class="btn-text">Выбор</span>
+            </button>
+            <button onclick="App.doSpread('year')" class="spread-btn">
+                <span class="btn-icon">🎯</span>
+                <span class="btn-text">Год вперед</span>
+            </button>
+        </nav>
+    </div>
+</header>
+
+<main>
+    <div id="spread-container">
+        <div class="welcome-screen">
+            <div class="welcome-content">
+                <h1>🔮 Добро пожаловать в мир Таро</h1>
+                <p class="welcome-subtitle">Выберите расклад, чтобы заглянуть в будущее</p>
+                <div class="welcome-features">
+                    <div class="feature-card">
+                        <div class="feature-icon">🎴</div>
+                        <h3>78 карт Райдера-Уэйта</h3>
+                        <p>Полная колода с детальными интерпретациями</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">✨</div>
+                        <h3>7 типов раскладов</h3>
+                        <p>От простой карты дня до сложного Кельтского креста</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📖</div>
+                        <h3>Подробные толкования</h3>
+                        <p>Любовь, карьера, финансы и советы</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <aside id="history-sidebar">
+        <div class="history-header">
+            <h3>📜 История сеансов</h3>
+            <button onclick="App.clearHistory()" class="clear-btn" title="Очистить историю">🗑️</button>
+        </div>
+        <ul id="historyList">
+            <li class="empty-msg">История пока пуста</li>
+        </ul>
+    </aside>
+</main>
+
+<footer>
+    <p>© 2024 Tarot Professional System | Для развлекательных целей</p>
+</footer>
+
+<!-- Core Scripts -->
+<script src="js/state.js"></script>
+<script src="js/data/init.js"></script>
+
+<!-- Card Data -->
+<script src="js/data/major.js"></script>
+<script src="js/data/wands.js"></script>
+<script src="js/data/cups.js"></script>
+<script src="js/data/swords.js"></script>
+<script src="js/data/pentacles.js"></script>
+
+<!-- Interpretations -->
+<script src="js/data/interpretations.js"></script>
+
+<!-- App Logic -->
+<script src="js/spreads.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/deck.js"></script>
+<script src="js/history.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>
