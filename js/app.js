@@ -1,6 +1,19 @@
 // js/app.js - Главная логика приложения
 window.App = {
     /**
+     * Показать всю колоду
+     */
+    showDeck() {
+        try {
+            UI.renderDeckGallery();
+            this.scrollToResults();
+        } catch (error) {
+            console.error('Ошибка при отображении колоды:', error);
+            alert('Произошла ошибка при загрузке колоды. Попробуйте обновить страницу.');
+        }
+    },
+
+    /**
      * Выполнить расклад
      */
     doSpread(spreadKey) {

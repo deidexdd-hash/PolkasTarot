@@ -2,80 +2,89 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="description" content="Профессиональная система гадания на картах Таро онлайн">
-    <title>🔮 Tarot Professional System</title>
+    <meta name="theme-color" content="#f5f5f7">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>✨ Tarot Professional System</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <header>
     <div class="header-content">
-        <div class="logo">🔮 TAROT PRO</div>
-        <nav class="spread-controls">
-            <button onclick="App.doSpread('daily')" class="spread-btn">
-                <span class="btn-icon">☀️</span>
+        <div class="logo">✨ TAROT</div>
+        <nav class="spread-controls" role="navigation" aria-label="Выбор расклада">
+            <button onclick="App.showDeck()" class="spread-btn deck-btn" aria-label="Вся колода">
+                <span class="btn-icon" aria-hidden="true">🎴</span>
+                <span class="btn-text">Колода</span>
+            </button>
+            <button onclick="App.doSpread('daily')" class="spread-btn" aria-label="Карта дня">
+                <span class="btn-icon" aria-hidden="true">☀️</span>
                 <span class="btn-text">Карта дня</span>
             </button>
-            <button onclick="App.doSpread('threecards')" class="spread-btn">
-                <span class="btn-icon">🔮</span>
+            <button onclick="App.doSpread('threecards')" class="spread-btn" aria-label="Три карты">
+                <span class="btn-icon" aria-hidden="true">🔮</span>
                 <span class="btn-text">Три карты</span>
             </button>
-            <button onclick="App.doSpread('cross')" class="spread-btn">
-                <span class="btn-icon">✨</span>
+            <button onclick="App.doSpread('cross')" class="spread-btn" aria-label="Крест">
+                <span class="btn-icon" aria-hidden="true">✨</span>
                 <span class="btn-text">Крест</span>
             </button>
-            <button onclick="App.doSpread('celtic')" class="spread-btn">
-                <span class="btn-icon">🍀</span>
+            <button onclick="App.doSpread('celtic')" class="spread-btn" aria-label="Кельтский крест">
+                <span class="btn-icon" aria-hidden="true">🍀</span>
                 <span class="btn-text">Кельтский крест</span>
             </button>
-            <button onclick="App.doSpread('pyramid')" class="spread-btn">
-                <span class="btn-icon">💕</span>
+            <button onclick="App.doSpread('pyramid')" class="spread-btn" aria-label="Любовь">
+                <span class="btn-icon" aria-hidden="true">💕</span>
                 <span class="btn-text">Любовь</span>
             </button>
-            <button onclick="App.doSpread('choice')" class="spread-btn">
-                <span class="btn-icon">🔄</span>
+            <button onclick="App.doSpread('choice')" class="spread-btn" aria-label="Выбор">
+                <span class="btn-icon" aria-hidden="true">🔄</span>
                 <span class="btn-text">Выбор</span>
             </button>
-            <button onclick="App.doSpread('year')" class="spread-btn">
-                <span class="btn-icon">🎯</span>
+            <button onclick="App.doSpread('year')" class="spread-btn" aria-label="Год вперед">
+                <span class="btn-icon" aria-hidden="true">🎯</span>
                 <span class="btn-text">Год вперед</span>
             </button>
         </nav>
     </div>
 </header>
 
-<main>
+<main role="main">
     <div id="spread-container">
         <div class="welcome-screen">
             <div class="welcome-content">
-                <h1>🔮 Добро пожаловать в мир Таро</h1>
+                <h1>✨ Добро пожаловать в мир Таро</h1>
                 <p class="welcome-subtitle">Выберите расклад, чтобы заглянуть в будущее</p>
                 <div class="welcome-features">
-                    <div class="feature-card">
-                        <div class="feature-icon">🎴</div>
+                    <article class="feature-card">
+                        <div class="feature-icon" aria-hidden="true">🎴</div>
                         <h3>78 карт Райдера-Уэйта</h3>
                         <p>Полная колода с детальными интерпретациями</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">✨</div>
+                    </article>
+                    <article class="feature-card">
+                        <div class="feature-icon" aria-hidden="true">✨</div>
                         <h3>7 типов раскладов</h3>
                         <p>От простой карты дня до сложного Кельтского креста</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">📖</div>
+                    </article>
+                    <article class="feature-card">
+                        <div class="feature-icon" aria-hidden="true">📖</div>
                         <h3>Подробные толкования</h3>
                         <p>Любовь, карьера, финансы и советы</p>
-                    </div>
+                    </article>
                 </div>
             </div>
         </div>
     </div>
 
-    <aside id="history-sidebar">
+    <aside id="history-sidebar" role="complementary" aria-label="История сеансов">
         <div class="history-header">
             <h3>📜 История сеансов</h3>
-            <button onclick="App.clearHistory()" class="clear-btn" title="Очистить историю">🗑️</button>
+            <button onclick="App.clearHistory()" class="clear-btn" title="Очистить историю" aria-label="Очистить историю">
+                🗑️
+            </button>
         </div>
         <ul id="historyList">
             <li class="empty-msg">История пока пуста</li>
@@ -83,7 +92,15 @@
     </aside>
 </main>
 
-<footer>
+<!-- Modal для детального просмотра карты -->
+<div id="cardModal" class="modal" onclick="this.classList.remove('active')">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="document.getElementById('cardModal').classList.remove('active')" aria-label="Закрыть">✕</button>
+        <div id="modalBody"></div>
+    </div>
+</div>
+
+<footer role="contentinfo">
     <p>© 2024 Tarot Professional System | Для развлекательных целей</p>
 </footer>
 
