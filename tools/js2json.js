@@ -305,11 +305,19 @@ function toList(value) {
     return list.map(clean).filter(Boolean);
 }
 
-function normalizeSide(side) {
+/**
+ * В major.js поле yes_no лежит на уровне meanings, а не внутри direct и
+ * reversed: ответ «да/нет» один на карту. Без запасного источника оно
+ * терялось у всех старших арканов — в выгрузке было пусто у 22 карт.
+ * Поэтому поле, отсутствующее в позиции, берётся с уровня карты.
+ */
+function normalizeSide(side, shared) {
     const src = side || {};
+    const common = shared || {};
+    const pick = (field) => (src[field] != null ? src[field] : common[field]);
     const out = {};
-    for (const field of TEXT_FIELDS) out[field] = clean(src[field]);
-    for (const field of LIST_FIELDS) out[field] = toList(src[field]);
+    for (const field of TEXT_FIELDS) out[field] = clean(pick(field));
+    for (const field of LIST_FIELDS) out[field] = toList(pick(field));
     return out;
 }
 
@@ -353,8 +361,8 @@ function normalizeCard(card, meta) {
         rank: meta.rank,
         img,
         meanings: {
-            direct: normalizeSide(card.meanings && card.meanings.direct),
-            reversed: normalizeSide(card.meanings && card.meanings.reversed),
+            direct: normalizeSide(card.meanings && card.meanings.direct, card.meanings),
+            reversed: normalizeSide(card.meanings && card.meanings.reversed, card.meanings),
         },
     };
 }
