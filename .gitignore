@@ -1,0 +1,11 @@
+# Производные выгрузки конвертера — пересобираются командой
+#   node tools/js2json.js
+# В репозитории держим только data/cards.json и data/index.json.
+data/cards.min.json
+data/cards.jsonl
+data/cards.csv
+data/major.json
+data/wands.json
+data/cups.json
+data/swords.json
+data/pentacles.json
