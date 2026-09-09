@@ -162,6 +162,34 @@ function repairImages(code, suit) {
     return { code: out, changed };
 }
 
+/**
+ * Генератор оставил хвостовые пробелы внутри кавычек: name: "Шут " и
+ * img: "img/cards/maj00.jpg ". На экспорт это не влияет (clean() подтягивает
+ * пробелы), но в браузере данные берутся из .js напрямую: имя выводится с
+ * пробелом, а путь с пробелом на конце даёт 404 — все 17 старших арканов
+ * выпадают без картинки. Чиним в исходнике, для всех файлов сразу.
+ */
+const RE_SCALAR_LINE = /^(\s*(?:name|img)\s*:\s*)"([^"]*)"(\s*,?\s*)$/;
+
+function repairScalarSpaces(code, fileLabel) {
+    let changed = 0;
+
+    const out = code.split('\n').map((line, idx) => {
+        const m = line.match(RE_SCALAR_LINE);
+        if (!m) return line;
+
+        const [, head, body, tail] = m;
+        const want = body.trim();
+        if (want === body) return line;
+
+        changed += 1;
+        notes.push(`${fileLabel}:${idx + 1} — подтянуты пробелы: "${body}" -> "${want}"`);
+        return `${head}"${want}"${tail}`;
+    }).join('\n');
+
+    return { code: out, changed };
+}
+
 // ---------------------------------------------------------------------------
 // Шаг 2. Загрузка данных
 // ---------------------------------------------------------------------------
@@ -180,6 +208,7 @@ function loadDb() {
 
     let totalFixed = 0;
     let totalImages = 0;
+    let totalSpaces = 0;
 
     for (const name of FILES) {
         const file = path.join(SRC_DIR, `${name}.js`);
@@ -192,6 +221,10 @@ function loadDb() {
         let { code, fixed } = repairSource(raw, `js/data/${name}.js`);
         totalFixed += fixed;
 
+        const spaces = repairScalarSpaces(code, `js/data/${name}.js`);
+        code = spaces.code;
+        totalSpaces += spaces.changed;
+
         let imgChanged = 0;
         if (SUITS.includes(name)) {
             const result = repairImages(code, name);
@@ -201,9 +234,10 @@ function loadDb() {
         }
 
         if (fixed > 0) console.log(`  js/data/${name}.js — починено кавычек: ${fixed}`);
+        if (spaces.changed > 0) console.log(`  js/data/${name}.js — подтянуто пробелов в name/img: ${spaces.changed}`);
         if (imgChanged > 0) console.log(`  js/data/${name}.js — исправлено путей к картинкам: ${imgChanged}`);
 
-        if ((fixed > 0 || imgChanged > 0) && FIX_SOURCE && !CHECK_ONLY) {
+        if ((fixed > 0 || imgChanged > 0 || spaces.changed > 0) && FIX_SOURCE && !CHECK_ONLY) {
             fs.writeFileSync(file, code, 'utf8');
             console.log(`  js/data/${name}.js — исходник перезаписан`);
         }
@@ -215,7 +249,7 @@ function loadDb() {
         }
     }
 
-    return { db: sandbox.window.TarotDB, totalFixed, totalImages };
+    return { db: sandbox.window.TarotDB, totalFixed, totalImages, totalSpaces };
 }
 
 /**
@@ -520,8 +554,8 @@ function main() {
     console.log('PolkasTarot — конвертер js/data → JSON\n');
 
     console.log('1. Читаю и чиню исходники');
-    const { db, totalFixed, totalImages } = loadDb();
-    if (totalFixed === 0 && totalImages === 0) console.log('  исходники в порядке, чинить нечего');
+    const { db, totalFixed, totalImages, totalSpaces } = loadDb();
+    if (totalFixed === 0 && totalImages === 0 && totalSpaces === 0) console.log('  исходники в порядке, чинить нечего');
 
     const raw = loadRaw();
 
@@ -571,7 +605,7 @@ function main() {
     console.log(`  data/${groups.join('.json, ')}.json`);
     if (WANT_CSV) console.log('  data/cards.csv');
 
-    if ((totalFixed > 0 || totalImages > 0) && !FIX_SOURCE) {
+    if ((totalFixed > 0 || totalImages > 0 || totalSpaces > 0) && !FIX_SOURCE) {
         const lines = ['\nВНИМАНИЕ: исходники в js/data/ остались как были.'];
         if (totalFixed > 0) {
             lines.push(`  ${totalFixed} неэкранированных кавычек — пока они там, major.js не грузится`);
@@ -579,6 +613,10 @@ function main() {
         }
         if (totalImages > 0) {
             lines.push(`  ${totalImages} карт указывают не на свою картинку.`);
+        }
+        if (totalSpaces > 0) {
+            lines.push(`  ${totalSpaces} значений name/img с хвостовым пробелом — из-за пробела`);
+            lines.push('  в конце пути картинки старших арканов не грузятся в браузере.');
         }
         lines.push('Почините исходники: node tools/js2json.js --fix-source');
         console.log(lines.join('\n'));
