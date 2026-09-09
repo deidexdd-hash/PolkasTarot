@@ -76,6 +76,18 @@ window.UI = {
                                 ${item.health}
                             </p>
                             ` : ''}
+                            ${item.time_frames ? `
+                            <p>
+                                <strong>⏳ Сроки</strong>
+                                ${item.time_frames}
+                            </p>
+                            ` : ''}
+                            ${item.yes_no ? `
+                            <p>
+                                <strong>🔮 Ответ да/нет</strong>
+                                ${item.yes_no}
+                            </p>
+                            ` : ''}
                         </div>
                     </div>
                 </div>
@@ -369,27 +381,32 @@ window.UI = {
      */
     // Порядок и подписи полей карточки. Часть из них заполнена только
     // у старших арканов — то, чего у карты нет, просто не выводится.
+    // Порядок и подписи полей карточки. Помеченные deep убраны под
+    // «Подробнее»: у старшего аркана их пять на каждое положение, и
+    // развёрнутыми они растягивают карточку до бесконечного скролла.
+    // У младших арканов таких полей нет вовсе, и раскрывашка не рисуется.
     MEANING_FIELDS: [
-        { key: 'symbolism',     label: '🖼️ Символика' },
         { key: 'general',       label: '📖 Общее значение' },
         { key: 'love',          label: '❤️ Любовь и отношения' },
         { key: 'relations',     label: '👥 Отношения с окружающими' },
         { key: 'work',          label: '💼 Работа и карьера' },
         { key: 'finance',       label: '💰 Финансы' },
         { key: 'health',        label: '🏥 Здоровье' },
-        { key: 'psychological', label: '🧠 Психологический аспект' },
-        { key: 'spiritual',     label: '🕊️ Духовный аспект' },
-        { key: 'time_frames',   label: '⏳ Сроки' },
-        { key: 'combinations',  label: '🔗 Сочетания с другими картами' },
         { key: 'advice',        label: '💡 Совет' },
-        { key: 'yes_no',        label: '🔮 Ответ да/нет' }
+        { key: 'yes_no',        label: '🔮 Ответ да/нет' },
+
+        { key: 'symbolism',     label: '🖼️ Символика',                  deep: true },
+        { key: 'psychological', label: '🧠 Психологический аспект',      deep: true },
+        { key: 'spiritual',     label: '🕊️ Духовный аспект',            deep: true },
+        { key: 'time_frames',   label: '⏳ Сроки',                       deep: true },
+        { key: 'combinations',  label: '🔗 Сочетания с другими картами', deep: true }
     ],
 
     renderMeaningItems(meanings, skip) {
         if (!meanings) return '<p>Информация отсутствует</p>';
         const skipped = skip || [];
 
-        const items = this.MEANING_FIELDS
+        const render = (fields) => fields
             .filter((field) => !skipped.includes(field.key))
             .filter((field) => this.hasValue(meanings[field.key]))
             .map((field) => `
@@ -397,9 +414,20 @@ window.UI = {
                     <strong>${field.label}</strong>
                     ${this.renderValue(meanings[field.key])}
                 </div>
-            `);
+            `)
+            .join('');
 
-        return items.length ? items.join('') : '<p>Информация отсутствует</p>';
+        const main = render(this.MEANING_FIELDS.filter((f) => !f.deep));
+        const deep = render(this.MEANING_FIELDS.filter((f) => f.deep));
+
+        if (!main && !deep) return '<p>Информация отсутствует</p>';
+
+        return main + (deep ? `
+            <details class="deep-fields">
+                <summary>Подробнее о карте</summary>
+                ${deep}
+            </details>
+        ` : '');
     },
 
     /**

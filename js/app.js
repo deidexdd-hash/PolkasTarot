@@ -60,6 +60,8 @@ window.App = {
                     work: meanings.work || "Информация отсутствует",
                     finance: meanings.finance || "Информация отсутствует",
                     health: meanings.health || "Информация отсутствует",
+                    time_frames: meanings.time_frames || null,
+                    yes_no: meanings.yes_no || null,
                     advice: meanings.advice || "Следуйте интуиции",
                     spreadName: config.title,
                     spreadKey: spreadKey,
