@@ -27,7 +27,7 @@ window.TarotDB.minor.cups = [
     },
     {
         name: "Двойка Кубков",
-        img: "img/cards/cups01.jpg",
+        img: "img/cards/cups02.jpg",
         meanings: {
             direct: {
                 general: "День гармонии, партнерства, взаимной любви, союза.",
@@ -53,7 +53,7 @@ window.TarotDB.minor.cups = [
     },
     {
         name: "Тройка Кубков",
-        img: "img/cards/cups01.jpg",
+        img: "img/cards/cups03.jpg",
         meanings: {
             direct: {
                 general: "День праздника, дружбы, веселья, счастливых событий.",
@@ -79,7 +79,7 @@ window.TarotDB.minor.cups = [
     },
     {
         name: "Четверка Кубков",
-        img: "img/cards/cups01.jpg",
+        img: "img/cards/cups04.jpg",
         meanings: {
             direct: {
                 general: "День апатии, упущенных возможностей, самоанализа.",
@@ -105,7 +105,7 @@ window.TarotDB.minor.cups = [
     },
     {
         name: "Пятерка Кубков",
-        img: "img/cards/cups01.jpg",
+        img: "img/cards/cups05.jpg",
         meanings: {
             direct: {
                 general: "День потерь, сожаления, горя, но также надежды.",
@@ -131,7 +131,7 @@ window.TarotDB.minor.cups = [
     },
     {
         name: "Шестерка Кубков",
-        img: "img/cards/cups01.jpg",
+        img: "img/cards/cups06.jpg",
         meanings: {
             direct: {
                 general: "День ностальгии, детских воспоминаний, невинности, подарков.",
@@ -157,7 +157,7 @@ window.TarotDB.minor.cups = [
     },
     {
         name: "Семерка Кубков",
-        img: "img/cards/cups01.jpg",
+        img: "img/cards/cups07.jpg",
         meanings: {
             direct: {
                 general: "День иллюзий, выбора, фантазий, мечтаний.",
@@ -183,7 +183,7 @@ window.TarotDB.minor.cups = [
     },
     {
         name: "Восьмерка Кубков",
-        img: "img/cards/cups01.jpg",
+        img: "img/cards/cups08.jpg",
         meanings: {
             direct: {
                 general: "День ухода, оставления прошлого, поиска смысла.",
@@ -209,7 +209,7 @@ window.TarotDB.minor.cups = [
     },
     {
         name: "Девятка Кубков",
-        img: "img/cards/cups01.jpg",
+        img: "img/cards/cups09.jpg",
         meanings: {
             direct: {
                 general: "День удовлетворения, исполнения желаний, удовольствия.",
@@ -235,7 +235,7 @@ window.TarotDB.minor.cups = [
     },
     {
         name: "Десятка Кубков",
-        img: "img/cards/cups01.jpg",
+        img: "img/cards/cups10.jpg",
         meanings: {
             direct: {
                 general: "День семейного счастья, гармонии, радости, исполнения.",
@@ -261,7 +261,7 @@ window.TarotDB.minor.cups = [
     },
     {
         name: "Паж Кубков",
-        img: "img/cards/cups01.jpg",
+        img: "img/cards/cups11.jpg",
         meanings: {
             direct: {
                 general: "День новых чувств, творческих идей, вдохновения, мечтаний.",
@@ -287,7 +287,7 @@ window.TarotDB.minor.cups = [
     },
     {
         name: "Рыцарь Кубков",
-        img: "img/cards/cups01.jpg",
+        img: "img/cards/cups12.jpg",
         meanings: {
             direct: {
                 general: "День романтики, предложений, эмоциональных действий, обаяния.",
@@ -313,7 +313,7 @@ window.TarotDB.minor.cups = [
     },
     {
         name: "Королева Кубков",
-        img: "img/cards/cups01.jpg",
+        img: "img/cards/cups13.jpg",
         meanings: {
             direct: {
                 general: "День эмоциональной мудрости, интуиции, заботы, сострадания.",
@@ -339,7 +339,7 @@ window.TarotDB.minor.cups = [
     },
     {
         name: "Король Кубков",
-        img: "img/cards/cups01.jpg",
+        img: "img/cards/cups14.jpg",
         meanings: {
             direct: {
                 general: "День эмоционального контроля, мудрости, дипломатии, спокойствия.",

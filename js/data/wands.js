@@ -27,7 +27,7 @@ window.TarotDB.minor.wands = [
     },
     {
         name: "Двойка Жезлов",
-        img: "img/cards/wands01.jpg",
+        img: "img/cards/wands02.jpg",
         meanings: {
             direct: {
                 general: "День планирования, выбора пути, сотрудничества.",
@@ -53,7 +53,7 @@ window.TarotDB.minor.wands = [
     },
     {
         name: "Тройка Жезлов",
-        img: "img/cards/wands01.jpg",
+        img: "img/cards/wands03.jpg",
         meanings: {
             direct: {
                 general: "День реализации планов, расширения, успеха.",
@@ -79,7 +79,7 @@ window.TarotDB.minor.wands = [
     },
     {
         name: "Четверка Жезлов",
-        img: "img/cards/wands01.jpg",
+        img: "img/cards/wands04.jpg",
         meanings: {
             direct: {
                 general: "День стабильности, праздника, гармонии, дома.",
@@ -105,7 +105,7 @@ window.TarotDB.minor.wands = [
     },
     {
         name: "Пятерка Жезлов",
-        img: "img/cards/wands01.jpg",
+        img: "img/cards/wands05.jpg",
         meanings: {
             direct: {
                 general: "День конфликтов, конкуренции, споров, борьбы.",
@@ -131,7 +131,7 @@ window.TarotDB.minor.wands = [
     },
     {
         name: "Шестерка Жезлов",
-        img: "img/cards/wands01.jpg",
+        img: "img/cards/wands06.jpg",
         meanings: {
             direct: {
                 general: "День победы, признания, успеха, триумфа.",
@@ -157,7 +157,7 @@ window.TarotDB.minor.wands = [
     },
     {
         name: "Семерка Жезлов",
-        img: "img/cards/wands01.jpg",
+        img: "img/cards/wands07.jpg",
         meanings: {
             direct: {
                 general: "День защиты, отстаивания позиций, сопротивления.",
@@ -183,7 +183,7 @@ window.TarotDB.minor.wands = [
     },
     {
         name: "Восьмерка Жезлов",
-        img: "img/cards/wands01.jpg",
+        img: "img/cards/wands08.jpg",
         meanings: {
             direct: {
                 general: "День быстрых перемен, новостей, движения, скорости.",
@@ -209,7 +209,7 @@ window.TarotDB.minor.wands = [
     },
     {
         name: "Девятка Жезлов",
-        img: "img/cards/wands01.jpg",
+        img: "img/cards/wands09.jpg",
         meanings: {
             direct: {
                 general: "День стойкости, защиты, бдительности, силы воли.",
@@ -235,7 +235,7 @@ window.TarotDB.minor.wands = [
     },
     {
         name: "Десятка Жезлов",
-        img: "img/cards/wands01.jpg",
+        img: "img/cards/wands10.jpg",
         meanings: {
             direct: {
                 general: "День бремени, ответственности, перегрузки.",
@@ -261,7 +261,7 @@ window.TarotDB.minor.wands = [
     },
     {
         name: "Паж Жезлов",
-        img: "img/cards/wands01.jpg",
+        img: "img/cards/wands11.jpg",
         meanings: {
             direct: {
                 general: "День новостей, энтузиазма, новых идей, обучения.",
@@ -287,7 +287,7 @@ window.TarotDB.minor.wands = [
     },
     {
         name: "Рыцарь Жезлов",
-        img: "img/cards/wands01.jpg",
+        img: "img/cards/wands12.jpg",
         meanings: {
             direct: {
                 general: "День действия, энергии, путешествий, смелости.",
@@ -313,7 +313,7 @@ window.TarotDB.minor.wands = [
     },
     {
         name: "Королева Жезлов",
-        img: "img/cards/wands01.jpg",
+        img: "img/cards/wands13.jpg",
         meanings: {
             direct: {
                 general: "День уверенности, харизмы, теплоты, лидерства.",
@@ -339,7 +339,7 @@ window.TarotDB.minor.wands = [
     },
     {
         name: "Король Жезлов",
-        img: "img/cards/wands01.jpg",
+        img: "img/cards/wands14.jpg",
         meanings: {
             direct: {
                 general: "День лидерства, авторитета, творчества, воли.",

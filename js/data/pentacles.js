@@ -27,7 +27,7 @@ window.TarotDB.minor.pentacles = [
     },
     {
         name: "Двойка Пентаклей",
-        img: "img/cards/pents01.jpg",
+        img: "img/cards/pents02.jpg",
         meanings: {
             direct: {
                 general: "День балансировки, гибкости, адаптации, управления несколькими делами.",
@@ -53,7 +53,7 @@ window.TarotDB.minor.pentacles = [
     },
     {
         name: "Тройка Пентаклей",
-        img: "img/cards/pents01.jpg",
+        img: "img/cards/pents03.jpg",
         meanings: {
             direct: {
                 general: "День мастерства, сотрудничества, признания, качественной работы.",
@@ -79,7 +79,7 @@ window.TarotDB.minor.pentacles = [
     },
     {
         name: "Четверка Пентаклей",
-        img: "img/cards/pents01.jpg",
+        img: "img/cards/pents04.jpg",
         meanings: {
             direct: {
                 general: "День стабильности, безопасности, контроля, экономии, но также жадности.",
@@ -105,7 +105,7 @@ window.TarotDB.minor.pentacles = [
     },
     {
         name: "Пятерка Пентаклей",
-        img: "img/cards/pents01.jpg",
+        img: "img/cards/pents05.jpg",
         meanings: {
             direct: {
                 general: "День финансовых трудностей, бедности, изоляции, болезни, но также надежды.",
@@ -131,7 +131,7 @@ window.TarotDB.minor.pentacles = [
     },
     {
         name: "Шестерка Пентаклей",
-        img: "img/cards/pents01.jpg",
+        img: "img/cards/pents06.jpg",
         meanings: {
             direct: {
                 general: "День щедрости, получения, баланса в даянии и принятии, справедливости.",
@@ -157,7 +157,7 @@ window.TarotDB.minor.pentacles = [
     },
     {
         name: "Семерка Пентаклей",
-        img: "img/cards/pents01.jpg",
+        img: "img/cards/pents07.jpg",
         meanings: {
             direct: {
                 general: "День оценки прогресса, терпения, долгосрочных инвестиций, ожидания результатов.",
@@ -183,7 +183,7 @@ window.TarotDB.minor.pentacles = [
     },
     {
         name: "Восьмерка Пентаклей",
-        img: "img/cards/pents01.jpg",
+        img: "img/cards/pents08.jpg",
         meanings: {
             direct: {
                 general: "День усердной работы, мастерства, обучения, внимания к деталям, ремесла.",
@@ -209,7 +209,7 @@ window.TarotDB.minor.pentacles = [
     },
     {
         name: "Девятка Пентаклей",
-        img: "img/cards/pents01.jpg",
+        img: "img/cards/pents09.jpg",
         meanings: {
             direct: {
                 general: "День самостоятельности, комфорта, наслаждения плодами труда, роскоши.",
@@ -235,7 +235,7 @@ window.TarotDB.minor.pentacles = [
     },
     {
         name: "Десятка Пентаклей",
-        img: "img/cards/pents01.jpg",
+        img: "img/cards/pents10.jpg",
         meanings: {
             direct: {
                 general: "День богатства, семьи, наследства, стабильности, долгосрочного успеха.",
@@ -261,7 +261,7 @@ window.TarotDB.minor.pentacles = [
     },
     {
         name: "Паж Пентаклей",
-        img: "img/cards/pents01.jpg",
+        img: "img/cards/pents11.jpg",
         meanings: {
             direct: {
                 general: "День новых возможностей обучения, практичности, новостей о деньгах, потенциала.",
@@ -287,7 +287,7 @@ window.TarotDB.minor.pentacles = [
     },
     {
         name: "Рыцарь Пентаклей",
-        img: "img/cards/pents01.jpg",
+        img: "img/cards/pents12.jpg",
         meanings: {
             direct: {
                 general: "День трудолюбия, ответственности, надежности, медленного и устойчивого прогресса.",
@@ -313,7 +313,7 @@ window.TarotDB.minor.pentacles = [
     },
     {
         name: "Королева Пентаклей",
-        img: "img/cards/pents01.jpg",
+        img: "img/cards/pents13.jpg",
         meanings: {
             direct: {
                 general: "День практичности, заботы, изобилия, комфорта, связи с природой.",
@@ -339,7 +339,7 @@ window.TarotDB.minor.pentacles = [
     },
     {
         name: "Король Пентаклей",
-        img: "img/cards/pents01.jpg",
+        img: "img/cards/pents14.jpg",
         meanings: {
             direct: {
                 general: "День процветания, безопасности, лидерства, стабильности, щедрости.",

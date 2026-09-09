@@ -27,7 +27,7 @@ window.TarotDB.minor.swords = [
     },
     {
         name: "Двойка Мечей",
-        img: "img/cards/swords01.jpg",
+        img: "img/cards/swords02.jpg",
         meanings: {
             direct: {
                 general: "День трудного выбора, тупиковой ситуации, перемирия, блокировки.",
@@ -53,7 +53,7 @@ window.TarotDB.minor.swords = [
     },
     {
         name: "Тройка Мечей",
-        img: "img/cards/swords01.jpg",
+        img: "img/cards/swords03.jpg",
         meanings: {
             direct: {
                 general: "День боли, разочарования, потери, сердечной раны.",
@@ -79,7 +79,7 @@ window.TarotDB.minor.swords = [
     },
     {
         name: "Четверка Мечей",
-        img: "img/cards/swords01.jpg",
+        img: "img/cards/swords04.jpg",
         meanings: {
             direct: {
                 general: "День отдыха, восстановления, медитации, перемирия с собой.",
@@ -105,7 +105,7 @@ window.TarotDB.minor.swords = [
     },
     {
         name: "Пятерка Мечей",
-        img: "img/cards/swords01.jpg",
+        img: "img/cards/swords05.jpg",
         meanings: {
             direct: {
                 general: "День конфликтов, победы любой ценой, предательства, унижения.",
@@ -131,7 +131,7 @@ window.TarotDB.minor.swords = [
     },
     {
         name: "Шестерка Мечей",
-        img: "img/cards/swords01.jpg",
+        img: "img/cards/swords06.jpg",
         meanings: {
             direct: {
                 general: "День перехода, движения к спокойствию, исцеления, путешествия.",
@@ -157,7 +157,7 @@ window.TarotDB.minor.swords = [
     },
     {
         name: "Семерка Мечей",
-        img: "img/cards/swords01.jpg",
+        img: "img/cards/swords07.jpg",
         meanings: {
             direct: {
                 general: "День хитрости, обмана, тайных планов, избегания конфликтов.",
@@ -183,7 +183,7 @@ window.TarotDB.minor.swords = [
     },
     {
         name: "Восьмерка Мечей",
-        img: "img/cards/swords01.jpg",
+        img: "img/cards/swords08.jpg",
         meanings: {
             direct: {
                 general: "День ограничений, чувства ловушки, беспомощности, самоограничения.",
@@ -209,7 +209,7 @@ window.TarotDB.minor.swords = [
     },
     {
         name: "Девятка Мечей",
-        img: "img/cards/swords01.jpg",
+        img: "img/cards/swords09.jpg",
         meanings: {
             direct: {
                 general: "День тревоги, страха, кошмаров, беспокойства, чувства вины.",
@@ -235,7 +235,7 @@ window.TarotDB.minor.swords = [
     },
     {
         name: "Десятка Мечей",
-        img: "img/cards/swords01.jpg",
+        img: "img/cards/swords10.jpg",
         meanings: {
             direct: {
                 general: "День конца, болезненного завершения, поражения, кризиса.",
@@ -261,7 +261,7 @@ window.TarotDB.minor.swords = [
     },
     {
         name: "Паж Мечей",
-        img: "img/cards/swords01.jpg",
+        img: "img/cards/swords11.jpg",
         meanings: {
             direct: {
                 general: "День любознательности, новых идей, бдительности, сообщений.",
@@ -287,7 +287,7 @@ window.TarotDB.minor.swords = [
     },
     {
         name: "Рыцарь Мечей",
-        img: "img/cards/swords01.jpg",
+        img: "img/cards/swords12.jpg",
         meanings: {
             direct: {
                 general: "День решительных действий, скорости, агрессии, прямолинейности.",
@@ -313,7 +313,7 @@ window.TarotDB.minor.swords = [
     },
     {
         name: "Королева Мечей",
-        img: "img/cards/swords01.jpg",
+        img: "img/cards/swords13.jpg",
         meanings: {
             direct: {
                 general: "День ясности, независимости, остроумия, прямолинейности, справедливости.",
@@ -339,7 +339,7 @@ window.TarotDB.minor.swords = [
     },
     {
         name: "Король Мечей",
-        img: "img/cards/swords01.jpg",
+        img: "img/cards/swords14.jpg",
         meanings: {
             direct: {
                 general: "День интеллекта, власти, авторитета, справедливости, контроля.",
