@@ -106,17 +106,11 @@
 
 <!-- Core Scripts -->
 <script src="js/state.js"></script>
-<script src="js/data/init.js"></script>
 
-<!-- Card Data -->
-<script src="js/data/major.js"></script>
-<script src="js/data/wands.js"></script>
-<script src="js/data/cups.js"></script>
-<script src="js/data/swords.js"></script>
-<script src="js/data/pentacles.js"></script>
-
-<!-- Interpretations -->
-<script src="js/data/interpretations.js"></script>
+<!-- Колода читается из data/cards.json, а не из тегов script:
+     js/data/*.js остаются исходником, из которого её собирает
+     tools/js2json.js -->
+<script src="js/loader.js"></script>
 
 <!-- App Logic -->
 <script src="js/spreads.js"></script>

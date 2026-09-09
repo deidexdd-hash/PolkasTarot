@@ -4,6 +4,7 @@ window.App = {
      * Показать всю колоду
      */
     showDeck() {
+        if (!this.deckReady()) return;
         try {
             UI.renderDeckGallery();
             this.scrollToResults();
@@ -17,6 +18,7 @@ window.App = {
      * Выполнить расклад
      */
     doSpread(spreadKey) {
+        if (!this.deckReady()) return;
         try {
             const config = Spreads.types[spreadKey];
             if (!config) {
@@ -41,28 +43,24 @@ window.App = {
                 }
 
                 const orientation = cardData.reversed ? 'reversed' : 'direct';
-                
-                // Получаем толкования
-                const meanings = cardData.meanings && cardData.meanings[orientation] 
-                    ? cardData.meanings[orientation] 
+
+                // Толкования берутся из карты: data/cards.json содержит
+                // полный текст для всех 78 карт в обоих положениях.
+                const meanings = cardData.meanings && cardData.meanings[orientation]
+                    ? cardData.meanings[orientation]
                     : {};
-                
-                // Проверяем расширенные интерпретации
-                const fullInfo = (window.FullInterpretations && window.FullInterpretations[cardData.name]) 
-                    ? window.FullInterpretations[cardData.name][orientation] 
-                    : meanings;
 
                 results.push({
                     name: cardData.name,
                     img: cardData.img,
                     orientation: orientation,
                     label: config.labels[i] || `Позиция ${i + 1}`,
-                    general: fullInfo.general || meanings.general || "Описание отсутствует",
-                    love: fullInfo.love || meanings.love || "Информация отсутствует",
-                    work: fullInfo.work || meanings.work || "Информация отсутствует",
-                    finance: fullInfo.finance || meanings.finance || "Информация отсутствует",
-                    health: fullInfo.health || meanings.health || "Информация отсутствует",
-                    advice: fullInfo.advice || meanings.advice || "Следуйте интуиции",
+                    general: meanings.general || "Описание отсутствует",
+                    love: meanings.love || "Информация отсутствует",
+                    work: meanings.work || "Информация отсутствует",
+                    finance: meanings.finance || "Информация отсутствует",
+                    health: meanings.health || "Информация отсутствует",
+                    advice: meanings.advice || "Следуйте интуиции",
                     spreadName: config.title,
                     spreadKey: spreadKey,
                     date: Utils.formatDate()
@@ -99,6 +97,19 @@ window.App = {
     },
 
     /**
+     * Колода читается из data/cards.json асинхронно. Если по кнопке кликнули
+     * раньше, чем она пришла, честнее сказать «ещё грузится», чем показывать
+     * ошибку загрузки.
+     */
+    deckReady() {
+        if (window.DeckLoader && DeckLoader.loaded) return true;
+        alert(window.DeckLoader && DeckLoader.failed
+            ? 'Колода не загрузилась: ' + DeckLoader.failed + '. Обновите страницу.'
+            : 'Колода ещё загружается. Попробуйте через секунду.');
+        return false;
+    },
+
+    /**
      * Очистить историю
      */
     clearHistory() {
@@ -127,20 +138,33 @@ window.App = {
     /**
      * Инициализация приложения
      */
-    init() {
+    async init() {
         console.log('🔮 Tarot Professional System initialized');
-        
-        // Загружаем историю
-        if (window.HistoryStore) {
-            HistoryStore.load();
+
+        // История необязательна: что бы с ней ни случилось, колода должна
+        // загрузиться. Поэтому её ошибки сюда не поднимаются.
+        try {
+            if (window.HistoryStore) HistoryStore.load();
+            if (window.UI) UI.renderHistory();
+        } catch (error) {
+            console.warn('Не удалось восстановить историю:', error);
         }
-        
-        // Отображаем историю
-        if (window.UI) {
-            UI.renderHistory();
+
+        // Колода приходит из data/cards.json, то есть асинхронно:
+        // до её загрузки расклады и галерея недоступны.
+        try {
+            await DeckLoader.load();
+        } catch (error) {
+            console.error('Не удалось загрузить колоду:', error);
+            const container = document.getElementById('spread-container');
+            if (container) {
+                container.innerHTML =
+                    '<p style="text-align: center; padding: 40px;">' +
+                    'Не удалось загрузить data/cards.json. Проверьте консоль (F12).</p>';
+            }
+            return;
         }
-        
-        // Проверяем, загружена ли колода
+
         const testDeck = Deck.create();
         if (testDeck && testDeck.length === 78) {
             console.log('✅ Колода загружена корректно: 78 карт');

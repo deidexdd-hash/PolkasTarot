@@ -51,8 +51,10 @@ window.UI = {
                         <div class="info-main-text">
                             <p><strong>📖 Общее значение:</strong><br>${item.general || "Описание отсутствует"}</p>
                             <div class="advice-box">
-                                <strong>💡 Совет:</strong><br>
-                                ${item.advice || "Слушайте свою интуицию"}
+                                <strong>💡 Совет:</strong>
+                                ${UI.hasValue(item.advice)
+                                    ? UI.renderValue(item.advice)
+                                    : '<p>Слушайте свою интуицию</p>'}
                             </div>
                         </div>
                         <div class="info-sub-details">
@@ -265,10 +267,10 @@ window.UI = {
         else if (db.minor.swords.includes(card)) cardType = 'Масть Мечей';
         else if (db.minor.pentacles.includes(card)) cardType = 'Масть Пентаклей';
 
-        // Получаем полные толкования
-        const fullInfo = window.FullInterpretations && window.FullInterpretations[card.name];
-        const directMeanings = fullInfo ? fullInfo.direct : card.meanings.direct;
-        const reversedMeanings = fullInfo ? fullInfo.reversed : card.meanings.reversed;
+        // Толкования берутся из самой карты: data/cards.json содержит
+        // полный текст для всех 78 карт в обоих положениях.
+        const directMeanings = card.meanings.direct;
+        const reversedMeanings = card.meanings.reversed;
 
         // Создаем HTML для модального окна
         const modalHtml = `
@@ -310,6 +312,28 @@ window.UI = {
             modalBody.innerHTML = modalHtml;
             modal.classList.add('active');
         }
+    },
+
+    /**
+     * В data/cards.json advice и combinations — списки. Раньше у старших
+     * арканов advice тоже был массивом, и шаблон выводил его как
+     * «совет1,совет2,совет3»; теперь список рендерится списком.
+     */
+    renderValue(value) {
+        if (Array.isArray(value)) {
+            return '<ul class="meaning-list">' +
+                value.map((item) => `<li>${item}</li>`).join('') +
+                '</ul>';
+        }
+        return `<p>${value}</p>`;
+    },
+
+    /**
+     * Пустой массив в JavaScript истинный, поэтому одной проверки
+     * на истинность для полей-списков мало.
+     */
+    hasValue(value) {
+        return Array.isArray(value) ? value.length > 0 : Boolean(value);
     },
 
     /**
@@ -356,11 +380,11 @@ window.UI = {
             `);
         }
         
-        if (meanings.advice) {
+        if (this.hasValue(meanings.advice)) {
             items.push(`
                 <div class="meaning-item">
                     <strong>💡 Совет</strong>
-                    <p>${meanings.advice}</p>
+                    ${this.renderValue(meanings.advice)}
                 </div>
             `);
         }
