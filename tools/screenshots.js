@@ -63,9 +63,14 @@ async function open(browser, options) {
         await page.waitForTimeout(500);
         await page.screenshot({ path: `${OUT}/phone-${theme}-4-card.png` });
 
-        // та же карточка с раскрытыми глубокими полями
-        await page.evaluate(() => document.querySelectorAll('details.deep-fields')
-            .forEach((d) => { d.open = true; }));
+        // Та же карточка с раскрытыми глубокими полями. Раскрывашка лежит
+        // ниже видимой области, поэтому без прокрутки кадр не отличался бы
+        // от предыдущего вовсе.
+        await page.evaluate(() => {
+            document.querySelectorAll('details.deep-fields').forEach((d) => { d.open = true; });
+            const first = document.querySelector('details.deep-fields');
+            if (first) first.scrollIntoView({ block: 'start' });
+        });
         await page.waitForTimeout(400);
         await page.screenshot({ path: `${OUT}/phone-${theme}-5-card-open.png` });
 
