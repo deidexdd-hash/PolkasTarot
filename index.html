@@ -4,104 +4,111 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="description" content="Профессиональная система гадания на картах Таро онлайн">
-    <meta name="theme-color" content="#f5f5f7">
+    <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <title>✨ Tarot Professional System</title>
+    <title>Таро</title>
+    <!-- Иконка вкладки: браузер запрашивает favicon.ico сам, и без неё
+         каждая загрузка страницы давала 404. -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%94%AE%3C/text%3E%3C/svg%3E">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<header>
-    <div class="header-content">
-        <div class="logo">✨ TAROT</div>
-        <nav class="spread-controls" role="navigation" aria-label="Выбор расклада">
-            <button onclick="App.showDeck()" class="spread-btn deck-btn" aria-label="Вся колода">
-                <span class="btn-icon" aria-hidden="true">🎴</span>
-                <span class="btn-text">Колода</span>
-            </button>
-            <button onclick="App.doSpread('daily')" class="spread-btn" aria-label="Карта дня">
-                <span class="btn-icon" aria-hidden="true">☀️</span>
-                <span class="btn-text">Карта дня</span>
-            </button>
-            <button onclick="App.doSpread('threecards')" class="spread-btn" aria-label="Три карты">
-                <span class="btn-icon" aria-hidden="true">🔮</span>
-                <span class="btn-text">Три карты</span>
-            </button>
-            <button onclick="App.doSpread('cross')" class="spread-btn" aria-label="Крест">
-                <span class="btn-icon" aria-hidden="true">✨</span>
-                <span class="btn-text">Крест</span>
-            </button>
-            <button onclick="App.doSpread('celtic')" class="spread-btn" aria-label="Кельтский крест">
-                <span class="btn-icon" aria-hidden="true">🍀</span>
-                <span class="btn-text">Кельтский крест</span>
-            </button>
-            <button onclick="App.doSpread('pyramid')" class="spread-btn" aria-label="Любовь">
-                <span class="btn-icon" aria-hidden="true">💕</span>
-                <span class="btn-text">Любовь</span>
-            </button>
-            <button onclick="App.doSpread('choice')" class="spread-btn" aria-label="Выбор">
-                <span class="btn-icon" aria-hidden="true">🔄</span>
-                <span class="btn-text">Выбор</span>
-            </button>
-            <button onclick="App.doSpread('year')" class="spread-btn" aria-label="Год вперед">
-                <span class="btn-icon" aria-hidden="true">🎯</span>
-                <span class="btn-text">Год вперед</span>
-            </button>
-        </nav>
+<header class="nav-bar">
+    <div class="nav-row">
+        <span class="nav-title">Таро</span>
+        <button onclick="App.showDeck()" class="nav-action" aria-label="Открыть колоду">
+            <span aria-hidden="true">🎴</span>
+            <span>Колода</span>
+        </button>
     </div>
+
+    <nav class="spread-strip" role="navigation" aria-label="Выбор расклада">
+        <button onclick="App.doSpread('daily')" class="spread-chip">
+            <span class="chip-icon" aria-hidden="true">☀️</span>
+            <span class="chip-text">Карта дня</span>
+        </button>
+        <button onclick="App.doSpread('threecards')" class="spread-chip">
+            <span class="chip-icon" aria-hidden="true">🔮</span>
+            <span class="chip-text">Три карты</span>
+        </button>
+        <button onclick="App.doSpread('cross')" class="spread-chip">
+            <span class="chip-icon" aria-hidden="true">✨</span>
+            <span class="chip-text">Крест</span>
+        </button>
+        <button onclick="App.doSpread('celtic')" class="spread-chip">
+            <span class="chip-icon" aria-hidden="true">🍀</span>
+            <span class="chip-text">Кельтский крест</span>
+        </button>
+        <button onclick="App.doSpread('pyramid')" class="spread-chip">
+            <span class="chip-icon" aria-hidden="true">💕</span>
+            <span class="chip-text">Любовь</span>
+        </button>
+        <button onclick="App.doSpread('choice')" class="spread-chip">
+            <span class="chip-icon" aria-hidden="true">🔄</span>
+            <span class="chip-text">Выбор</span>
+        </button>
+        <button onclick="App.doSpread('year')" class="spread-chip">
+            <span class="chip-icon" aria-hidden="true">🎯</span>
+            <span class="chip-text">Год вперёд</span>
+        </button>
+    </nav>
 </header>
 
 <main role="main">
     <div id="spread-container">
-        <div class="welcome-screen">
-            <div class="welcome-content">
-                <h1>✨ Добро пожаловать в мир Таро</h1>
-                <p class="welcome-subtitle">Выберите расклад, чтобы заглянуть в будущее</p>
-                <div class="welcome-features">
-                    <article class="feature-card">
-                        <div class="feature-icon" aria-hidden="true">🎴</div>
-                        <h3>78 карт Райдера-Уэйта</h3>
-                        <p>Полная колода с детальными интерпретациями</p>
-                    </article>
-                    <article class="feature-card">
-                        <div class="feature-icon" aria-hidden="true">✨</div>
-                        <h3>7 типов раскладов</h3>
-                        <p>От простой карты дня до сложного Кельтского креста</p>
-                    </article>
-                    <article class="feature-card">
-                        <div class="feature-icon" aria-hidden="true">📖</div>
-                        <h3>Подробные толкования</h3>
-                        <p>Любовь, карьера, финансы и советы</p>
-                    </article>
-                </div>
-            </div>
-        </div>
+        <section class="welcome-screen">
+            <h1 class="welcome-title">Загляните в карты</h1>
+            <p class="welcome-subtitle">Выберите расклад наверху или откройте всю колоду</p>
+
+            <ul class="inset-list" role="list">
+                <li>
+                    <span class="row-icon" aria-hidden="true">🎴</span>
+                    <span class="row-body">
+                        <span class="row-title">78 карт Райдера-Уэйта</span>
+                        <span class="row-note">Полная колода с подробными толкованиями</span>
+                    </span>
+                </li>
+                <li>
+                    <span class="row-icon" aria-hidden="true">✨</span>
+                    <span class="row-body">
+                        <span class="row-title">7 раскладов</span>
+                        <span class="row-note">От карты дня до Кельтского креста</span>
+                    </span>
+                </li>
+                <li>
+                    <span class="row-icon" aria-hidden="true">📖</span>
+                    <span class="row-body">
+                        <span class="row-title">13 разделов на карту</span>
+                        <span class="row-note">Любовь, работа, финансы, здоровье и другие</span>
+                    </span>
+                </li>
+            </ul>
+        </section>
     </div>
 
     <aside id="history-sidebar" role="complementary" aria-label="История сеансов">
-        <div class="history-header">
-            <h3>📜 История сеансов</h3>
-            <button onclick="App.clearHistory()" class="clear-btn" title="Очистить историю" aria-label="Очистить историю">
-                🗑️
-            </button>
+        <div class="section-head">
+            <h2>История</h2>
+            <button onclick="App.clearHistory()" class="text-btn" aria-label="Очистить историю">Очистить</button>
         </div>
-        <ul id="historyList">
-            <li class="empty-msg">История пока пуста</li>
-        </ul>
+        <ul id="historyList" class="inset-list"></ul>
     </aside>
 </main>
 
-<!-- Modal для детального просмотра карты -->
-<div id="cardModal" class="modal" onclick="this.classList.remove('active')">
-    <div class="modal-content" onclick="event.stopPropagation()">
-        <button class="modal-close" onclick="document.getElementById('cardModal').classList.remove('active')" aria-label="Закрыть">✕</button>
-        <div id="modalBody"></div>
+<!-- Карточка карты: выезжающий снизу лист -->
+<div id="cardModal" class="sheet-backdrop" onclick="UI.closeCard()">
+    <div class="sheet" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-label="Значение карты">
+        <div class="sheet-grabber" aria-hidden="true"></div>
+        <button class="sheet-close" onclick="UI.closeCard()" aria-label="Закрыть">✕</button>
+        <div id="modalBody" class="sheet-body"></div>
     </div>
 </div>
 
 <footer role="contentinfo">
-    <p>© 2024 Tarot Professional System | Для развлекательных целей</p>
+    <p>Для развлекательных целей</p>
 </footer>
 
 <!-- Core Scripts -->
