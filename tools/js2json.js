@@ -595,8 +595,20 @@ function main() {
     }
 
     if (CHECK_ONLY) {
+        // Проверка выше прогоняется по данным, ПОЧИНЕННЫМ В ПАМЯТИ. Браузер
+        // читает js/data/*.js как есть, поэтому нетронутый исходник — такая же
+        // поломка, как невалидные данные, и --check обязан её завалить.
+        const dirty = totalFixed + totalImages + totalSpaces;
+        if (dirty > 0) {
+            console.log(`\n  Исходники в js/data/ требуют починки (${dirty} значений):`);
+            if (totalFixed > 0) console.log(`    - неэкранированных кавычек: ${totalFixed}`);
+            if (totalSpaces > 0) console.log(`    - хвостовых пробелов в name/img: ${totalSpaces}`);
+            if (totalImages > 0) console.log(`    - карт с чужой картинкой: ${totalImages}`);
+            console.log('  Почините: node tools/js2json.js --fix-source');
+        }
+
         console.log('\nРежим --check: ничего не записано');
-        process.exit(problems.length ? 1 : 0);
+        process.exit(problems.length || dirty > 0 ? 1 : 0);
     }
 
     console.log('\n4. Записываю');
