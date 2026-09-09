@@ -272,6 +272,15 @@ window.UI = {
         const directMeanings = card.meanings.direct;
         const reversedMeanings = card.meanings.reversed;
 
+        // У старших арканов yes_no один на карту и совпадает в обоих
+        // положениях — выводим его отдельно, чтобы не показывать дважды.
+        // У младших ответы разные, там он остаётся внутри положения.
+        const sharedYesNo = directMeanings.yes_no &&
+            directMeanings.yes_no === reversedMeanings.yes_no
+            ? directMeanings.yes_no
+            : null;
+        const skip = sharedYesNo ? ['yes_no'] : [];
+
         // Создаем HTML для модального окна
         const modalHtml = `
             <div class="modal-card-detail">
@@ -291,7 +300,7 @@ window.UI = {
                             ✨ Прямое положение
                             <span class="orientation-badge direct">Прямая</span>
                         </h3>
-                        ${this.renderMeaningItems(directMeanings)}
+                        ${this.renderMeaningItems(directMeanings, skip)}
                     </div>
                     
                     <div class="meaning-section">
@@ -299,8 +308,17 @@ window.UI = {
                             🔄 Перевернутое положение
                             <span class="orientation-badge reversed">Перевернутая</span>
                         </h3>
-                        ${this.renderMeaningItems(reversedMeanings)}
+                        ${this.renderMeaningItems(reversedMeanings, skip)}
                     </div>
+
+                    ${sharedYesNo ? `
+                    <div class="meaning-section">
+                        <h3>🔮 Ответ да/нет</h3>
+                        <div class="meaning-item">
+                            <p>${sharedYesNo}</p>
+                        </div>
+                    </div>
+                    ` : ''}
                 </div>
             </div>
         `;
@@ -339,57 +357,39 @@ window.UI = {
     /**
      * Рендер элементов значений карты
      */
-    renderMeaningItems(meanings) {
+    // Порядок и подписи полей карточки. Часть из них заполнена только
+    // у старших арканов — то, чего у карты нет, просто не выводится.
+    MEANING_FIELDS: [
+        { key: 'symbolism',     label: '🖼️ Символика' },
+        { key: 'general',       label: '📖 Общее значение' },
+        { key: 'love',          label: '❤️ Любовь и отношения' },
+        { key: 'relations',     label: '👥 Отношения с окружающими' },
+        { key: 'work',          label: '💼 Работа и карьера' },
+        { key: 'finance',       label: '💰 Финансы' },
+        { key: 'health',        label: '🏥 Здоровье' },
+        { key: 'psychological', label: '🧠 Психологический аспект' },
+        { key: 'spiritual',     label: '🕊️ Духовный аспект' },
+        { key: 'time_frames',   label: '⏳ Сроки' },
+        { key: 'combinations',  label: '🔗 Сочетания с другими картами' },
+        { key: 'advice',        label: '💡 Совет' },
+        { key: 'yes_no',        label: '🔮 Ответ да/нет' }
+    ],
+
+    renderMeaningItems(meanings, skip) {
         if (!meanings) return '<p>Информация отсутствует</p>';
+        const skipped = skip || [];
 
-        const items = [];
-        
-        if (meanings.general) {
-            items.push(`
+        const items = this.MEANING_FIELDS
+            .filter((field) => !skipped.includes(field.key))
+            .filter((field) => this.hasValue(meanings[field.key]))
+            .map((field) => `
                 <div class="meaning-item">
-                    <strong>📖 Общее значение</strong>
-                    <p>${meanings.general}</p>
+                    <strong>${field.label}</strong>
+                    ${this.renderValue(meanings[field.key])}
                 </div>
             `);
-        }
-        
-        if (meanings.love) {
-            items.push(`
-                <div class="meaning-item">
-                    <strong>❤️ Любовь и отношения</strong>
-                    <p>${meanings.love}</p>
-                </div>
-            `);
-        }
-        
-        if (meanings.work) {
-            items.push(`
-                <div class="meaning-item">
-                    <strong>💼 Работа и карьера</strong>
-                    <p>${meanings.work}</p>
-                </div>
-            `);
-        }
-        
-        if (meanings.finance) {
-            items.push(`
-                <div class="meaning-item">
-                    <strong>💰 Финансы</strong>
-                    <p>${meanings.finance}</p>
-                </div>
-            `);
-        }
-        
-        if (this.hasValue(meanings.advice)) {
-            items.push(`
-                <div class="meaning-item">
-                    <strong>💡 Совет</strong>
-                    ${this.renderValue(meanings.advice)}
-                </div>
-            `);
-        }
 
-        return items.join('');
+        return items.length ? items.join('') : '<p>Информация отсутствует</p>';
     },
 
     /**
