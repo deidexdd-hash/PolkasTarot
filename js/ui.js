@@ -84,19 +84,20 @@ window.UI = {
 
         // Стили для расклада
         const tableClass = isDaily ? 'spread-table daily-layout' : 'spread-table';
-        const tableStyle = isDaily 
-            ? '' 
-            : `display: grid; grid-template-columns: ${config.grid}; grid-template-areas: ${config.areas.join(' ')}; gap: 40px; justify-items: center;`;
+        // Раскладку передаём переменными, а не inline-стилем: иначе CSS не может
+        // сложить многоколоночный расклад в столбец на узком экране.
+        const tableStyle = isDaily
+            ? ''
+            : `--spread-cols: ${config.grid}; --spread-areas: ${config.areas.join(' ')};`;
 
-        // Итоговый HTML
         container.innerHTML = `
-            <h2 class="spread-main-title">✨ ${title} ✨</h2>
-            ${config.description ? `<p style="text-align: center; color: #b8b8b8; margin-bottom: 30px; font-size: 1.1rem;">${config.description}</p>` : ''}
+            <h2 class="spread-main-title">${title}</h2>
+            ${config.description ? `<p class="spread-lede">${config.description}</p>` : ''}
             <div class="${tableClass}" style="${tableStyle}">
                 ${cardsHtml}
             </div>
             <div class="interpretation-area">
-                <h2>📜 Толкование расклада</h2>
+                <h2>Толкование</h2>
                 ${infoHtml}
             </div>
         `;
@@ -189,10 +190,8 @@ window.UI = {
 
         container.innerHTML = `
             <div class="deck-gallery">
-                <h2 class="spread-main-title">🎴 Колода Таро</h2>
-                <p style="text-align: center; color: #86868b; margin-bottom: 40px; font-size: 1.1rem;">
-                    78 карт Райдера-Уэйта с подробными описаниями
-                </p>
+                <h2 class="spread-main-title">Колода</h2>
+                <p class="spread-lede">78 карт Райдера-Уэйта с подробными толкованиями</p>
                 ${filterHtml}
                 ${sectionsHtml}
             </div>
@@ -297,23 +296,23 @@ window.UI = {
                 <div class="modal-meanings">
                     <div class="meaning-section">
                         <h3>
-                            ✨ Прямое положение
+                            Прямое положение
                             <span class="orientation-badge direct">Прямая</span>
                         </h3>
                         ${this.renderMeaningItems(directMeanings, skip)}
                     </div>
-                    
+
                     <div class="meaning-section">
                         <h3>
-                            🔄 Перевернутое положение
-                            <span class="orientation-badge reversed">Перевернутая</span>
+                            Перевёрнутое положение
+                            <span class="orientation-badge reversed">Перевёрнутая</span>
                         </h3>
                         ${this.renderMeaningItems(reversedMeanings, skip)}
                     </div>
 
                     ${sharedYesNo ? `
                     <div class="meaning-section">
-                        <h3>🔮 Ответ да/нет</h3>
+                        <h3>Ответ да/нет</h3>
                         <div class="meaning-item">
                             <p>${sharedYesNo}</p>
                         </div>
@@ -323,13 +322,24 @@ window.UI = {
             </div>
         `;
 
-        // Показываем модальное окно
         const modal = document.getElementById('cardModal');
         const modalBody = document.getElementById('modalBody');
         if (modal && modalBody) {
             modalBody.innerHTML = modalHtml;
+            modalBody.scrollTop = 0;
             modal.classList.add('active');
+            // Пока лист открыт, фон под ним прокручиваться не должен.
+            document.body.style.overflow = 'hidden';
         }
+    },
+
+    /**
+     * Закрыть карточку карты.
+     */
+    closeCard() {
+        const modal = document.getElementById('cardModal');
+        if (modal) modal.classList.remove('active');
+        document.body.style.overflow = '';
     },
 
     /**
@@ -413,13 +423,11 @@ window.UI = {
 
             return `
                 <li>
-                    <div>
-                        <small style="display: block; margin-bottom: 5px;">${time}</small>
-                        <b>${cardName}</b>
-                        <small style="display: block; color: #888; margin-top: 3px;">
-                            ${spreadName}${cardsCount}
-                        </small>
-                    </div>
+                    <span class="row-body">
+                        <span class="row-title">${cardName}</span>
+                        <span class="row-note">${spreadName}${cardsCount}</span>
+                    </span>
+                    <small>${time}</small>
                 </li>
             `;
         }).join('');
