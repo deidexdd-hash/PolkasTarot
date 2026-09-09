@@ -7,7 +7,11 @@
 name: Данные
 
 on:
+  # Без ограничения по веткам push и pull_request дают два одинаковых
+  # прогона на каждый коммит в ветке с открытым PR. Ветки покрывает
+  # pull_request, main — push.
   push:
+    branches: [main]
   pull_request:
 
 jobs:
