@@ -9,3 +9,8 @@ data/wands.json
 data/cups.json
 data/swords.json
 data/pentacles.json
+
+# Проверочные инструменты и их выхлоп
+tools/node_modules/
+tools/package-lock.json
+screenshots/
