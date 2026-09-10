@@ -16,7 +16,7 @@ on:
         type: boolean
         default: true
       width:
-        description: 'Ширина картинки по длинной стороне, px'
+        description: 'Ширина картинки по длинной стороне, px (потолок: возьмётся ближайший размер, который отдаёт Викисклад)'
         type: string
         default: '720'
 
@@ -37,6 +37,12 @@ jobs:
         with:
           node-version: '20'
 
+      # jsdom для прогона приложения и jimp для уменьшения картинок. Оба на
+      # чистом JS. Ставим до загрузки: если Викисклад отдаёт только крупные
+      # копии, уменьшать придётся уже на этом шаге.
+      - name: Поставить инструменты
+        run: npm --prefix tools install --no-audit --no-fund --omit=optional
+
       # Падает, если хоть один файл не найден на Викискладе или не оказался
       # общественным достоянием. Ошибка называет каждую карту поимённо.
       - name: Проверить имена файлов и лицензии
@@ -53,7 +59,6 @@ jobs:
         if: ${{ !inputs.dry_run }}
         run: |
           node tools/js2json.js --check
-          npm --prefix tools install --no-audit --no-fund --omit=optional
           node tools/e2e.js
           node tools/e2e.js --broken-storage
 
