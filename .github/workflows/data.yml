@@ -20,11 +20,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '22'
 
       # Падает, если данные невалидны (не 78 карт, дубли id, пустой general,
       # нет файла картинки) ИЛИ если исходники в js/data/ требуют починки.
@@ -51,5 +51,6 @@ jobs:
 
       - name: Прогнать приложение в jsdom
         run: |
+          node tools/test-images.js
           node tools/e2e.js
           node tools/e2e.js --broken-storage

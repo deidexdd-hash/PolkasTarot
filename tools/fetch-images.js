@@ -135,13 +135,13 @@ function titleKey(title) {
     return t.charAt(0).toUpperCase() + t.slice(1);
 }
 
-async function queryBatch(titles) {
+async function queryBatch(titles, width) {
     const url = `${API}?${new URLSearchParams({
         action: 'query', format: 'json', formatversion: '2',
         titles: titles.map((t) => 'File:' + t).join('|'),
         prop: 'imageinfo',
         iiprop: 'url|size|extmetadata|mime',
-        iiurlwidth: String(WIDTH),
+        iiurlwidth: String(width || WIDTH),
     })}`;
     const body = JSON.parse((await get(url)).toString('utf8'));
     const out = new Map();
@@ -253,10 +253,10 @@ function isPublicDomain(info) {
 }
 
 /** Спрашивает Викисклад про item.title и складывает ответ в item.info. */
-async function resolve(list) {
+async function resolve(list, width) {
     for (let i = 0; i < list.length; i += 50) {
         const batch = list.slice(i, i + 50);
-        const pages = await queryBatch(batch.map((it) => it.title));
+        const pages = await queryBatch(batch.map((it) => it.title), width);
         for (const item of batch) {
             const page = pages.get(titleKey(item.title));
             if (page && !page.missing && page.imageinfo && page.imageinfo[0]) {
@@ -281,58 +281,6 @@ function jpegWidth(buf) {
     return null;
 }
 
-/** Адрес без вопросительного знака и всего, что за ним. */
-const stripQuery = (url) => String(url).split('?')[0];
-
-/**
- * Тот же адрес уменьшенной копии, но с другой шириной.
- *
- * Викисклад не обязан отдавать копию ровно той ширины, которую просили:
- * на запрос 720 px он вернул ссылку на копию 960 px. Зато вернул именно
- * ссылку на копию, а в ней ширина стоит прямо в имени файла — её и
- * переписываем:
- *
- *   .../thumb/9/90/Имя.jpg/960px-Имя.jpg?utm_source=…
- *   .../thumb/9/90/Имя.jpg/720px-Имя.jpg
- *
- * Хвост с utm_source отбрасываем: он не нужен для загрузки, а раньше
- * ломал разбор адреса — именно из-за него не сработала попытка собрать
- * ссылку заново.
- */
-function retargetThumb(url, width) {
-    const clean = stripQuery(url);
-    const m = clean.match(/^(.*\/)(\d+)px-([^/]+)$/);
-    if (!m) return null;
-    if (Number(m[2]) === width) return null;      // уже нужная ширина
-    return `${m[1]}${width}px-${m[3]}`;
-}
-
-/**
- * Ссылка на уменьшенную копию, собранная из ссылки на оригинал.
- *
- * Запасной путь на случай, если в thumburl придёт адрес оригинала, а не
- * копии, и переписывать в нём будет нечего. Схема адресов у Викисклада
- * стабильная:  .../commons/a/ab/Имя.jpg  ->  .../commons/thumb/a/ab/Имя.jpg/720px-Имя.jpg
- */
-function thumbFromOriginal(url, width) {
-    const m = stripQuery(url).match(/^(https?:\/\/[^/]+\/wikipedia\/commons)\/([0-9a-f])\/([0-9a-f]{2})\/([^/]+)$/);
-    if (!m) return null;
-    const [, base, a, ab, name] = m;
-    return `${base}/thumb/${a}/${ab}/${name}/${width}px-${name}`;
-}
-
-/**
- * Адреса, по которым можно попросить копию заданной ширины.
- * Два способа могут дать один и тот же адрес — тогда и ходить туда стоит
- * один раз, и в отчёте он должен стоять один раз.
- */
-function altUrls(item, width) {
-    return [...new Set([
-        retargetThumb(item.info.thumburl, width),
-        thumbFromOriginal(item.info.url || item.info.thumburl, width),
-    ].filter(Boolean))];
-}
-
 // Размеры, которые пробуем, если запрошенный не отдаётся. Викисклад
 // отдаёт копии не любой ширины, а из своего набора: на запрос 720 px он
 // дважды вернул 960, и по адресу с 720px- тоже. Гадать, какие размеры
@@ -353,38 +301,45 @@ const WIDTH_LADDER = [1280, 1024, 960, 800, 720, 640, 512, 480, 400, 320, 256];
 async function probeWidth(item) {
     const tried = [];
     const candidates = [WIDTH, ...WIDTH_LADDER.filter((w) => w < WIDTH)];
-
-    // Самое маленькое, что служба вообще согласилась отдать. Пригодится,
-    // если в потолок не уложилось ничего: качаем это и уменьшаем сами.
     let smallest = null;
 
     for (const w of candidates) {
-        const urls = altUrls(item, w);
-        if (!urls.length) { tried.push({ w, got: 'адрес не собирается' }); continue; }
-
-        for (const url of urls) {
-            let got;
-            try {
-                const data = await get(url);
-                const gw = jpegWidth(data);
-                got = gw ? `${gw} px` : `не картинка (${data.length} байт)`;
-                if (gw) {
-                    if (gw <= WIDTH) {
-                        tried.push({ w, got, url });
-                        return { width: w, actual: gw, tried, resize: false };
-                    }
-                    if (!smallest || gw < smallest.actual) smallest = { w, actual: gw };
-                }
-            } catch (e) {
-                got = 'не открылся: ' + String((e && e.message) || e).slice(0, 70);
-            }
-            tried.push({ w, got, url });
+        // Спрашиваем адрес у API, а не строим его сами. Собранные вручную
+        // адреса Викисклад отвергает: и thumb.wikimedia.org, и
+        // upload.wikimedia.org отвечали на них HTTP 400, при том что адрес,
+        // выданный самим API, качается прекрасно. У него в хвосте свои
+        // параметры, и обрезать их, как и подставлять своё число ширины,
+        // оказалось нельзя.
+        let url;
+        try {
+            const pages = await queryBatch([item.title], w);
+            const page = pages.get(titleKey(item.title));
+            url = page && page.imageinfo && page.imageinfo[0] && page.imageinfo[0].thumburl;
+        } catch (e) {
+            tried.push({ w, got: 'API не ответил: ' + String((e && e.message) || e).slice(0, 60) });
+            continue;
         }
+        if (!url) { tried.push({ w, got: 'API не дал адреса копии' }); continue; }
+
+        let got;
+        try {
+            const data = await get(url);
+            const gw = jpegWidth(data);
+            got = gw ? `${gw} px` : `не картинка (${data.length} байт)`;
+            if (gw) {
+                if (gw <= WIDTH) {
+                    tried.push({ w, got, url });
+                    return { width: w, actual: gw, tried, resize: false };
+                }
+                if (!smallest || gw < smallest.actual) smallest = { w, actual: gw };
+            }
+        } catch (e) {
+            got = 'не открылся: ' + String((e && e.message) || e).slice(0, 70);
+        }
+        tried.push({ w, got, url });
     }
 
-    if (smallest) {
-        return { width: smallest.w, actual: smallest.actual, tried, resize: true };
-    }
+    if (smallest) return { width: smallest.w, actual: smallest.actual, tried, resize: true };
     return { width: null, tried, resize: false };
 }
 
@@ -513,7 +468,6 @@ async function main() {
         );
     }
 
-    let resizeTo = null;
     if (!probe.resize) {
         console.log(`  ${probe.actual} px — берём`);
     } else {
@@ -527,37 +481,46 @@ async function main() {
                 `  либо запустите с --width ${probe.actual}, если такой вес устраивает.`
             );
         }
-        resizeTo = WIDTH;
         console.log(`  меньше ${probe.actual} px не отдаётся — качаем ${probe.actual} px и уменьшаем до ${WIDTH} px сами`);
     }
 
-    console.log('\n3. Качаю');
+    if (probe.width !== WIDTH) {
+        // Перезапрашиваем адреса под выбранную ширину: у каждой карты свой,
+        // и выдать его может только API — собранные вручную он отвергает.
+        console.log('\n3. Спрашиваю адреса под выбранный размер');
+        await resolve(items, probe.width);
+    }
+
+    console.log('\n4. Качаю');
     fs.rmSync(STAGE_DIR, { recursive: true, force: true });
     fs.mkdirSync(STAGE_DIR, { recursive: true });
     let bytes = 0;
     for (const [i, item] of items.entries()) {
-        // Идём сразу за найденной шириной, а не за тем, что предложил API.
-        const urls = altUrls(item, probe.width);
-        const tryUrls = [...urls, item.info.thumburl];
+        // Используем только адрес API, сохраняя путь и параметры целиком.
+        const tryUrls = [item.info.thumburl].filter(Boolean);
         let data = null;
+        const why = [];
         for (const url of tryUrls) {
             try {
                 const got = await get(url);
                 const gw = jpegWidth(got);
-                if (got.length >= 2048 && gw && gw <= probe.actual) { data = got; break; }
-            } catch (e) { /* пробуем следующий */ }
+                if (got.length >= 2048 && gw) { data = got; break; }
+                why.push(`${url} -> ${gw ? gw + ' px' : 'не картинка'}`);
+            } catch (e) {
+                why.push(`${url} -> ${String((e && e.message) || e).slice(0, 60)}`);
+            }
         }
         if (!data) {
             throw new Error(
-                `${item.name}: не удалось получить копию не шире ${probe.actual} px.\n` +
-                `  Пробовали: ${tryUrls.join('\n             ')}`
+                `${item.name}: не удалось скачать картинку.\n  ` + why.join('\n  ')
             );
         }
 
-        if (resizeTo) {
+        // Размер проверяется у каждой карты: доступные копии могут отличаться.
+        if (jpegWidth(data) > WIDTH) {
             let small;
             try {
-                small = await shrink(data, resizeTo);
+                small = await shrink(data, WIDTH);
             } catch (e) {
                 // Без имени карты такая ошибка бесполезна: 78 файлов, и
                 // непонятно, на каком из них разбор картинки сломался.
@@ -581,14 +544,14 @@ async function main() {
     const realWidth = widths.length === 1 ? widths[0] : widths.join('/');
     console.log(`  скачано ${(bytes / 1048576).toFixed(1)} МБ, ширина ${realWidth} px`);
 
-    console.log('\n4. Заменяю');
+    console.log('\n5. Заменяю');
     for (const item of items) {
         fs.renameSync(path.join(STAGE_DIR, item.target), path.join(IMG_DIR, item.target));
     }
     fs.rmSync(STAGE_DIR, { recursive: true, force: true });
     console.log(`  ${items.length} файлов в img/cards`);
 
-    console.log('\n5. Пишу SOURCES.md');
+    console.log('\n6. Пишу SOURCES.md');
     writeSources(items, realWidth);
     console.log('  готово. Проверьте данные: node tools/js2json.js --check');
 }
