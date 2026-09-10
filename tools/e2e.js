@@ -179,6 +179,40 @@ const ok = (cond, msg) => {
     ok(minor.includes('Да, через эмоциональную открытость') &&
        minor.includes('Нет, эмоции мешают'), 'ответы для положений разные');
 
+    console.log('\n--- раскладка ---');
+    // Сетка расклада теперь считается из позиций, а не пишется руками.
+    // Проверяем ровно то, что раньше приходилось выверять глазами: что
+    // описание собралось без ошибок и что каждая карта получила свою клетку.
+    ok(w.Spreads.errors.length === 0,
+       `все расклады описаны верно${w.Spreads.errors.length ? ': ' + w.Spreads.errors.join('; ') : ''}`);
+
+    const layoutNames = Object.keys(w.Spreads.types);
+    ok(layoutNames.length === 8, `раскладов собрано: ${layoutNames.length} из 8`);
+
+    const layoutBad = [];
+    for (const key of layoutNames) {
+        const cfg = w.Spreads.types[key];
+        const cells = cfg.areas.join(' ').replace(/'/g, ' ').trim().split(/\s+/);
+        const cards = cells.filter((c) => c !== '.');
+        const uniq = new Set(cards);
+        const cols = cfg.areas.map((r) => r.replace(/'/g, ' ').trim().split(/\s+/).length);
+        if (uniq.size !== cards.length) layoutBad.push(`${key}: карта продублирована`);
+        if (cards.length !== cfg.count) layoutBad.push(`${key}: клеток ${cards.length}, карт ${cfg.count}`);
+        if (cfg.labels.length !== cfg.count) layoutBad.push(`${key}: подписей ${cfg.labels.length}, карт ${cfg.count}`);
+        if (new Set(cols).size !== 1) layoutBad.push(`${key}: ряды разной длины ${cols.join('/')}`);
+        for (let i = 1; i <= cfg.count; i += 1) {
+            if (!uniq.has('p' + i)) layoutBad.push(`${key}: нет клетки для карты ${i}`);
+        }
+    }
+    ok(layoutBad.length === 0,
+       `в каждом раскладе у каждой карты своя клетка${layoutBad.length ? ': ' + layoutBad.slice(0, 3).join('; ') : ''}`);
+
+    w.App.doSpread('celtic');
+    const celtic = w.document.getElementById('spread-container');
+    const placed = [...celtic.querySelectorAll('.card-item')].map((el) => el.style.gridArea);
+    ok(placed.length === 10, `кельтский крест выложил 10 карт (${placed.length})`);
+    ok(new Set(placed).size === placed.length, 'ни одна карта не села на чужую клетку');
+
     console.log('\n--- расклад ---');
     w.App.doSpread('daily');
     const spread = w.document.getElementById('spread-container').innerHTML;
