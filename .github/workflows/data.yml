@@ -51,5 +51,6 @@ jobs:
 
       - name: Прогнать приложение в jsdom
         run: |
+          node tools/test-images.js
           node tools/e2e.js
           node tools/e2e.js --broken-storage
