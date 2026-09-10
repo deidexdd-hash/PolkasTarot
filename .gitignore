@@ -14,3 +14,6 @@ data/pentacles.json
 tools/node_modules/
 tools/package-lock.json
 screenshots/
+
+# Временная папка загрузки картинок (tools/fetch-images.js)
+.image-stage/
