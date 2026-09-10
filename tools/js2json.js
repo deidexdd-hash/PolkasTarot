@@ -28,6 +28,7 @@
 const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
+const crypto = require('crypto');
 
 // ---------------------------------------------------------------------------
 // Конфигурация
@@ -512,11 +513,21 @@ function writeCsv(cards, file) {
 function writeOutputs(cards) {
     fs.mkdirSync(OUT_DIR, { recursive: true });
 
+    // Версия — отпечаток самих данных, а не дата сборки. С датой выгрузка
+    // переставала совпадать с закоммиченной на следующий же день, и второй
+    // шаг CI («пересобирается без изменений») ломался сам собой, без единой
+    // правки данных. Теперь версия меняется тогда и только тогда, когда
+    // меняются карты.
+    const version = crypto.createHash('sha256')
+        .update(JSON.stringify(cards))
+        .digest('hex')
+        .slice(0, 12);
+
     const payload = {
         name: 'PolkasTarot — значения карт Таро на русском',
         deck: 'Rider-Waite-Smith',
         language: 'ru',
-        version: new Date().toISOString().slice(0, 10),
+        version,
         count: cards.length,
         cards,
     };
