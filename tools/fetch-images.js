@@ -86,7 +86,10 @@ function plan() {
         const title = card.arcana === 'major'
             ? `RWS_Tarot_${String(card.number).padStart(2, '0')}_${MAJOR_EN[card.number]}.jpg`
             : `${SUIT_COMMONS[card.suit]}${String(card.number).padStart(2, '0')}.jpg`;
-        return { name: card.name, code: card.code, target: path.basename(card.img), title };
+        return {
+            name: card.name, code: card.code, target: path.basename(card.img), title,
+            en: card.arcana === 'major' ? MAJOR_EN[card.number].replace(/_/g, ' ') : null,
+        };
     });
 }
 
@@ -133,6 +136,85 @@ async function queryBatch(titles) {
     return out;
 }
 
+// Счётчик переписывает строку через \r — в терминале это одна бегущая
+// цифра. В логах GitHub Actions терминала нет, \r там не отматывает
+// курсор, и все промежуточные числа слипаются в одну строку с тем, что
+// печатается следом. Поэтому вне терминала показываем только итог.
+const TTY = process.stdout.isTTY;
+let lastProgress = '';
+function progress(text) {
+    lastProgress = text;
+    if (TTY) process.stdout.write(text + '\r');
+}
+function progressDone() {
+    if (TTY) process.stdout.write(''.padEnd(lastProgress.length + 2) + '\r');
+    else if (lastProgress) console.log(lastProgress);
+    lastProgress = '';
+}
+
+/** Один запрос к API с произвольными параметрами. */
+async function api(params) {
+    const url = `${API}?${new URLSearchParams({ format: 'json', formatversion: '2', ...params })}`;
+    return JSON.parse((await get(url)).toString('utf8'));
+}
+
+/**
+ * Ищет на Викискладе настоящие имена файлов для карт, которых не нашлось.
+ *
+ * Викисклад файлы переименовывает, и угадывать их имена по памяти —
+ * гиблое дело: именно так и вышло, что все 56 младших арканов нашлись,
+ * а все 22 старших нет. Поэтому спрашиваем сам Викисклад.
+ *
+ * Отправной точкой берём карту, которая НАШЛАСЬ: смотрим, в каких она
+ * категориях, и перебираем файлы оттуда. Так не нужно ни угадывать имя
+ * категории, ни знать заранее, как она называется сегодня.
+ */
+async function discover(found, missing) {
+    const anchor = found.find((it) => it.info);
+    if (!anchor) return new Map();
+
+    let cats = [];
+    try {
+        const r = await api({
+            action: 'query', titles: 'File:' + anchor.title,
+            prop: 'categories', cllimit: '50',
+        });
+        const page = ((r.query && r.query.pages) || [])[0];
+        cats = ((page && page.categories) || []).map((c) => c.title)
+            // Категории вроде «PD-old» содержат сотни тысяч файлов и к делу
+            // не относятся. Нас интересуют колоды.
+            .filter((t) => /tarot|таро/i.test(t));
+    } catch (e) {
+        return new Map();
+    }
+
+    const pool = [];
+    for (const cat of cats.slice(0, 6)) {
+        try {
+            const r = await api({
+                action: 'query', list: 'categorymembers',
+                cmtitle: cat, cmtype: 'file', cmlimit: '500',
+            });
+            for (const m of (r.query && r.query.categorymembers) || []) {
+                pool.push(String(m.title).replace(/^File:/, ''));
+            }
+        } catch (e) { /* одна категория не открылась — не беда */ }
+    }
+
+    // Сопоставляем по английскому имени карты: «Hanged_Man» найдётся и в
+    // «RWS Tarot 12 Hanged Man.jpg», и в «Tarot Hanged Man.jpg».
+    const norm = (t) => t.replace(/[_\s-]+/g, ' ').toLowerCase();
+    const guesses = new Map();
+    for (const item of missing) {
+        const en = item.en;
+        if (!en) continue;
+        const needle = norm(en);
+        const hits = pool.filter((f) => norm(f).includes(needle));
+        if (hits.length) guesses.set(item.name, hits.slice(0, 4));
+    }
+    return { guesses, poolSize: pool.length, cats };
+}
+
 const meta = (info, key) => {
     const em = info && info.extmetadata && info.extmetadata[key];
     return em ? String(em.value).replace(/<[^>]+>/g, '').trim() : '';
@@ -150,33 +232,69 @@ function isPublicDomain(info) {
     return /public domain|общественное достояние/.test(short + ' ' + terms) || code === 'pd';
 }
 
+/** Спрашивает Викисклад про item.title и складывает ответ в item.info. */
+async function resolve(list) {
+    for (let i = 0; i < list.length; i += 50) {
+        const batch = list.slice(i, i + 50);
+        const pages = await queryBatch(batch.map((it) => it.title));
+        for (const item of batch) {
+            const page = pages.get(item.title);
+            if (page && !page.missing && page.imageinfo && page.imageinfo[0]) {
+                item.info = page.imageinfo[0];
+            }
+        }
+        progress(`  ${Math.min(i + 50, list.length)}/${list.length}`);
+    }
+    progressDone();
+}
+
 async function main() {
     const items = plan();
     console.log(`Колода: ${items.length} карт, ширина ${WIDTH} px\n`);
 
     console.log('1. Спрашиваю Викисклад про лицензии');
-    const found = new Map();
-    for (let i = 0; i < items.length; i += 50) {
-        const batch = items.slice(i, i + 50);
-        const pages = await queryBatch(batch.map((it) => it.title));
-        for (const [title, page] of pages) found.set(title, page);
-        process.stdout.write(`  ${Math.min(i + 50, items.length)}/${items.length}\r`);
+    await resolve(items);
+
+    let missing = items.filter((it) => !it.info);
+    if (missing.length) {
+        // Имена файлов на Викискладе меняются, и держать их в этом файле
+        // по памяти — ровно тот способ, которым все 22 старших аркана и
+        // разъехались, пока все 56 младших были в порядке. Поэтому вместо
+        // того чтобы сдаться и попросить человека править таблицу, спросим
+        // сам Викисклад и подставим найденное.
+        console.log(`\n  не нашлось файлов: ${missing.length}. Спрашиваю Викисклад, как они называются`);
+        const d = await discover(items, missing);
+        const swapped = [];
+        for (const item of missing) {
+            const hits = (d.guesses || new Map()).get(item.name) || [];
+            // Подставляем только когда кандидат ровно один: два похожих
+            // имени — это уже не находка, а лотерея, и выбирать за человека
+            // тут нельзя.
+            if (hits.length === 1) {
+                swapped.push(`${item.name}: ${item.title} -> ${hits[0]}`);
+                item.title = hits[0];
+            }
+        }
+        if (swapped.length) {
+            console.log(`  нашлось однозначно: ${swapped.length}, перепроверяю их`);
+            await resolve(items.filter((it) => !it.info));
+            console.log('\n  Имена подставлены Викискладом, а не взяты из таблицы:');
+            for (const line of swapped) console.log('    ' + line);
+            console.log('  Если это не те карты — правьте MAJOR_EN и SUIT_COMMONS в шапке файла.');
+        }
+        missing = items.filter((it) => !it.info);
     }
-    console.log(`  получено ответов: ${found.size}`.padEnd(30));
 
     const bad = [];
     for (const item of items) {
-        const page = found.get(item.title);
-        if (!page || page.missing || !page.imageinfo || !page.imageinfo[0]) {
+        if (!item.info) {
             bad.push(`${item.name}: на Викискладе нет File:${item.title}`);
             continue;
         }
-        const info = page.imageinfo[0];
-        item.info = info;
-        if (!isPublicDomain(info)) {
-            bad.push(`${item.name}: File:${item.title} — лицензия «${meta(info, 'LicenseShortName') || 'не указана'}», а нужно общественное достояние`);
+        if (!isPublicDomain(item.info)) {
+            bad.push(`${item.name}: File:${item.title} — лицензия «${meta(item.info, 'LicenseShortName') || 'не указана'}», а нужно общественное достояние`);
         }
-        if (!info.thumburl) {
+        if (!item.info.thumburl) {
             bad.push(`${item.name}: Викисклад не отдал уменьшенную копию`);
         }
     }
@@ -184,12 +302,24 @@ async function main() {
     if (bad.length) {
         console.log(`\nНе годится (${bad.length}):`);
         for (const b of bad) console.log('  - ' + b);
-        console.log('\nНичего не скачано и не заменено.');
-        console.log('Имена файлов задаются в MAJOR_EN и SUIT_COMMONS в этом же файле —');
-        console.log('если Викисклад переименовал файл, поправьте там.');
+
+        if (missing.length) {
+            const d = await discover(items, missing);
+            const guesses = d.guesses || new Map();
+            if (guesses.size) {
+                console.log('\nПохожее на Викискладе есть, но выбрать за вас нельзя — вариантов больше одного:');
+                for (const [card, hits] of guesses) {
+                    console.log(`  ${card}: ${hits.join('  |  ')}`);
+                }
+            } else {
+                console.log('\nНичего похожего на Викискладе не нашлось.');
+            }
+        }
+        console.log('\nПоправьте MAJOR_EN или SUIT_COMMONS в шапке этого файла и запустите снова.');
+        console.log('Ничего не скачано и не заменено.');
         process.exit(1);
     }
-    console.log('  все 78 — общественное достояние');
+    console.log(`  все ${items.length} — общественное достояние`);
 
     if (DRY) {
         console.log('\n--dry-run: проверка пройдена, ничего не скачано.');
@@ -209,9 +339,10 @@ async function main() {
         if (data.length < 2048) throw new Error(`${item.name}: подозрительно маленький файл`);
         fs.writeFileSync(path.join(STAGE_DIR, item.target), data);
         bytes += data.length;
-        process.stdout.write(`  ${i + 1}/${items.length}\r`);
+        progress(`  ${i + 1}/${items.length}`);
     }
-    console.log(`  скачано ${(bytes / 1048576).toFixed(1)} МБ`.padEnd(30));
+    progressDone();
+    console.log(`  скачано ${(bytes / 1048576).toFixed(1)} МБ`);
 
     console.log('\n3. Заменяю');
     for (const item of items) {
