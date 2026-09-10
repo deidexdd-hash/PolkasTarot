@@ -40,3 +40,16 @@ jobs:
         run: |
           node tools/js2json.js
           git diff --exit-code -- data/cards.json data/index.json
+
+      # Данные могут быть валидны, а приложение при этом сломано: колода
+      # читается через fetch, разметка собирается в рантайме. Поэтому
+      # страница поднимается в jsdom и проверяется то, что видит пользователь.
+      # Второй прогон — с localStorage, который бросает на каждый вызов:
+      # однажды это роняло загрузку колоды целиком.
+      - name: Поставить jsdom
+        run: npm --prefix tools install --no-audit --no-fund --omit=optional
+
+      - name: Прогнать приложение в jsdom
+        run: |
+          node tools/e2e.js
+          node tools/e2e.js --broken-storage
