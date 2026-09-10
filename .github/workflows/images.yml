@@ -1,0 +1,113 @@
+# Замена картинок колоды сканами с Викисклада.
+#
+# Скрипту tools/fetch-images.js нужен интернет, а запускать его локально не
+# всегда есть где. Раннеру GitHub интернет доступен, поэтому вся работа
+# делается здесь: проверка лицензий, загрузка, проверка данных и PR с
+# результатом. От человека нужна одна кнопка.
+#
+# Запуск: вкладка Actions -> «Картинки» -> Run workflow.
+name: Картинки
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Только проверить имена файлов и лицензии, ничего не менять'
+        type: boolean
+        default: true
+      width:
+        description: 'Ширина картинки по длинной стороне, px'
+        type: string
+        default: '720'
+
+# Нужно, чтобы завести ветку с новыми картинками и открыть на неё PR.
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  images:
+    name: Скачать с Викисклада и открыть PR
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Падает, если хоть один файл не найден на Викискладе или не оказался
+      # общественным достоянием. Ошибка называет каждую карту поимённо.
+      - name: Проверить имена файлов и лицензии
+        run: node tools/fetch-images.js --dry-run --width "${{ inputs.width }}"
+
+      - name: Скачать и заменить
+        if: ${{ !inputs.dry_run }}
+        run: node tools/fetch-images.js --width "${{ inputs.width }}"
+
+      # Картинки заменились — значит надо убедиться, что колода всё ещё
+      # сходится: js2json.js --check проверяет, что файл каждой из 78 карт
+      # лежит на месте, а e2e поднимает страницу целиком.
+      - name: Проверить колоду
+        if: ${{ !inputs.dry_run }}
+        run: |
+          node tools/js2json.js --check
+          npm --prefix tools install --no-audit --no-fund --omit=optional
+          node tools/e2e.js
+          node tools/e2e.js --broken-storage
+
+      - name: Открыть PR с новыми картинками
+        if: ${{ !inputs.dry_run }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WIDTH: ${{ inputs.width }}
+        run: |
+          # SOURCES.md всегда пишет сегодняшнюю дату, поэтому сравнивать его
+          # целиком нельзя: PR открывался бы на одну сменившуюся строку даже
+          # тогда, когда картинки не изменились ни на байт. Смотрим на
+          # картинки, а из справки — на всё, кроме строки с датой: лицензия
+          # на Викискладе может поменяться и без замены файла, и вот об этом
+          # знать надо.
+          SOURCES_DIFF=$(git diff -U0 -- SOURCES.md | grep -E '^[+-][^+-]' | grep -v 'Дата загрузки' || true)
+          if git diff --quiet -- img/cards && [ -z "$SOURCES_DIFF" ]; then
+            echo "Викисклад отдал ровно то, что уже лежит в репозитории — менять нечего."
+            git checkout -- SOURCES.md
+            exit 0
+          fi
+
+          BRANCH="images/wikimedia-${{ github.run_number }}"
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add img/cards SOURCES.md
+          git commit \
+            -m "Картинки колоды со сканов Викисклада ($WIDTH px)" \
+            -m "Загружено рабочим процессом «Картинки», прогон ${{ github.run_number }}.
+          Лицензия каждого файла проверена по ответу API Викисклада: качается
+          только общественное достояние. Происхождение всех 78 картинок
+          записано в SOURCES.md из тех же ответов." \
+            -m "$RUN_URL"
+          git push -u origin "$BRANCH"
+
+          # Тело PR через файл, а не через --body: так в него не попадут
+          # отступы, которыми выровнен этот скрипт внутри YAML.
+          cat > /tmp/pr-body.md <<BODY
+          Картинки заменены сканами с Викисклада, происхождение каждой записано в \`SOURCES.md\`.
+
+          Лицензии проверены по ответу API: если бы хоть один файл не оказался общественным достоянием, загрузка не началась бы вовсе — скрипт останавливается до первого скачивания.
+
+          Колода проверена прямо в этом прогоне: \`js2json.js --check\` (файл каждой из 78 карт на месте) и \`e2e.js\` в обоих режимах.
+
+          Собственный CI на этом PR не запустится: коммиты, сделанные \`GITHUB_TOKEN\`, не будят другие рабочие процессы. Поэтому проверки и прогнаны выше.
+
+          Прогон: $RUN_URL
+          BODY
+
+          gh pr create --draft \
+            --base "${{ github.ref_name }}" \
+            --head "$BRANCH" \
+            --title "Картинки колоды со сканов Викисклада ($WIDTH px)" \
+            --body-file /tmp/pr-body.md
