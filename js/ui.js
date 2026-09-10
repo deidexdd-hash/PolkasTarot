@@ -3,7 +3,7 @@ window.UI = {
     /**
      * Отрисовка расклада
      */
-    renderSpread(title, cards, config) {
+    renderSpread(title, cards, config, meta) {
         const container = document.getElementById('spread-container');
         if (!container) return;
 
@@ -47,6 +47,7 @@ window.UI = {
                         <span>${index + 1}. ${item.name}</span>
                         <small style="color: ${orientationColor};">(${orientationText})</small>
                     </h3>
+                    ${UI.renderCorrespondences(item.correspondences)}
                     <div class="info-content-wrapper">
                         <div class="info-main-text">
                             <p><strong>📖 Общее значение:</strong><br>${item.general || "Описание отсутствует"}</p>
@@ -102,9 +103,21 @@ window.UI = {
             ? ''
             : `--spread-cols: ${config.grid}; --spread-areas: ${config.areas.join(' ')};`;
 
+        // Вопрос и ссылка на расклад. Показываем только когда вопрос задан:
+        // без него расклад случайный, и повторить его по ссылке нельзя.
+        const info = meta || {};
+        const askedHtml = info.question ? `
+            <div class="spread-asked">
+                <p class="asked-text">«${this.escape(info.question)}»</p>
+                <button type="button" class="text-btn" onclick="App.shareSpread()">Ссылка на расклад</button>
+                <span id="shareNote" class="share-note" role="status" aria-live="polite"></span>
+            </div>
+        ` : '';
+
         container.innerHTML = `
             <h2 class="spread-main-title">${title}</h2>
             ${config.description ? `<p class="spread-lede">${config.description}</p>` : ''}
+            ${askedHtml}
             <div class="${tableClass}" style="${tableStyle}">
                 ${cardsHtml}
             </div>
@@ -254,6 +267,52 @@ window.UI = {
     /**
      * Показать детальную информацию о карте
      */
+    /** Вопрос приходит от пользователя и попадает в разметку — экранируем. */
+    escape(text) {
+        return String(text).replace(/[&<>"']/g, (c) => (
+            { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+        ));
+    },
+
+    /** Короткое сообщение рядом с кнопкой «Ссылка на расклад». */
+    flashShare(text) {
+        const note = document.getElementById('shareNote');
+        if (!note) return;
+        note.textContent = text;
+        clearTimeout(this._shareTimer);
+        this._shareTimer = setTimeout(() => { note.textContent = ''; }, 4000);
+    },
+
+    /**
+     * Астрологические соответствия карты одной строкой чипов.
+     *
+     * У карты либо есть планета и знак (старшие арканы, числовые младшие),
+     * либо нет ни того, ни другого — тогда вся привязка это стихия, и
+     * подписывать чип словом «Стихия» незачем: «Корень стихии Воды» и так
+     * говорит о себе. Пустой блок не рисуем вовсе.
+     */
+    renderCorrespondences(corr) {
+        if (!corr) return '';
+
+        const chip = (name, value) =>
+            `<span class="corr-chip">${name ? `<b>${name}</b>` : ''}${value}</span>`;
+
+        let chips;
+        if (corr.planet || corr.sign) {
+            chips = [
+                corr.element ? chip('Стихия', corr.element) : '',
+                corr.planet ? chip('Планета', corr.planet) : '',
+                corr.sign ? chip('Знак', corr.sign) : ''
+            ].join('');
+        } else if (corr.label) {
+            chips = chip('', corr.label);
+        } else {
+            return '';
+        }
+
+        return `<div class="corr-row" title="Соответствия по системе Золотой Зари">${chips}</div>`;
+    },
+
     showCardDetail(cardName) {
         const db = window.TarotDB;
         if (!db) return;
@@ -302,6 +361,7 @@ window.UI = {
                     <div class="modal-card-info">
                         <h2>${card.name}</h2>
                         <span class="card-type">${cardType}</span>
+                        ${this.renderCorrespondences(card.correspondences)}
                     </div>
                 </div>
                 
@@ -445,7 +505,9 @@ window.UI = {
         const historyHtml = State.history.slice(0, 10).map((item, index) => {
             const date = item.date || 'Неизвестная дата';
             const time = date.split(',')[1] ? date.split(',')[1].trim() : '';
-            const spreadName = item.spreadName || 'Неизвестный расклад';
+            const spreadName = item.question
+                ? `${item.spreadName || 'Расклад'} · «${this.escape(item.question)}»`
+                : (item.spreadName || 'Неизвестный расклад');
             const cardName = item.name || 'Карта';
             const cardsCount = item.cardsCount ? ` (${item.cardsCount} карт)` : '';
 

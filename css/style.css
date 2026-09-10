@@ -140,6 +140,68 @@ img { max-width: 100%; display: block; }
 
 .nav-action:active { background: var(--fill-strong); transform: scale(0.96); }
 
+/* Поле вопроса — в духе строки поиска iOS: скруглённая подложка, иконка
+   слева, никакой рамки. */
+.question-row {
+    padding: 14px calc(var(--pad) + var(--safe-r)) 4px calc(var(--pad) + var(--safe-l));
+}
+
+.question-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 12px;
+    min-height: 38px;
+    border-radius: 10px;
+    background: var(--fill);
+}
+
+.question-icon { font-size: 14px; opacity: 0.65; }
+
+.question-field input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: none;
+    color: var(--label);
+    /* 16px — иначе Safari на iPhone масштабирует страницу при фокусе. */
+    font-size: 16px;
+    font-family: inherit;
+}
+
+.question-field input::placeholder { color: var(--label-3); }
+.question-field input:focus { outline: none; }
+.question-field:focus-within { background: var(--fill-strong); }
+
+/* Заданный вопрос над раскладом и ссылка на него. */
+.spread-asked {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px 12px;
+    margin: 0 0 18px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--fill);
+}
+
+/* Вопрос и ссылка идут одной строкой: поле с вопросом стоит выше на той же
+   странице, и разворачивать здесь второй абзац значит показать один текст
+   дважды подряд. Перенос только если строка не влезла. */
+.asked-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    font-size: 15px;
+    font-style: italic;
+    color: var(--label);
+    overflow-wrap: anywhere;
+}
+
+.spread-asked > .text-btn { flex: 0 0 auto; }
+
+.share-note { font-size: 13px; color: var(--label-2); word-break: break-all; }
+
 /* Лента раскладов: горизонтальная прокрутка с подписями.
    Раньше здесь была сетка одинаковых кружков с одними эмодзи —
    угадать по ним расклад было невозможно. */
@@ -616,6 +678,40 @@ footer p { margin: 0; }
 }
 
 .card-type { color: var(--label-2); font-size: 14px; }
+
+/* Соответствия карты: стихия, планета, знак. Ряд переносится, потому что на
+   узком экране три чипа в строку не встают. */
+.corr-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.corr-chip {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--fill);
+    color: var(--label);
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.corr-chip > b {
+    color: var(--label-2);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+/* В толковании расклада ряд идёт под заголовком карты и не должен спорить
+   с ним по весу. */
+.info-block .corr-row { margin: -4px 0 12px; }
 
 .meaning-section { margin-bottom: 20px; }
 

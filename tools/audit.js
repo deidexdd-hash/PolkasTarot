@@ -100,6 +100,49 @@ const ok = (cond, msg) => {
     ok(strip.chip === strip.title,
        `первая плашка выровнена с заголовком (${strip.chip} px против ${strip.title} px)`);
 
+    console.log('\n--- вопрос и ссылка ---');
+    // Сам <input> низкий (21 px), но он завёрнут в <label>: нажатие в любую
+    // точку подложки переводит фокус в поле. Поэтому меряем подложку и тут же
+    // проверяем, что она правда работает как кнопка — по краю, а не по центру.
+    const field = await page.evaluate(() => {
+        // Предыдущие проверки прокрутили страницу к раскладу, а поле лежит
+        // в её начале: без возврата наверх кликать было бы некуда.
+        window.scrollTo(0, 0);
+        const box = document.querySelector('.question-field');
+        const r = box.getBoundingClientRect();
+        return { h: Math.round(r.height), x: r.left + 6, y: r.top + 3,
+                 font: parseFloat(getComputedStyle(document.getElementById('questionInput')).fontSize) };
+    });
+    ok(field.h >= 36, `подложка поля не мельче пальца (${field.h} px)`);
+    // Safari на iPhone масштабирует страницу, если у поля шрифт меньше 16 px.
+    ok(field.font >= 16, `шрифт поля ${field.font} px — Safari не будет зумить`);
+
+    await page.mouse.click(field.x, field.y);
+    const focused = await page.evaluate(() => document.activeElement && document.activeElement.id);
+    ok(focused === 'questionInput', `нажатие по краю подложки ставит курсор в поле (фокус: ${focused || 'нигде'})`);
+
+    await page.fill('#questionInput', 'стоит ли менять работу');
+    await page.evaluate(() => App.doSpread('threecards'));
+    await page.waitForTimeout(400);
+
+    const share = await page.evaluate(() => {
+        const b = document.querySelector('.spread-asked .text-btn');
+        if (!b) return null;
+        const r = b.getBoundingClientRect();
+        const top = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+        return {
+            h: Math.round(r.height),
+            right: Math.round(r.right),
+            vw: document.documentElement.clientWidth,
+            reachable: !!(top && (top === b || b.contains(top)))
+        };
+    });
+    ok(share !== null, 'блок с вопросом и ссылкой отрисован');
+    if (share) {
+        ok(share.reachable, 'кнопка «Ссылка на расклад» нажимается');
+        ok(share.right <= share.vw, `кнопка не уезжает за край (${share.right} из ${share.vw} px)`);
+    }
+
     console.log('\n--- карточка карты ---');
     await page.evaluate(() => UI.showCardDetail('Башня'));
     await page.waitForTimeout(400);

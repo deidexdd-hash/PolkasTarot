@@ -112,6 +112,37 @@ const ok = (cond, msg) => {
     const missing = imgs.filter((p) => !fs.existsSync(path.join(ROOT, p)));
     ok(missing.length === 0, `битых путей к картинкам: ${missing.length}`);
 
+    console.log('\n--- честность тасовки ---');
+    // crypto.getRandomValues в jsdom очень медленный (полторы миллисекунды
+    // на тасовку), а проверяем мы алгоритм, а не источник случайности —
+    // на время замера подменяем его быстрым.
+    const realRng = w.crypto.getRandomValues.bind(w.crypto);
+    w.crypto.getRandomValues = (a) => {
+        for (let i = 0; i < a.length; i++) a[i] = Math.floor(Math.random() * 4294967296);
+        return a;
+    };
+
+    const RUNS = 30000;
+    const tally = new Map();
+    for (let r = 0; r < RUNS; r++) {
+        const d = w.Utils.shuffle(deck);
+        const card = d[d.length - 1].name;      // Deck.draw() берёт с конца
+        tally.set(card, (tally.get(card) || 0) + 1);
+    }
+    w.crypto.getRandomValues = realRng;
+
+    const expect = RUNS / deck.length;
+    const chi = [...tally.values()].reduce((s, c) => s + (c - expect) ** 2 / expect, 0)
+              + (deck.length - tally.size) * expect;
+    const skew = Math.max(...tally.values()) / Math.min(...tally.values());
+
+    // 77 степеней свободы: у честной тасовки хи-квадрат около 77, порог взят
+    // с большим запасом. Прежняя тасовка через sort со случайным
+    // компаратором давала здесь тысячи, а перекос между самой частой
+    // и самой редкой картой доходил до 13.9 раза.
+    ok(chi < 200, `карты выпадают равномерно: хи-квадрат ${chi.toFixed(0)} (у честной ~77)`);
+    ok(skew < 2, `перекос между картами ${skew.toFixed(1)}x (у сломанной тасовки был 13.9x)`);
+
     console.log('\n--- галерея ---');
     w.UI.renderDeckGallery();
     const gallery = w.document.getElementById('spread-container').innerHTML;
@@ -148,6 +179,73 @@ const ok = (cond, msg) => {
     ok(minor.includes('Да, через эмоциональную открытость') &&
        minor.includes('Нет, эмоции мешают'), 'ответы для положений разные');
 
+    console.log('\n--- соответствия ---');
+    // Стихия, планета и знак приходят из js/data/correspondences.js через
+    // конвертер. Проверяем и данные, и то, что интерфейс их показывает.
+    const noCorr = deck.filter((c) => !c.correspondences);
+    ok(noCorr.length === 0,
+       `соответствия есть у всех 78 карт${noCorr.length ? `, нет у ${noCorr.length}` : ''}`);
+
+    const elements = new Set(deck.map((c) => c.correspondences && c.correspondences.element));
+    ok([...elements].every((e) => e === null || ['Огонь', 'Вода', 'Воздух', 'Земля'].includes(e)),
+       `стихии только из четырёх: ${[...elements].filter(Boolean).sort().join(', ')}`);
+
+    // Масть задаёт стихию жёстко — если у какой-то карты масти стихия чужая,
+    // значит соответствия разъехались с колодой.
+    const suitEl = { wands: 'Огонь', cups: 'Вода', swords: 'Воздух', pentacles: 'Земля' };
+    const wrongSuit = deck.filter((c) => c.suit && c.correspondences.element !== suitEl[c.suit]);
+    ok(wrongSuit.length === 0,
+       `стихия младших арканов совпадает с мастью${wrongSuit.length ? `: сбой у «${wrongSuit[0].name}»` : ''}`);
+
+    w.UI.showCardDetail('Башня');
+    const towerCorr = w.document.getElementById('modalBody').innerHTML;
+    ok(/corr-chip/.test(towerCorr), 'в карточке есть ряд соответствий');
+    ok(towerCorr.includes('Марс'), 'у Башни показан Марс');
+
+    w.UI.showCardDetail('Тройка Мечей');
+    const threeCorr = w.document.getElementById('modalBody').innerHTML;
+    ok(threeCorr.includes('Сатурн') && threeCorr.includes('Весы') && threeCorr.includes('Воздух'),
+       'у числовой карты показаны стихия, планета и знак декана');
+
+    w.UI.showCardDetail('Король Пентаклей');
+    const kingCorr = w.document.getElementById('modalBody').innerHTML;
+    ok(kingCorr.includes('Огонь Земли'), 'у придворной карты стихия внутри стихии');
+    ok(!/<b>Планета<\/b>/.test(kingCorr), 'придворной карте не приписана планета');
+
+    console.log('\n--- раскладка ---');
+    // Сетка расклада теперь считается из позиций, а не пишется руками.
+    // Проверяем ровно то, что раньше приходилось выверять глазами: что
+    // описание собралось без ошибок и что каждая карта получила свою клетку.
+    ok(w.Spreads.errors.length === 0,
+       `все расклады описаны верно${w.Spreads.errors.length ? ': ' + w.Spreads.errors.join('; ') : ''}`);
+
+    const layoutNames = Object.keys(w.Spreads.types);
+    ok(layoutNames.length === 8, `раскладов собрано: ${layoutNames.length} из 8`);
+
+    const layoutBad = [];
+    for (const key of layoutNames) {
+        const cfg = w.Spreads.types[key];
+        const cells = cfg.areas.join(' ').replace(/'/g, ' ').trim().split(/\s+/);
+        const cards = cells.filter((c) => c !== '.');
+        const uniq = new Set(cards);
+        const cols = cfg.areas.map((r) => r.replace(/'/g, ' ').trim().split(/\s+/).length);
+        if (uniq.size !== cards.length) layoutBad.push(`${key}: карта продублирована`);
+        if (cards.length !== cfg.count) layoutBad.push(`${key}: клеток ${cards.length}, карт ${cfg.count}`);
+        if (cfg.labels.length !== cfg.count) layoutBad.push(`${key}: подписей ${cfg.labels.length}, карт ${cfg.count}`);
+        if (new Set(cols).size !== 1) layoutBad.push(`${key}: ряды разной длины ${cols.join('/')}`);
+        for (let i = 1; i <= cfg.count; i += 1) {
+            if (!uniq.has('p' + i)) layoutBad.push(`${key}: нет клетки для карты ${i}`);
+        }
+    }
+    ok(layoutBad.length === 0,
+       `в каждом раскладе у каждой карты своя клетка${layoutBad.length ? ': ' + layoutBad.slice(0, 3).join('; ') : ''}`);
+
+    w.App.doSpread('celtic');
+    const celtic = w.document.getElementById('spread-container');
+    const placed = [...celtic.querySelectorAll('.card-item')].map((el) => el.style.gridArea);
+    ok(placed.length === 10, `кельтский крест выложил 10 карт (${placed.length})`);
+    ok(new Set(placed).size === placed.length, 'ни одна карта не села на чужую клетку');
+
     console.log('\n--- расклад ---');
     w.App.doSpread('daily');
     const spread = w.document.getElementById('spread-container').innerHTML;
@@ -155,6 +253,7 @@ const ok = (cond, msg) => {
     ok(spread.includes('<ul class="meaning-list">'), 'совет выводится списком');
     ok(!spread.includes('Описание отсутствует'), 'общее значение подставилось');
     ok(spread.includes('Ответ да/нет'), 'в раскладе есть ответ да/нет');
+    ok(spread.includes('corr-chip'), 'в толковании расклада показаны соответствия');
 
     // Сроки заполнены только у старших арканов, а «Карта дня» тянет случайную:
     // требовать их безусловно — значит получить тест, падающий через раз.
@@ -170,6 +269,56 @@ const ok = (cond, msg) => {
     } else {
         ok(false, 'не удалось определить выпавшую карту');
     }
+
+    console.log('\n--- расклад по вопросу ---');
+    // Вопрос задаёт зерно: те же карты в тот же день, и по ссылке тоже.
+    const cardsOf = () => [...w.document.querySelectorAll('.card-title-under')]
+        .map((el) => el.textContent.trim()).join(' | ');
+
+    const ask = (q, day) => {
+        w.App.doSpread('threecards', { question: q, day: day || '2026-09-10' });
+        return cardsOf();
+    };
+
+    const first = ask('стоит ли менять работу');
+    const again = ask('стоит ли менять работу');
+    ok(first === again, `один вопрос в один день — один расклад (${first.slice(0, 40)}…)`);
+
+    const other = ask('стоит ли менять работу?');
+    ok(first !== other, 'другой вопрос — другой расклад');
+
+    const tomorrow = ask('стоит ли менять работу', '2026-09-11');
+    ok(first !== tomorrow, 'тот же вопрос назавтра — новый расклад');
+
+    // Без вопроса раздача остаётся случайной. Совпадение двух подряд из 78
+    // карт по трём позициям практически невозможно, но чтобы тест не мигал
+    // раз в вечность, считаем удачей несовпадение хотя бы одной из пяти пар.
+    const blind = [];
+    for (let i = 0; i < 5; i += 1) { w.App.doSpread('threecards', { question: '' }); blind.push(cardsOf()); }
+    ok(new Set(blind).size > 1, 'без вопроса расклады разные');
+
+    ok(!/[?#]/.test(w.location.hash) || w.location.hash === '',
+       `без вопроса ссылка не подставляется (hash: «${w.location.hash}»)`);
+
+    // Ссылка: собрали её на одном раскладе, разобрали и повторили.
+    ask('что меня ждёт этой осенью');
+    const link = w.location.hash;
+    ok(/^#s=threecards/.test(link), `ссылка собрана (${link.slice(0, 30)}…)`);
+
+    const parsed = w.App.readLink();
+    ok(parsed && parsed.spreadKey === 'threecards' && parsed.question === 'что меня ждёт этой осенью'
+       && parsed.day === '2026-09-10', 'ссылка разбирается обратно');
+
+    const byLink = ask(parsed.question, parsed.day);
+    ok(byLink === cardsOf(), 'расклад по ссылке совпадает с исходным');
+
+    // Вопрос — это чужой текст в разметке. Проверяем, что он не выполняется.
+    w.App.doSpread('daily', { question: '<img src=x onerror=alert(1)>злой вопрос', day: '2026-09-10' });
+    const asked = w.document.querySelector('.spread-asked').innerHTML;
+    ok(!/<img/i.test(asked) && asked.includes('&lt;img'), 'вопрос экранирован, а не вставлен как разметка');
+    ok(w.document.querySelectorAll('.spread-asked img').length === 0, 'из вопроса не появилось тега');
+
+    w.location.hash = '';
 
     console.log('\n--- консоль страницы ---');
     console.log(errors.length ? '  ' + errors.join('\n  ') : '  чисто');

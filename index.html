@@ -54,10 +54,31 @@
             <span class="chip-icon" aria-hidden="true">🎯</span>
             <span class="chip-text">Год вперёд</span>
         </button>
+        <button onclick="App.doSpread('career')" class="spread-chip">
+            <span class="chip-icon" aria-hidden="true">💼</span>
+            <span class="chip-text">Карьера</span>
+        </button>
     </nav>
 </header>
 
 <main role="main">
+    <!-- Вопрос задаёт зерно расклада: тот же вопрос в тот же день даёт те же
+         карты, и на такой расклад можно дать ссылку.
+
+         Поле лежит в начале страницы, а не в липкой шапке: в шапке оно
+         занимало бы 48 px экрана всегда, на всех экранах, ради того, чем
+         пользуются изредка. Здесь оно уезжает при прокрутке, но остаётся
+         ровно там, куда возвращаешься начать новый расклад. Внутрь
+         #spread-container его класть нельзя — расклад подменяет его целиком. -->
+    <div class="question-row">
+        <label class="question-field">
+            <span class="question-icon" aria-hidden="true">✍️</span>
+            <input id="questionInput" type="text" maxlength="200" autocomplete="off"
+                   placeholder="Ваш вопрос (необязательно)"
+                   aria-label="Вопрос к картам">
+        </label>
+    </div>
+
     <div id="spread-container">
         <section class="welcome-screen">
             <h1 class="welcome-title">Загляните в карты</h1>
@@ -74,7 +95,7 @@
                 <li>
                     <span class="row-icon" aria-hidden="true">✨</span>
                     <span class="row-body">
-                        <span class="row-title">7 раскладов</span>
+                        <span class="row-title">8 раскладов</span>
                         <span class="row-note">От карты дня до Кельтского креста</span>
                     </span>
                 </li>

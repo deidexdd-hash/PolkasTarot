@@ -2,7 +2,7 @@
   "name": "PolkasTarot — значения карт Таро на русском",
   "deck": "Rider-Waite-Smith",
   "language": "ru",
-  "version": "2b4540ae5431",
+  "version": "df49b7673777",
   "count": 78,
   "cards": [
     {
@@ -18,6 +18,12 @@
       "number": 0,
       "rank": null,
       "img": "img/cards/maj00.jpg",
+      "correspondences": {
+        "element": "Воздух",
+        "planet": null,
+        "sign": null,
+        "label": "Воздух"
+      },
       "meanings": {
         "direct": {
           "symbolism": "На карте изображен молодой человек, стоящий на краю обрыва с взглядом, устремленным в небо. Он одет в пестрые одежды, украшенные цветами, символизирующими природную спонтанность и радость жизни. В руке он держит белую розу — символ чистоты намерений и невинности. За его спиной — небольшой узелок на палке, содержащий все его скромное имущество, что говорит о готовности к путешествию без лишнего багажа.\n\nБелая собака у его ног представляет инстинкт и защиту, предупреждая о необходимости внимательности, но также демонстрируя верность духу приключений. Солнце в верхнем углу карты излучает золотой свет, символизируя божественное руководство и оптимизм. Горы вдали представляют грядущие вызовы, которые пока еще дал еки и неясны.",
@@ -96,6 +102,12 @@
       "number": 1,
       "rank": null,
       "img": "img/cards/maj01.jpg",
+      "correspondences": {
+        "element": null,
+        "planet": "Меркурий",
+        "sign": null,
+        "label": "Меркурий"
+      },
       "meanings": {
         "direct": {
           "symbolism": "Маг стоит перед четырьмя атрибутами мастей: жезлом, кубком, мечом и пентаклем. Он одновременно указывает на небо и на землю, символизируя соединение высшего и низшего, духа и мате рии. Его одежда украшена символами планет и астрологических знаков. На его голове — герметическая корона, а у ног — символ инь-янь, указывающий на баланс противоположностей.",
@@ -174,6 +186,12 @@
       "number": 2,
       "rank": null,
       "img": "img/cards/maj02.jpg",
+      "correspondences": {
+        "element": null,
+        "planet": "Луна",
+        "sign": null,
+        "label": "Луна"
+      },
       "meanings": {
         "direct": {
           "symbolism": "Верховная Жрица сидит между двумя колоннами, символизирующими Инь и Ян, баланс противоположностей. На её голове — корона с лунным серпом, а на груди — шестиконечная звезда, соедин яющая небо и землю. У её ног — полумесяц, а за спиной — завеса с изображением пальм, символизирующей тайну. В руках она держит свиток с Торой, закрытый печатью.",
@@ -252,6 +270,12 @@
       "number": 3,
       "rank": null,
       "img": "img/cards/maj03.jpg",
+      "correspondences": {
+        "element": null,
+        "planet": "Венера",
+        "sign": null,
+        "label": "Венера"
+      },
       "meanings": {
         "direct": {
           "symbolism": "Императрица сидит на богато украшенном троне, покрытом плодами и символами изобилия. На её голове — корона с двенадцатью звездами, символизирующими Зодиак. Она держит в руке скипетр с шаром, а у её ног — пшеничные колосья. За спиной — сад с плодовыми деревьями и река, символизирующие плодородие и изобилие. Её одежда украшена символами природы и плодовитости.",
@@ -330,6 +354,12 @@
       "number": 4,
       "rank": null,
       "img": "img/cards/maj04.jpg",
+      "correspondences": {
+        "element": "Огонь",
+        "planet": null,
+        "sign": "Овен",
+        "label": "Овен"
+      },
       "meanings": {
         "direct": {
           "symbolism": "Император восседает на строго обставленном каменном троне, украшенном орлами. Он одет в богатую мантию и корону, а в руках держит скипетр и земной шар, символы власти и контроля. Его поза строга и неподвижна, а взгляд устремлён вдаль. За спиной — пустынные пейзажи, символизирующие контроль над землёй. Его одежда и атрибуты отражают структуру, закон и порядок.",
@@ -408,6 +438,12 @@
       "number": 5,
       "rank": null,
       "img": "img/cards/maj05.jpg",
+      "correspondences": {
+        "element": "Земля",
+        "planet": null,
+        "sign": "Телец",
+        "label": "Телец"
+      },
       "meanings": {
         "direct": {
           "symbolism": "Иерофант сидит на богато украшенном троне, облаченный в епископальные одежды. Он держит в руках папский посох и благословляет двух людей перед ним. За его спиной — три ступени и два ключа, символизирующие доступ к тайным знаниям и духовной власти. Его головной убор — папская тиара, а на одежде — религиозные символы. Сцена передает атмосферу церемониального наставничества и передачи традиций.",
@@ -486,6 +522,12 @@
       "number": 6,
       "rank": null,
       "img": "img/cards/maj06.jpg",
+      "correspondences": {
+        "element": "Воздух",
+        "planet": null,
+        "sign": "Близнецы",
+        "label": "Близнецы"
+      },
       "meanings": {
         "direct": {
           "symbolism": "Карта изображает Адама и Еву в саду Эдема, стоящих перед ангелом, который благословляет их союз. За ними — дерево жизни и дерево познания добра и зла. Ангел указывает на дерево жизни, символизируя правильный выбор. Фон картины — райский сад, наполненный гармонией, красотой и любовью. Вся сцена передает атмосферу идеального союза, выбора, основанного на любви, и божественного благословения.",
@@ -564,6 +606,12 @@
       "number": 7,
       "rank": null,
       "img": "img/cards/maj07.jpg",
+      "correspondences": {
+        "element": "Вода",
+        "planet": null,
+        "sign": "Рак",
+        "label": "Рак"
+      },
       "meanings": {
         "direct": {
           "symbolism": "Колесница изображает воина, стоящего на колеснице, запряженной двумя сфинксами (или конями) — черным и белым. Воин держит в руках скипетр и направляет колесницу вперед. За его спиной — четырехугольный щит с символами. На голове — корона. Вся сцена символизирует движение, победу, контроль над противоположностями и преодоление преград. Сфинксы представляют собой противоположные силы (например, разум и эмоции, свет и тьму), которые должны быть уравновешены для достижения цели.",
@@ -642,6 +690,12 @@
       "number": 8,
       "rank": null,
       "img": "img/cards/maj08.jpg",
+      "correspondences": {
+        "element": "Огонь",
+        "planet": null,
+        "sign": "Лев",
+        "label": "Лев"
+      },
       "meanings": {
         "direct": {
           "symbolism": "Карта изображает женщину, спокойно и уверенно держащую за челюсти льва, символизируя контроль над животной природой, страхами и страстями. На её голове — венец с лентами, символизирующий духовную силу. Её поза — мягкая, но устойчивая, а выражение лица — спокойное и доброжелательное. Вся сцена передает атмосферу внутренней силы, соединенной с состраданием, терпением и мудростью. Фон может быть спокойным, с элементами природы, подчеркивающими гармонию.",
@@ -720,6 +774,12 @@
       "number": 9,
       "rank": null,
       "img": "img/cards/maj09.jpg",
+      "correspondences": {
+        "element": "Земля",
+        "planet": null,
+        "sign": "Дева",
+        "label": "Дева"
+      },
       "meanings": {
         "direct": {
           "symbolism": "Отшельник изображен как пожилой мужчина, облаченный в плащ, стоящий на вершине горы. Он держит в руке лампу, из которой исходит свет, и посох, символизирующий путь. Его лицо скрыто, а свет от лампы освещает лишь небольшой участок перед ним. За ним — пустынные пейзажи и звездное небо. Вся сцена передает атмосферу уединения, внутреннего поиска, мудрости, полученной через опыт и размышления, и сосредоточенности на внутреннем свете.",
@@ -798,6 +858,12 @@
       "number": 10,
       "rank": null,
       "img": "img/cards/maj10.jpg",
+      "correspondences": {
+        "element": null,
+        "planet": "Юпитер",
+        "sign": null,
+        "label": "Юпитер"
+      },
       "meanings": {
         "direct": {
           "symbolism": "Колесо Фортуны изображает большое вертикальное колесо, на котором сидит богиня Фортуна. На разных уровнях колеса находятся различные символы и существа, такие как лев (символ огня ), орел (воздух), бык (земля) и ангел (вода), представляющие четыре стихии и циклы природы. На вершине колеса — человек, поднимающийся, а внизу — другой, падающий. Вся сцена символизирует вечный цикл перемен, удачи, судьбы и кармы. Фон часто включает в себя символы зодиака и астрологические элементы.",
@@ -876,6 +942,12 @@
       "number": 11,
       "rank": null,
       "img": "img/cards/maj11.jpg",
+      "correspondences": {
+        "element": "Воздух",
+        "planet": null,
+        "sign": "Весы",
+        "label": "Весы"
+      },
       "meanings": {
         "direct": {
           "symbolism": "Справедливость изображена как женщина, сидящая на троне, держащая в одной руке весы, а в другой — меч. На её голове — корона, символизирующая власть и закон. За ней — сцена, показывающая процесс взвешивания дел. Весы символизируют баланс, а меч — силу закона и резолюцию. Вся сцена передает атмосферу беспристрастного правосудия, баланса и кармы.",
@@ -954,6 +1026,12 @@
       "number": 12,
       "rank": null,
       "img": "img/cards/maj12.jpg",
+      "correspondences": {
+        "element": "Вода",
+        "planet": null,
+        "sign": null,
+        "label": "Вода"
+      },
       "meanings": {
         "direct": {
           "symbolism": "Повешенный изображен как человек, висящий за ногу на дереве или кресте. Его руки связаны за спиной, а на лице — спокойное, задумчивое выражение. Вокруг него — пейзаж, который может быть как мрачным, так и светлым, в зависимости от интерпретации. За ним — три дерева, символизирующие выбор, путь и жертву. Вся сцена передает атмосферу остановки, размышления, жертвы и нового взгляда на ситуацию.",
@@ -1032,6 +1110,12 @@
       "number": 13,
       "rank": null,
       "img": "img/cards/maj13.jpg",
+      "correspondences": {
+        "element": "Вода",
+        "planet": null,
+        "sign": "Скорпион",
+        "label": "Скорпион"
+      },
       "meanings": {
         "direct": {
           "symbolism": "Смерть изображается как всадник на белом коне, облаченный в черные одежды. В одной руке он держит меч, а в другой — знамя. За ним — разрушенные стены, символизирующие конец старого. Вокруг него — люди всех возрастов, реагирующие по-разному: кто-то боится, кто-то принимает. На горизонте — солнце, символизирующее новый день. Вся сцена передает атмосферу конца, трансформации, обновления и неизбежности перемен.",
@@ -1110,6 +1194,12 @@
       "number": 14,
       "rank": null,
       "img": "img/cards/maj14.jpg",
+      "correspondences": {
+        "element": "Огонь",
+        "planet": null,
+        "sign": "Стрелец",
+        "label": "Стрелец"
+      },
       "meanings": {
         "direct": {
           "symbolism": "Умеренность изображена как женщина, стоящая между двумя башнями. В одной руке она держит кувшин с водой, из которого переливается жидкость в другой кувшин. На её голове — крылья, символизирующие духовность. Вокруг неё — пейзаж, символизирующий гармонию и баланс. Вся сцена передает атмосферу баланса, гармонии, терпения и внутреннего равновесия.",
@@ -1188,6 +1278,12 @@
       "number": 15,
       "rank": null,
       "img": "img/cards/maj15.jpg",
+      "correspondences": {
+        "element": "Земля",
+        "planet": null,
+        "sign": "Козерог",
+        "label": "Козерог"
+      },
       "meanings": {
         "direct": {
           "symbolism": "Дьявол изображен как демоническая фигура, стоящая на скале. В одной руке он держит посох, а в другой — символ власти. Перед ним — мужчина и женщина, связанные цепями, но при этом их ноги не прикованы, и они могут уйти. Вокруг них — символы искушения, тьмы и плотских удовольствий. Вся сцена передает атмосферу зависимости, искушения, тьмы и ограничений.",
@@ -1266,6 +1362,12 @@
       "number": 16,
       "rank": null,
       "img": "img/cards/maj16.jpg",
+      "correspondences": {
+        "element": null,
+        "planet": "Марс",
+        "sign": null,
+        "label": "Марс"
+      },
       "meanings": {
         "direct": {
           "symbolism": "Башня изображает высокую башню, пораженную молнией. Из неё падают люди и камни. Вокруг — пейзаж, символизирующий разрушение и внезапные перемены. На вершине башни — корона, символизирующая высокое положение. Вся сцена передает атмосферу внезапного разрушения, катастрофы, обнажения и неожиданных перемен.",
@@ -1344,6 +1446,12 @@
       "number": 17,
       "rank": null,
       "img": "img/cards/maj17.jpg",
+      "correspondences": {
+        "element": "Воздух",
+        "planet": null,
+        "sign": "Водолей",
+        "label": "Водолей"
+      },
       "meanings": {
         "direct": {
           "symbolism": "На карте изображена обнажённая женщина, преклонившая колено у берега водоёма. Одной ногой она стоит на суше, другой касается воды — равновесие между материальными бессознательным. В руках два сосуда: из одного она льёт воду обратно в источник, из другого на землю, возвращая полученное миру. Над ней большая восьмиконечная звезда и семь малых — путеводный свет и семь чакр. На дереве позади сидит ибис, птица Тота, символ мысли и памяти.",
@@ -1422,6 +1530,12 @@
       "number": 18,
       "rank": null,
       "img": "img/cards/maj18.jpg",
+      "correspondences": {
+        "element": "Вода",
+        "planet": null,
+        "sign": "Рыбы",
+        "label": "Рыбы"
+      },
       "meanings": {
         "direct": {
           "symbolism": "На карте полная луна с человеческим лицом, погружённым в дрёму, роняет капли росы на землю. Внизу собака и волк воют на неё — прирученное и дикое в человеке. Из воды выползает рак, символ древнего страха, поднимающегося из глубин бессознательного. Между двумя башнями уходит извилистая тропа, теряющаяся в холмах: путь есть, но конца его не видно.",
@@ -1500,6 +1614,12 @@
       "number": 19,
       "rank": null,
       "img": "img/cards/maj19.jpg",
+      "correspondences": {
+        "element": null,
+        "planet": "Солнце",
+        "sign": null,
+        "label": "Солнце"
+      },
       "meanings": {
         "direct": {
           "symbolism": "На карте огромное солнце с человеческим лицом, испускающее прямые и волнистые лучи — мужское и женское начала. Под ним обнажённый ребёнок верхом на белом коне, без седла и упряжи: полное доверие жизни и отсутствие страха. В руке ребёнка красное знамя, за спиной кирпичная стена и четыре подсолнуха, повёрнутые к нему, а не к солнцу. Стена отделяет сад детства от мира, но ребёнок уже выехал за неё.",
@@ -1578,6 +1698,12 @@
       "number": 20,
       "rank": null,
       "img": "img/cards/maj20.jpg",
+      "correspondences": {
+        "element": "Огонь",
+        "planet": null,
+        "sign": null,
+        "label": "Огонь"
+      },
       "meanings": {
         "direct": {
           "symbolism": "На карте архангел Гавриил трубит в трубу, спускаясь с облаков. Со знамени на трубе смотрит красный крест на белом поле — символ искупления. Внизу из открытых саркофагов поднимаются обнажённые люди: мужчина, женщина и ребёнок, воздевшие руки навстречу зову. Саркофаги плывут по воде, за ними видны горы — прошлое отпущено, впереди то, что не изменить. Никто не судит: люди встают сами, услышав.",
@@ -1656,6 +1782,12 @@
       "number": 21,
       "rank": null,
       "img": "img/cards/maj21.jpg",
+      "correspondences": {
+        "element": null,
+        "planet": "Сатурн",
+        "sign": null,
+        "label": "Сатурн"
+      },
       "meanings": {
         "direct": {
           "symbolism": "В центре карты танцующая фигура в лёгком покрывале, окружённая овальным лавровым венком, перевязанным вверху и внизу красными лентами в форме знака бесконечности. В обеих руках по жезлу — равновесие сил, которыми фигура наконец владеет свободно. По углам четыре существа: человек, орёл, бык и лев — четыре стихии, четыре фиксированных знака зодиака, собранные в целое. Венок замкнут: круг пройден.",
@@ -1734,6 +1866,12 @@
       "number": 1,
       "rank": "ace",
       "img": "img/cards/wands01.jpg",
+      "correspondences": {
+        "element": "Огонь",
+        "planet": null,
+        "sign": null,
+        "label": "Корень стихии Огня"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -1784,6 +1922,12 @@
       "number": 2,
       "rank": "two",
       "img": "img/cards/wands02.jpg",
+      "correspondences": {
+        "element": "Огонь",
+        "planet": "Марс",
+        "sign": "Овен",
+        "label": "Марс в Овне"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -1834,6 +1978,12 @@
       "number": 3,
       "rank": "three",
       "img": "img/cards/wands03.jpg",
+      "correspondences": {
+        "element": "Огонь",
+        "planet": "Солнце",
+        "sign": "Овен",
+        "label": "Солнце в Овне"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -1884,6 +2034,12 @@
       "number": 4,
       "rank": "four",
       "img": "img/cards/wands04.jpg",
+      "correspondences": {
+        "element": "Огонь",
+        "planet": "Венера",
+        "sign": "Овен",
+        "label": "Венера в Овне"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -1934,6 +2090,12 @@
       "number": 5,
       "rank": "five",
       "img": "img/cards/wands05.jpg",
+      "correspondences": {
+        "element": "Огонь",
+        "planet": "Сатурн",
+        "sign": "Лев",
+        "label": "Сатурн в Льве"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -1984,6 +2146,12 @@
       "number": 6,
       "rank": "six",
       "img": "img/cards/wands06.jpg",
+      "correspondences": {
+        "element": "Огонь",
+        "planet": "Юпитер",
+        "sign": "Лев",
+        "label": "Юпитер в Льве"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -2034,6 +2202,12 @@
       "number": 7,
       "rank": "seven",
       "img": "img/cards/wands07.jpg",
+      "correspondences": {
+        "element": "Огонь",
+        "planet": "Марс",
+        "sign": "Лев",
+        "label": "Марс в Льве"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -2084,6 +2258,12 @@
       "number": 8,
       "rank": "eight",
       "img": "img/cards/wands08.jpg",
+      "correspondences": {
+        "element": "Огонь",
+        "planet": "Меркурий",
+        "sign": "Стрелец",
+        "label": "Меркурий в Стрельце"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -2134,6 +2314,12 @@
       "number": 9,
       "rank": "nine",
       "img": "img/cards/wands09.jpg",
+      "correspondences": {
+        "element": "Огонь",
+        "planet": "Луна",
+        "sign": "Стрелец",
+        "label": "Луна в Стрельце"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -2184,6 +2370,12 @@
       "number": 10,
       "rank": "ten",
       "img": "img/cards/wands10.jpg",
+      "correspondences": {
+        "element": "Огонь",
+        "planet": "Сатурн",
+        "sign": "Стрелец",
+        "label": "Сатурн в Стрельце"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -2234,6 +2426,12 @@
       "number": 11,
       "rank": "page",
       "img": "img/cards/wands11.jpg",
+      "correspondences": {
+        "element": "Огонь",
+        "planet": null,
+        "sign": null,
+        "label": "Земля Огня"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -2284,6 +2482,12 @@
       "number": 12,
       "rank": "knight",
       "img": "img/cards/wands12.jpg",
+      "correspondences": {
+        "element": "Огонь",
+        "planet": null,
+        "sign": null,
+        "label": "Воздух Огня"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -2334,6 +2538,12 @@
       "number": 13,
       "rank": "queen",
       "img": "img/cards/wands13.jpg",
+      "correspondences": {
+        "element": "Огонь",
+        "planet": null,
+        "sign": null,
+        "label": "Вода Огня"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -2384,6 +2594,12 @@
       "number": 14,
       "rank": "king",
       "img": "img/cards/wands14.jpg",
+      "correspondences": {
+        "element": "Огонь",
+        "planet": null,
+        "sign": null,
+        "label": "Огонь Огня"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -2434,6 +2650,12 @@
       "number": 1,
       "rank": "ace",
       "img": "img/cards/cups01.jpg",
+      "correspondences": {
+        "element": "Вода",
+        "planet": null,
+        "sign": null,
+        "label": "Корень стихии Воды"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -2484,6 +2706,12 @@
       "number": 2,
       "rank": "two",
       "img": "img/cards/cups02.jpg",
+      "correspondences": {
+        "element": "Вода",
+        "planet": "Венера",
+        "sign": "Рак",
+        "label": "Венера в Раке"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -2534,6 +2762,12 @@
       "number": 3,
       "rank": "three",
       "img": "img/cards/cups03.jpg",
+      "correspondences": {
+        "element": "Вода",
+        "planet": "Меркурий",
+        "sign": "Рак",
+        "label": "Меркурий в Раке"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -2584,6 +2818,12 @@
       "number": 4,
       "rank": "four",
       "img": "img/cards/cups04.jpg",
+      "correspondences": {
+        "element": "Вода",
+        "planet": "Луна",
+        "sign": "Рак",
+        "label": "Луна в Раке"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -2634,6 +2874,12 @@
       "number": 5,
       "rank": "five",
       "img": "img/cards/cups05.jpg",
+      "correspondences": {
+        "element": "Вода",
+        "planet": "Марс",
+        "sign": "Скорпион",
+        "label": "Марс в Скорпионе"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -2684,6 +2930,12 @@
       "number": 6,
       "rank": "six",
       "img": "img/cards/cups06.jpg",
+      "correspondences": {
+        "element": "Вода",
+        "planet": "Солнце",
+        "sign": "Скорпион",
+        "label": "Солнце в Скорпионе"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -2734,6 +2986,12 @@
       "number": 7,
       "rank": "seven",
       "img": "img/cards/cups07.jpg",
+      "correspondences": {
+        "element": "Вода",
+        "planet": "Венера",
+        "sign": "Скорпион",
+        "label": "Венера в Скорпионе"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -2784,6 +3042,12 @@
       "number": 8,
       "rank": "eight",
       "img": "img/cards/cups08.jpg",
+      "correspondences": {
+        "element": "Вода",
+        "planet": "Сатурн",
+        "sign": "Рыбы",
+        "label": "Сатурн в Рыбах"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -2834,6 +3098,12 @@
       "number": 9,
       "rank": "nine",
       "img": "img/cards/cups09.jpg",
+      "correspondences": {
+        "element": "Вода",
+        "planet": "Юпитер",
+        "sign": "Рыбы",
+        "label": "Юпитер в Рыбах"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -2884,6 +3154,12 @@
       "number": 10,
       "rank": "ten",
       "img": "img/cards/cups10.jpg",
+      "correspondences": {
+        "element": "Вода",
+        "planet": "Марс",
+        "sign": "Рыбы",
+        "label": "Марс в Рыбах"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -2934,6 +3210,12 @@
       "number": 11,
       "rank": "page",
       "img": "img/cards/cups11.jpg",
+      "correspondences": {
+        "element": "Вода",
+        "planet": null,
+        "sign": null,
+        "label": "Земля Воды"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -2984,6 +3266,12 @@
       "number": 12,
       "rank": "knight",
       "img": "img/cards/cups12.jpg",
+      "correspondences": {
+        "element": "Вода",
+        "planet": null,
+        "sign": null,
+        "label": "Воздух Воды"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -3034,6 +3322,12 @@
       "number": 13,
       "rank": "queen",
       "img": "img/cards/cups13.jpg",
+      "correspondences": {
+        "element": "Вода",
+        "planet": null,
+        "sign": null,
+        "label": "Вода Воды"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -3084,6 +3378,12 @@
       "number": 14,
       "rank": "king",
       "img": "img/cards/cups14.jpg",
+      "correspondences": {
+        "element": "Вода",
+        "planet": null,
+        "sign": null,
+        "label": "Огонь Воды"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -3134,6 +3434,12 @@
       "number": 1,
       "rank": "ace",
       "img": "img/cards/swords01.jpg",
+      "correspondences": {
+        "element": "Воздух",
+        "planet": null,
+        "sign": null,
+        "label": "Корень стихии Воздуха"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -3184,6 +3490,12 @@
       "number": 2,
       "rank": "two",
       "img": "img/cards/swords02.jpg",
+      "correspondences": {
+        "element": "Воздух",
+        "planet": "Луна",
+        "sign": "Весы",
+        "label": "Луна в Весах"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -3234,6 +3546,12 @@
       "number": 3,
       "rank": "three",
       "img": "img/cards/swords03.jpg",
+      "correspondences": {
+        "element": "Воздух",
+        "planet": "Сатурн",
+        "sign": "Весы",
+        "label": "Сатурн в Весах"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -3284,6 +3602,12 @@
       "number": 4,
       "rank": "four",
       "img": "img/cards/swords04.jpg",
+      "correspondences": {
+        "element": "Воздух",
+        "planet": "Юпитер",
+        "sign": "Весы",
+        "label": "Юпитер в Весах"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -3334,6 +3658,12 @@
       "number": 5,
       "rank": "five",
       "img": "img/cards/swords05.jpg",
+      "correspondences": {
+        "element": "Воздух",
+        "planet": "Венера",
+        "sign": "Водолей",
+        "label": "Венера в Водолее"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -3384,6 +3714,12 @@
       "number": 6,
       "rank": "six",
       "img": "img/cards/swords06.jpg",
+      "correspondences": {
+        "element": "Воздух",
+        "planet": "Меркурий",
+        "sign": "Водолей",
+        "label": "Меркурий в Водолее"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -3434,6 +3770,12 @@
       "number": 7,
       "rank": "seven",
       "img": "img/cards/swords07.jpg",
+      "correspondences": {
+        "element": "Воздух",
+        "planet": "Луна",
+        "sign": "Водолей",
+        "label": "Луна в Водолее"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -3484,6 +3826,12 @@
       "number": 8,
       "rank": "eight",
       "img": "img/cards/swords08.jpg",
+      "correspondences": {
+        "element": "Воздух",
+        "planet": "Юпитер",
+        "sign": "Близнецы",
+        "label": "Юпитер в Близнецах"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -3534,6 +3882,12 @@
       "number": 9,
       "rank": "nine",
       "img": "img/cards/swords09.jpg",
+      "correspondences": {
+        "element": "Воздух",
+        "planet": "Марс",
+        "sign": "Близнецы",
+        "label": "Марс в Близнецах"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -3584,6 +3938,12 @@
       "number": 10,
       "rank": "ten",
       "img": "img/cards/swords10.jpg",
+      "correspondences": {
+        "element": "Воздух",
+        "planet": "Солнце",
+        "sign": "Близнецы",
+        "label": "Солнце в Близнецах"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -3634,6 +3994,12 @@
       "number": 11,
       "rank": "page",
       "img": "img/cards/swords11.jpg",
+      "correspondences": {
+        "element": "Воздух",
+        "planet": null,
+        "sign": null,
+        "label": "Земля Воздуха"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -3684,6 +4050,12 @@
       "number": 12,
       "rank": "knight",
       "img": "img/cards/swords12.jpg",
+      "correspondences": {
+        "element": "Воздух",
+        "planet": null,
+        "sign": null,
+        "label": "Воздух Воздуха"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -3734,6 +4106,12 @@
       "number": 13,
       "rank": "queen",
       "img": "img/cards/swords13.jpg",
+      "correspondences": {
+        "element": "Воздух",
+        "planet": null,
+        "sign": null,
+        "label": "Вода Воздуха"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -3784,6 +4162,12 @@
       "number": 14,
       "rank": "king",
       "img": "img/cards/swords14.jpg",
+      "correspondences": {
+        "element": "Воздух",
+        "planet": null,
+        "sign": null,
+        "label": "Огонь Воздуха"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -3834,6 +4218,12 @@
       "number": 1,
       "rank": "ace",
       "img": "img/cards/pents01.jpg",
+      "correspondences": {
+        "element": "Земля",
+        "planet": null,
+        "sign": null,
+        "label": "Корень стихии Земли"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -3884,6 +4274,12 @@
       "number": 2,
       "rank": "two",
       "img": "img/cards/pents02.jpg",
+      "correspondences": {
+        "element": "Земля",
+        "planet": "Юпитер",
+        "sign": "Козерог",
+        "label": "Юпитер в Козероге"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -3934,6 +4330,12 @@
       "number": 3,
       "rank": "three",
       "img": "img/cards/pents03.jpg",
+      "correspondences": {
+        "element": "Земля",
+        "planet": "Марс",
+        "sign": "Козерог",
+        "label": "Марс в Козероге"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -3984,6 +4386,12 @@
       "number": 4,
       "rank": "four",
       "img": "img/cards/pents04.jpg",
+      "correspondences": {
+        "element": "Земля",
+        "planet": "Солнце",
+        "sign": "Козерог",
+        "label": "Солнце в Козероге"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -4034,6 +4442,12 @@
       "number": 5,
       "rank": "five",
       "img": "img/cards/pents05.jpg",
+      "correspondences": {
+        "element": "Земля",
+        "planet": "Меркурий",
+        "sign": "Телец",
+        "label": "Меркурий в Тельце"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -4084,6 +4498,12 @@
       "number": 6,
       "rank": "six",
       "img": "img/cards/pents06.jpg",
+      "correspondences": {
+        "element": "Земля",
+        "planet": "Луна",
+        "sign": "Телец",
+        "label": "Луна в Тельце"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -4134,6 +4554,12 @@
       "number": 7,
       "rank": "seven",
       "img": "img/cards/pents07.jpg",
+      "correspondences": {
+        "element": "Земля",
+        "planet": "Сатурн",
+        "sign": "Телец",
+        "label": "Сатурн в Тельце"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -4184,6 +4610,12 @@
       "number": 8,
       "rank": "eight",
       "img": "img/cards/pents08.jpg",
+      "correspondences": {
+        "element": "Земля",
+        "planet": "Солнце",
+        "sign": "Дева",
+        "label": "Солнце в Деве"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -4234,6 +4666,12 @@
       "number": 9,
       "rank": "nine",
       "img": "img/cards/pents09.jpg",
+      "correspondences": {
+        "element": "Земля",
+        "planet": "Венера",
+        "sign": "Дева",
+        "label": "Венера в Деве"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -4284,6 +4722,12 @@
       "number": 10,
       "rank": "ten",
       "img": "img/cards/pents10.jpg",
+      "correspondences": {
+        "element": "Земля",
+        "planet": "Меркурий",
+        "sign": "Дева",
+        "label": "Меркурий в Деве"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -4334,6 +4778,12 @@
       "number": 11,
       "rank": "page",
       "img": "img/cards/pents11.jpg",
+      "correspondences": {
+        "element": "Земля",
+        "planet": null,
+        "sign": null,
+        "label": "Земля Земли"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -4384,6 +4834,12 @@
       "number": 12,
       "rank": "knight",
       "img": "img/cards/pents12.jpg",
+      "correspondences": {
+        "element": "Земля",
+        "planet": null,
+        "sign": null,
+        "label": "Воздух Земли"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -4434,6 +4890,12 @@
       "number": 13,
       "rank": "queen",
       "img": "img/cards/pents13.jpg",
+      "correspondences": {
+        "element": "Земля",
+        "planet": null,
+        "sign": null,
+        "label": "Вода Земли"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,
@@ -4484,6 +4946,12 @@
       "number": 14,
       "rank": "king",
       "img": "img/cards/pents14.jpg",
+      "correspondences": {
+        "element": "Земля",
+        "planet": null,
+        "sign": null,
+        "label": "Огонь Земли"
+      },
       "meanings": {
         "direct": {
           "symbolism": null,

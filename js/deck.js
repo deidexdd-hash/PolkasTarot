@@ -3,7 +3,7 @@ window.Deck = {
     /**
      * Собирает полную колоду из 78 карт
      */
-    create() {
+    create(rng) {
         const db = window.TarotDB;
 
         // Собираем все части воедино
@@ -24,19 +24,23 @@ window.Deck = {
             return [];
         }
 
-        // Перемешиваем и возвращаем
-        return window.Utils.shuffle(fullDeck);
+        // Перемешиваем и возвращаем. rng задаётся только для расклада по
+        // вопросу, где карты обязаны повториться; обычная раздача берёт
+        // числа из crypto.
+        return window.Utils.shuffle(fullDeck, rng);
     },
 
     /**
      * Достает одну карту и определяет её ориентацию (прямая/перевернутая)
      */
-    draw(deck) {
+    draw(deck, rng) {
         if (deck.length === 0) return null;
-        
+
         const card = deck.pop();
-        // 50% шанс на перевернутую карту
-        const isReversed = Math.random() < 0.5;
+        // 50% шанс на перевёрнутую карту. Через Utils, а не Math.random:
+        // иначе положение карты не повторилось бы по ссылке, да и в обычной
+        // раздаче источник случайности должен быть один и тот же.
+        const isReversed = window.Utils.randomInt(2, rng) === 1;
         
         return { 
             ...card, 
