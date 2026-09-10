@@ -54,6 +54,7 @@ window.App = {
                     name: cardData.name,
                     img: cardData.img,
                     orientation: orientation,
+                    correspondences: cardData.correspondences || null,
                     label: config.labels[i] || `Позиция ${i + 1}`,
                     general: meanings.general || "Описание отсутствует",
                     love: meanings.love || "Информация отсутствует",

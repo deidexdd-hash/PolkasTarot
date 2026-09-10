@@ -79,6 +79,8 @@ const CHECK_ONLY = args.has('--check');
 const WANT_CSV = args.has('--csv');
 
 const problems = [];
+// Таблица соответствий: заполняется в main() до нормализации.
+let CORR = null;
 const notes = [];
 const remapped = [];
 
@@ -281,6 +283,116 @@ function loadRaw() {
     return sandbox.result;
 }
 
+/**
+ * js/data/correspondences.js — астрологические соответствия (Золотая Заря).
+ * Читается отдельно от карт: это не текст толкований, а справочная таблица.
+ */
+function loadCorrespondences() {
+    const file = path.join(SRC_DIR, 'correspondences.js');
+    if (!fs.existsSync(file)) {
+        problems.push('нет файла js/data/correspondences.js');
+        return null;
+    }
+    const sandbox = { window: {}, console: { log() {}, error() {}, warn() {} } };
+    const context = vm.createContext(sandbox);
+    try {
+        vm.runInContext(fs.readFileSync(file, 'utf8'), context, { filename: file });
+    } catch (err) {
+        problems.push(`js/data/correspondences.js не парсится: ${err.message}`);
+        return null;
+    }
+    return sandbox.window.TarotCorrespondences || null;
+}
+
+/**
+ * Пересчитывает таблицу деканов по правилу и сверяет с записанной.
+ *
+ * Тридцать шесть строк «планета в знаке» невозможно вычитать глазами: одна
+ * переставленная пара выглядит ровно так же, как правильная. Но круг деканов
+ * строится по правилу — халдейский ряд планет по кругу от Марса на 0° Овна,
+ * масть по стихии знака, номера тройками, — и правило можно применить
+ * заново. Совпало с таблицей — значит, опечатки нет.
+ */
+function checkDecans(C) {
+    const groups = [[2, 3, 4], [5, 6, 7], [8, 9, 10]];
+    const bySuitElement = {};
+    for (const [suit, el] of Object.entries(C.suitElement)) bySuitElement[el] = suit;
+
+    let step = C.chaldean.indexOf('Марс');
+    let mismatched = 0;
+    let checked = 0;
+
+    C.zodiac.forEach((sign, si) => {
+        const suit = bySuitElement[C.signElement[sign]];
+        for (const num of groups[si % 3]) {
+            const planet = C.chaldean[step % C.chaldean.length];
+            step += 1;
+            checked += 1;
+            const got = C.decan[suit] && C.decan[suit][num];
+            if (!got || got[0] !== planet || got[1] !== sign) {
+                mismatched += 1;
+                problems.push(
+                    `декан ${suit} ${num}: в таблице ${got ? got.join(' в ') : 'пусто'}, ` +
+                    `по правилу ${planet} в ${sign}`
+                );
+            }
+        }
+    });
+
+    return { checked, mismatched };
+}
+
+/**
+ * Соответствия одной карты. Возвращает то, что осмысленно показать рядом с
+ * толкованием: стихия, планета, знак и одна строка-подпись под ними.
+ */
+function cardCorrespondences(C, meta) {
+    if (!C) return null;
+
+    if (meta.arcana === 'major') {
+        const m = C.major[meta.id];
+        if (!m) return null;
+        const sign = m.sign || null;
+        const element = m.element || (sign ? C.signElement[sign] : null);
+        const planet = m.planet || null;
+        const label = planet || sign || element;
+        return { element, planet, sign, label };
+    }
+
+    const suitEl = C.suitElement[meta.suit];
+    if (!suitEl) return null;
+
+    if (meta.rank === 'ace') {
+        return { element: suitEl, planet: null, sign: null, label: `Корень стихии ${GENITIVE[suitEl]}` };
+    }
+
+    const court = C.courtElement[meta.rank];
+    if (court) {
+        // Стихия придворной карты — стихия её масти: Король Пентаклей земной,
+        // и написать ему «Стихия: Огонь» значило бы сбить с толку. Огненность
+        // ранга — это оттенок внутри масти, ему место в подписи.
+        return { element: suitEl, planet: null, sign: null, label: `${court} ${GENITIVE[suitEl]}` };
+    }
+
+    const decan = C.decan[meta.suit] && C.decan[meta.suit][meta.number];
+    if (!decan) return null;
+    return {
+        element: suitEl,
+        planet: decan[0],
+        sign: decan[1],
+        label: `${decan[0]} в ${GENITIVE_SIGN[decan[1]] || decan[1]}`,
+    };
+}
+
+// Родительный падеж стихий и предложный знаков — иначе подпись читается как
+// телеграмма: «Огонь Вода», «Марс в Овен».
+const GENITIVE = { 'Огонь': 'Огня', 'Вода': 'Воды', 'Воздух': 'Воздуха', 'Земля': 'Земли' };
+const GENITIVE_SIGN = {
+    'Овен': 'Овне', 'Телец': 'Тельце', 'Близнецы': 'Близнецах', 'Рак': 'Раке',
+    'Лев': 'Льве', 'Дева': 'Деве', 'Весы': 'Весах', 'Скорпион': 'Скорпионе',
+    'Стрелец': 'Стрельце', 'Козерог': 'Козероге', 'Водолей': 'Водолее', 'Рыбы': 'Рыбах',
+};
+
 // ---------------------------------------------------------------------------
 // Шаг 3. Нормализация
 // ---------------------------------------------------------------------------
@@ -361,6 +473,7 @@ function normalizeCard(card, meta) {
         number: meta.number,
         rank: meta.rank,
         img,
+        correspondences: cardCorrespondences(CORR, meta),
         meanings: {
             direct: normalizeSide(card.meanings && card.meanings.direct, card.meanings),
             reversed: normalizeSide(card.meanings && card.meanings.reversed, card.meanings),
@@ -577,6 +690,13 @@ function main() {
     if (totalFixed === 0 && totalImages === 0 && totalSpaces === 0) console.log('  исходники в порядке, чинить нечего');
 
     const raw = loadRaw();
+
+    CORR = loadCorrespondences();
+    if (CORR) {
+        const d = checkDecans(CORR);
+        console.log(`  соответствия: ${d.checked} деканов сверено с правилом` +
+                    (d.mismatched ? `, расходится ${d.mismatched}` : ', расхождений нет'));
+    }
 
     console.log('\n2. Нормализую');
     const cards = build(db, raw);

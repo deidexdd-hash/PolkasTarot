@@ -179,6 +179,39 @@ const ok = (cond, msg) => {
     ok(minor.includes('Да, через эмоциональную открытость') &&
        minor.includes('Нет, эмоции мешают'), 'ответы для положений разные');
 
+    console.log('\n--- соответствия ---');
+    // Стихия, планета и знак приходят из js/data/correspondences.js через
+    // конвертер. Проверяем и данные, и то, что интерфейс их показывает.
+    const noCorr = deck.filter((c) => !c.correspondences);
+    ok(noCorr.length === 0,
+       `соответствия есть у всех 78 карт${noCorr.length ? `, нет у ${noCorr.length}` : ''}`);
+
+    const elements = new Set(deck.map((c) => c.correspondences && c.correspondences.element));
+    ok([...elements].every((e) => e === null || ['Огонь', 'Вода', 'Воздух', 'Земля'].includes(e)),
+       `стихии только из четырёх: ${[...elements].filter(Boolean).sort().join(', ')}`);
+
+    // Масть задаёт стихию жёстко — если у какой-то карты масти стихия чужая,
+    // значит соответствия разъехались с колодой.
+    const suitEl = { wands: 'Огонь', cups: 'Вода', swords: 'Воздух', pentacles: 'Земля' };
+    const wrongSuit = deck.filter((c) => c.suit && c.correspondences.element !== suitEl[c.suit]);
+    ok(wrongSuit.length === 0,
+       `стихия младших арканов совпадает с мастью${wrongSuit.length ? `: сбой у «${wrongSuit[0].name}»` : ''}`);
+
+    w.UI.showCardDetail('Башня');
+    const towerCorr = w.document.getElementById('modalBody').innerHTML;
+    ok(/corr-chip/.test(towerCorr), 'в карточке есть ряд соответствий');
+    ok(towerCorr.includes('Марс'), 'у Башни показан Марс');
+
+    w.UI.showCardDetail('Тройка Мечей');
+    const threeCorr = w.document.getElementById('modalBody').innerHTML;
+    ok(threeCorr.includes('Сатурн') && threeCorr.includes('Весы') && threeCorr.includes('Воздух'),
+       'у числовой карты показаны стихия, планета и знак декана');
+
+    w.UI.showCardDetail('Король Пентаклей');
+    const kingCorr = w.document.getElementById('modalBody').innerHTML;
+    ok(kingCorr.includes('Огонь Земли'), 'у придворной карты стихия внутри стихии');
+    ok(!/<b>Планета<\/b>/.test(kingCorr), 'придворной карте не приписана планета');
+
     console.log('\n--- раскладка ---');
     // Сетка расклада теперь считается из позиций, а не пишется руками.
     // Проверяем ровно то, что раньше приходилось выверять глазами: что
@@ -220,6 +253,7 @@ const ok = (cond, msg) => {
     ok(spread.includes('<ul class="meaning-list">'), 'совет выводится списком');
     ok(!spread.includes('Описание отсутствует'), 'общее значение подставилось');
     ok(spread.includes('Ответ да/нет'), 'в раскладе есть ответ да/нет');
+    ok(spread.includes('corr-chip'), 'в толковании расклада показаны соответствия');
 
     // Сроки заполнены только у старших арканов, а «Карта дня» тянет случайную:
     // требовать их безусловно — значит получить тест, падающий через раз.

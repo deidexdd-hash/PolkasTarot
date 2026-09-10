@@ -47,6 +47,7 @@ window.UI = {
                         <span>${index + 1}. ${item.name}</span>
                         <small style="color: ${orientationColor};">(${orientationText})</small>
                     </h3>
+                    ${UI.renderCorrespondences(item.correspondences)}
                     <div class="info-content-wrapper">
                         <div class="info-main-text">
                             <p><strong>📖 Общее значение:</strong><br>${item.general || "Описание отсутствует"}</p>
@@ -254,6 +255,36 @@ window.UI = {
     /**
      * Показать детальную информацию о карте
      */
+    /**
+     * Астрологические соответствия карты одной строкой чипов.
+     *
+     * У карты либо есть планета и знак (старшие арканы, числовые младшие),
+     * либо нет ни того, ни другого — тогда вся привязка это стихия, и
+     * подписывать чип словом «Стихия» незачем: «Корень стихии Воды» и так
+     * говорит о себе. Пустой блок не рисуем вовсе.
+     */
+    renderCorrespondences(corr) {
+        if (!corr) return '';
+
+        const chip = (name, value) =>
+            `<span class="corr-chip">${name ? `<b>${name}</b>` : ''}${value}</span>`;
+
+        let chips;
+        if (corr.planet || corr.sign) {
+            chips = [
+                corr.element ? chip('Стихия', corr.element) : '',
+                corr.planet ? chip('Планета', corr.planet) : '',
+                corr.sign ? chip('Знак', corr.sign) : ''
+            ].join('');
+        } else if (corr.label) {
+            chips = chip('', corr.label);
+        } else {
+            return '';
+        }
+
+        return `<div class="corr-row" title="Соответствия по системе Золотой Зари">${chips}</div>`;
+    },
+
     showCardDetail(cardName) {
         const db = window.TarotDB;
         if (!db) return;
@@ -302,6 +333,7 @@ window.UI = {
                     <div class="modal-card-info">
                         <h2>${card.name}</h2>
                         <span class="card-type">${cardType}</span>
+                        ${this.renderCorrespondences(card.correspondences)}
                     </div>
                 </div>
                 

@@ -617,6 +617,40 @@ footer p { margin: 0; }
 
 .card-type { color: var(--label-2); font-size: 14px; }
 
+/* Соответствия карты: стихия, планета, знак. Ряд переносится, потому что на
+   узком экране три чипа в строку не встают. */
+.corr-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.corr-chip {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--fill);
+    color: var(--label);
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.corr-chip > b {
+    color: var(--label-2);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+/* В толковании расклада ряд идёт под заголовком карты и не должен спорить
+   с ним по весу. */
+.info-block .corr-row { margin: -4px 0 12px; }
+
 .meaning-section { margin-bottom: 20px; }
 
 .meaning-section > h3 {
