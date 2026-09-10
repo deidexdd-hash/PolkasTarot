@@ -19,7 +19,7 @@
  *
  *   node tools/fetch-images.js --dry-run   только проверить имена и лицензии
  *   node tools/fetch-images.js             проверить, скачать, заменить
- *   node tools/fetch-images.js --width 900 другой размер по длинной стороне
+ *   node tools/fetch-images.js --width 900 другой потолок по длинной стороне
  *
  * Нужен доступ в интернет к commons.wikimedia.org. Зависимостей нет.
  *
@@ -322,20 +322,64 @@ function thumbFromOriginal(url, width) {
 }
 
 /**
- * Куда ещё сходить за копией нужной ширины, если пришла не та.
+ * Адреса, по которым можно попросить копию заданной ширины.
  * Два способа могут дать один и тот же адрес — тогда и ходить туда стоит
- * один раз, и в сообщении об ошибке он должен стоять один раз.
+ * один раз, и в отчёте он должен стоять один раз.
  */
-function altUrls(item) {
+function altUrls(item, width) {
     return [...new Set([
-        retargetThumb(item.info.thumburl, WIDTH),
-        thumbFromOriginal(item.info.url || item.info.thumburl, WIDTH),
+        retargetThumb(item.info.thumburl, width),
+        thumbFromOriginal(item.info.url || item.info.thumburl, width),
     ].filter(Boolean))];
+}
+
+// Размеры, которые пробуем, если запрошенный не отдаётся. Викисклад
+// отдаёт копии не любой ширины, а из своего набора: на запрос 720 px он
+// дважды вернул 960, и по адресу с 720px- тоже. Гадать, какие размеры
+// в наборе, бесполезно — спрашиваем и смотрим, что придёт.
+const WIDTH_LADDER = [1280, 1024, 960, 800, 720, 640, 512, 480, 400, 320, 256];
+
+/**
+ * Нащупывает ширину, которую служба действительно отдаёт.
+ *
+ * Пробует запрошенную, потом всё меньшие из набора, и на каждой смотрит не
+ * на обещание, а на заголовок пришедшего JPEG. Возвращает первую ширину,
+ * укладывающуюся в запрошенную, и отчёт обо всех попытках.
+ *
+ * Отчёт нужен не меньше результата: раньше на неудаче печаталось «ни один
+ * не дал 720 px», и по этой строке нельзя было отличить «вернуло 960» от
+ * «адрес не открылся». Теперь у каждой попытки виден исход.
+ */
+async function probeWidth(item) {
+    const tried = [];
+    const candidates = [WIDTH, ...WIDTH_LADDER.filter((w) => w < WIDTH)];
+
+    for (const w of candidates) {
+        const urls = altUrls(item, w);
+        if (!urls.length) { tried.push({ w, got: 'адрес не собирается' }); continue; }
+
+        for (const url of urls) {
+            let got;
+            try {
+                const data = await get(url);
+                const gw = jpegWidth(data);
+                got = gw ? `${gw} px` : `не картинка (${data.length} байт)`;
+                if (gw && gw <= WIDTH) {
+                    tried.push({ w, got, url });
+                    return { width: w, actual: gw, tried };
+                }
+            } catch (e) {
+                got = 'не открылся: ' + String((e && e.message) || e).slice(0, 70);
+            }
+            tried.push({ w, got, url });
+        }
+    }
+    return { width: null, tried };
 }
 
 async function main() {
     const items = plan();
-    console.log(`Колода: ${items.length} карт, ширина ${WIDTH} px\n`);
+    console.log(`Колода: ${items.length} карт, ширина не больше ${WIDTH} px\n`);
 
     console.log('1. Спрашиваю Викисклад про лицензии');
     await resolve(items);
@@ -415,42 +459,55 @@ async function main() {
         return;
     }
 
-    console.log('\n2. Качаю');
+    console.log('\n2. Ищу размер, который отдаёт Викисклад');
+    // Раньше здесь начиналась загрузка, а размер проверялся у каждого файла
+    // по отдельности. Но набор доступных размеров один на всю службу, так
+    // что дешевле выяснить его один раз на первой карте, чем 78 раз ошибаться.
+    const probe = await probeWidth(items[0]);
+    for (const t of probe.tried) {
+        // Хост важен: копии и оригиналы Викисклад раздаёт с разных адресов,
+        // и вполне может статься, что один из них ширину уважает, а другой нет.
+        const host = t.url ? new URL(t.url).host : '';
+        console.log(`  просили ${String(t.w).padStart(4)} px ${host ? 'у ' + host : ''} -> ${t.got}`);
+    }
+    if (!probe.width) {
+        const seen = probe.tried.map((t) => parseInt(t.got, 10)).filter(Number.isFinite);
+        const smallest = seen.length ? Math.min(...seen) : null;
+        throw new Error(
+            `ни один размер не уложился в ${WIDTH} px.\n` +
+            `  Викисклад дал: ${items[0].info.thumburl}\n` +
+            (smallest
+                ? `  Меньше ${smallest} px он не отдаёт. Запустите с --width ${smallest},\n` +
+                  `  если такой вес устраивает, либо уменьшайте картинки отдельно.`
+                : `  Ни один адрес не открылся — похоже, дело в сети, а не в размере.`)
+        );
+    }
+    if (probe.width !== WIDTH) {
+        console.log(`  ${WIDTH} px не отдаётся, берём ${probe.width} px (пришло ${probe.actual} px)`);
+    } else {
+        console.log(`  ${WIDTH} px отдаётся`);
+    }
+
+    console.log('\n3. Качаю');
     fs.rmSync(STAGE_DIR, { recursive: true, force: true });
     fs.mkdirSync(STAGE_DIR, { recursive: true });
     let bytes = 0;
-    let widened = 0;
     for (const [i, item] of items.entries()) {
-        let data = await get(item.info.thumburl);
-        if (data.length < 2048) throw new Error(`${item.name}: подозрительно маленький файл`);
-
-        // Проверяем не обещание, а факт: сколько пикселей в скачанном файле.
-        // Викисклад может отдать под видом уменьшенной копии оригинал, и без
-        // этой проверки разница видна только по весу репозитория.
-        let w = jpegWidth(data);
-        if (w && w > WIDTH * 1.1) {
-            // Сначала переписываем ширину в том адресе, который дал сам
-            // Викисклад, и только если переписывать нечего — собираем
-            // адрес из ссылки на оригинал.
-            const candidates = altUrls(item);
-
-            for (const alt of candidates) {
-                try {
-                    const retry = await get(alt);
-                    const rw = jpegWidth(retry);
-                    if (retry.length >= 2048 && rw && rw <= WIDTH * 1.1) {
-                        data = retry; w = rw; widened += 1;
-                        break;
-                    }
-                } catch (e) { /* не вышло — пробуем следующий */ }
-            }
+        // Идём сразу за найденной шириной, а не за тем, что предложил API.
+        const urls = altUrls(item, probe.width);
+        let data = null;
+        let w = null;
+        for (const url of [...urls, item.info.thumburl]) {
+            try {
+                const got = await get(url);
+                const gw = jpegWidth(got);
+                if (got.length >= 2048 && gw && gw <= WIDTH) { data = got; w = gw; break; }
+            } catch (e) { /* пробуем следующий */ }
         }
-        if (w && w > WIDTH * 1.1) {
+        if (!data) {
             throw new Error(
-                `${item.name}: просили ${WIDTH} px, а пришло ${w} px.\n` +
-                `  Викисклад дал: ${item.info.thumburl}\n` +
-                `  Пробовали: ${altUrls(item).join('\n             ') || 'нечего'}\n` +
-                `  Ни один не дал ${WIDTH} px. Запустите с --width ${w} либо разберитесь с адресом.`
+                `${item.name}: не удалось получить копию не шире ${WIDTH} px.\n` +
+                `  Пробовали: ${[...urls, item.info.thumburl].join('\n             ')}`
             );
         }
 
@@ -459,26 +516,25 @@ async function main() {
         progress(`  ${i + 1}/${items.length}`);
     }
     progressDone();
-    if (widened) {
-        console.log(`  у ${widened} файлов пришла копия не того размера — адрес переписан на ${WIDTH} px`);
-    }
-    const widths = new Set(fs.readdirSync(STAGE_DIR)
-        .map((f) => jpegWidth(fs.readFileSync(path.join(STAGE_DIR, f)))).filter(Boolean));
-    console.log(`  скачано ${(bytes / 1048576).toFixed(1)} МБ, ширина ${[...widths].sort((a, b) => a - b).join('/')} px`);
+    const widths = [...new Set(fs.readdirSync(STAGE_DIR)
+        .map((f) => jpegWidth(fs.readFileSync(path.join(STAGE_DIR, f)))).filter(Boolean))]
+        .sort((a, b) => a - b);
+    const realWidth = widths.length === 1 ? widths[0] : widths.join('/');
+    console.log(`  скачано ${(bytes / 1048576).toFixed(1)} МБ, ширина ${realWidth} px`);
 
-    console.log('\n3. Заменяю');
+    console.log('\n4. Заменяю');
     for (const item of items) {
         fs.renameSync(path.join(STAGE_DIR, item.target), path.join(IMG_DIR, item.target));
     }
     fs.rmSync(STAGE_DIR, { recursive: true, force: true });
     console.log(`  ${items.length} файлов в img/cards`);
 
-    console.log('\n4. Пишу SOURCES.md');
-    writeSources(items);
+    console.log('\n5. Пишу SOURCES.md');
+    writeSources(items, realWidth);
     console.log('  готово. Проверьте данные: node tools/js2json.js --check');
 }
 
-function writeSources(items) {
+function writeSources(items, actualWidth) {
     const today = new Date().toISOString().slice(0, 10);
     const lines = [
         '# Происхождение изображений',
@@ -486,7 +542,7 @@ function writeSources(items) {
         'Файл создан автоматически: `node tools/fetch-images.js`.',
         'Руками не правится — при следующем запуске перезапишется.',
         '',
-        `Дата загрузки: ${today}. Ширина: ${WIDTH} px по длинной стороне.`,
+        `Дата загрузки: ${today}. Ширина: ${actualWidth} px по длинной стороне.`,
         '',
         'Все изображения — колода Райдера — Уэйта — Смит, издана в 1909 году,',
         'общественное достояние. Лицензия каждого файла ниже взята из ответа',

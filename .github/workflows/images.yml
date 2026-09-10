@@ -16,7 +16,7 @@ on:
         type: boolean
         default: true
       width:
-        description: 'Ширина картинки по длинной стороне, px'
+        description: 'Ширина картинки по длинной стороне, px (потолок: возьмётся ближайший размер, который отдаёт Викисклад)'
         type: string
         default: '720'
 
