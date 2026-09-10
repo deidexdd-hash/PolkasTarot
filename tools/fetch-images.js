@@ -354,6 +354,10 @@ async function probeWidth(item) {
     const tried = [];
     const candidates = [WIDTH, ...WIDTH_LADDER.filter((w) => w < WIDTH)];
 
+    // Самое маленькое, что служба вообще согласилась отдать. Пригодится,
+    // если в потолок не уложилось ничего: качаем это и уменьшаем сами.
+    let smallest = null;
+
     for (const w of candidates) {
         const urls = altUrls(item, w);
         if (!urls.length) { tried.push({ w, got: 'адрес не собирается' }); continue; }
@@ -364,9 +368,12 @@ async function probeWidth(item) {
                 const data = await get(url);
                 const gw = jpegWidth(data);
                 got = gw ? `${gw} px` : `не картинка (${data.length} байт)`;
-                if (gw && gw <= WIDTH) {
-                    tried.push({ w, got, url });
-                    return { width: w, actual: gw, tried };
+                if (gw) {
+                    if (gw <= WIDTH) {
+                        tried.push({ w, got, url });
+                        return { width: w, actual: gw, tried, resize: false };
+                    }
+                    if (!smallest || gw < smallest.actual) smallest = { w, actual: gw };
                 }
             } catch (e) {
                 got = 'не открылся: ' + String((e && e.message) || e).slice(0, 70);
@@ -374,7 +381,35 @@ async function probeWidth(item) {
             tried.push({ w, got, url });
         }
     }
-    return { width: null, tried };
+
+    if (smallest) {
+        return { width: smallest.w, actual: smallest.actual, tried, resize: true };
+    }
+    return { width: null, tried, resize: false };
+}
+
+/**
+ * Уменьшает картинку до нужной ширины.
+ *
+ * Викисклад отдаёт копии только своих размеров, и если ни один не влезает
+ * в потолок — уменьшаем сами, вместо того чтобы ставить человека перед
+ * выбором «сорок мегабайт или ничего». jimp здесь потому, что он на чистом
+ * JS: нативная сборка в рабочем процессе — лишний способ сломаться.
+ */
+let jimpModule;
+function loadShrinker() {
+    if (jimpModule === undefined) {
+        try { jimpModule = require('jimp'); } catch (e) { jimpModule = null; }
+    }
+    return jimpModule;
+}
+
+async function shrink(buf, width) {
+    const jimp = loadShrinker();
+    if (!jimp) return null;
+    const img = await jimp.Jimp.fromBuffer(buf);
+    img.resize({ w: width });
+    return img.getBuffer('image/jpeg', { quality: 82 });
 }
 
 async function main() {
@@ -471,21 +506,29 @@ async function main() {
         console.log(`  просили ${String(t.w).padStart(4)} px ${host ? 'у ' + host : ''} -> ${t.got}`);
     }
     if (!probe.width) {
-        const seen = probe.tried.map((t) => parseInt(t.got, 10)).filter(Number.isFinite);
-        const smallest = seen.length ? Math.min(...seen) : null;
         throw new Error(
-            `ни один размер не уложился в ${WIDTH} px.\n` +
+            `не удалось получить ни одной копии.\n` +
             `  Викисклад дал: ${items[0].info.thumburl}\n` +
-            (smallest
-                ? `  Меньше ${smallest} px он не отдаёт. Запустите с --width ${smallest},\n` +
-                  `  если такой вес устраивает, либо уменьшайте картинки отдельно.`
-                : `  Ни один адрес не открылся — похоже, дело в сети, а не в размере.`)
+            `  Ни один адрес не открылся — похоже, дело в сети, а не в размере.`
         );
     }
-    if (probe.width !== WIDTH) {
-        console.log(`  ${WIDTH} px не отдаётся, берём ${probe.width} px (пришло ${probe.actual} px)`);
+
+    let resizeTo = null;
+    if (!probe.resize) {
+        console.log(`  ${probe.actual} px — берём`);
     } else {
-        console.log(`  ${WIDTH} px отдаётся`);
+        // Меньше служба не отдаёт. Раньше здесь прогон падал и предлагал
+        // человеку выбирать между сорока мегабайтами и ничем; теперь просто
+        // уменьшаем сами.
+        if (!loadShrinker()) {
+            throw new Error(
+                `меньше ${probe.actual} px Викисклад не отдаёт, а уменьшить нечем.\n` +
+                `  Поставьте инструмент уменьшения:  npm --prefix tools install\n` +
+                `  либо запустите с --width ${probe.actual}, если такой вес устраивает.`
+            );
+        }
+        resizeTo = WIDTH;
+        console.log(`  меньше ${probe.actual} px не отдаётся — качаем ${probe.actual} px и уменьшаем до ${WIDTH} px сами`);
     }
 
     console.log('\n3. Качаю');
@@ -495,20 +538,36 @@ async function main() {
     for (const [i, item] of items.entries()) {
         // Идём сразу за найденной шириной, а не за тем, что предложил API.
         const urls = altUrls(item, probe.width);
+        const tryUrls = [...urls, item.info.thumburl];
         let data = null;
-        let w = null;
-        for (const url of [...urls, item.info.thumburl]) {
+        for (const url of tryUrls) {
             try {
                 const got = await get(url);
                 const gw = jpegWidth(got);
-                if (got.length >= 2048 && gw && gw <= WIDTH) { data = got; w = gw; break; }
+                if (got.length >= 2048 && gw && gw <= probe.actual) { data = got; break; }
             } catch (e) { /* пробуем следующий */ }
         }
         if (!data) {
             throw new Error(
-                `${item.name}: не удалось получить копию не шире ${WIDTH} px.\n` +
-                `  Пробовали: ${[...urls, item.info.thumburl].join('\n             ')}`
+                `${item.name}: не удалось получить копию не шире ${probe.actual} px.\n` +
+                `  Пробовали: ${tryUrls.join('\n             ')}`
             );
+        }
+
+        if (resizeTo) {
+            let small;
+            try {
+                small = await shrink(data, resizeTo);
+            } catch (e) {
+                // Без имени карты такая ошибка бесполезна: 78 файлов, и
+                // непонятно, на каком из них разбор картинки сломался.
+                throw new Error(
+                    `${item.name}: не удалось уменьшить картинку — ${(e && e.message) || e}\n` +
+                    `  Файл: ${item.title} (${data.length} байт)`
+                );
+            }
+            if (!small) throw new Error(`${item.name}: уменьшать нечем`);
+            data = small;
         }
 
         fs.writeFileSync(path.join(STAGE_DIR, item.target), data);
