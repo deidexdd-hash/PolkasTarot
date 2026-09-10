@@ -46,8 +46,15 @@ const args = process.argv.slice(2);
 const DRY = args.includes('--dry-run');
 const WIDTH = (() => {
     const i = args.indexOf('--width');
-    const n = i >= 0 ? parseInt(args[i + 1], 10) : 720;
-    return Number.isFinite(n) && n >= 200 && n <= 4000 ? n : 720;
+    if (i < 0) return 720;
+    const n = parseInt(args[i + 1], 10);
+    // Молча подставить 720 вместо непонятного значения — значит скачать не
+    // тот размер и написать в SOURCES.md неправду о том, что скачано.
+    if (!Number.isFinite(n) || n < 200 || n > 4000) {
+        console.error(`--width «${args[i + 1]}»: нужно целое от 200 до 4000`);
+        process.exit(2);
+    }
+    return n;
 })();
 
 // Английские имена старших арканов — из них складываются имена файлов на
