@@ -17,7 +17,7 @@ window.App = {
     /**
      * Выполнить расклад
      */
-    doSpread(spreadKey) {
+    doSpread(spreadKey, options) {
         if (!this.deckReady()) return;
         try {
             const config = Spreads.types[spreadKey];
@@ -26,8 +26,23 @@ window.App = {
                 return;
             }
 
+            const opts = options || {};
+            // Вопрос берём из поля, если его не передали явно (по ссылке).
+            const field = document.getElementById('questionInput');
+            const question = String(
+                opts.question != null ? opts.question : (field ? field.value : '')
+            ).trim().slice(0, 200);
+            const day = opts.day || this.today();
+
+            // Расклад по вопросу обязан повториться: тот же вопрос в тот же
+            // день даёт те же карты, и ссылкой на него можно поделиться.
+            // Без вопроса раздача остаётся случайной, из crypto.
+            const rng = question
+                ? Utils.seededRng(Utils.hashSeed(`${question.toLowerCase()}|${day}|${spreadKey}`))
+                : null;
+
             // Создаем колоду
-            const fullDeck = Deck.create();
+            const fullDeck = Deck.create(rng);
             if (!fullDeck || fullDeck.length === 0) {
                 alert('Ошибка загрузки колоды. Проверьте консоль (F12).');
                 return;
@@ -36,7 +51,7 @@ window.App = {
             // Тянем карты
             const results = [];
             for (let i = 0; i < config.count; i++) {
-                const cardData = Deck.draw(fullDeck);
+                const cardData = Deck.draw(fullDeck, rng);
                 if (!cardData) {
                     console.error('Ошибка при вытягивании карты');
                     continue;
@@ -76,6 +91,7 @@ window.App = {
                 date: Utils.formatDate(),
                 spreadName: config.title,
                 spreadKey: spreadKey,
+                question: question || null,
                 cardsCount: results.length
             });
 
@@ -87,7 +103,11 @@ window.App = {
             HistoryStore.save();
             
             // Отображаем результаты
-            UI.renderSpread(config.title, results, config);
+            UI.renderSpread(config.title, results, config, { question, day, spreadKey });
+
+            // Ссылка держится в hash: он не уходит на сервер, то есть вопрос
+            // остаётся между человеком и тем, кому он сам дал ссылку.
+            this.setLink(question ? { question, day, spreadKey } : null);
             UI.renderHistory();
             
             // Скроллим к результатам
@@ -97,6 +117,69 @@ window.App = {
             console.error('Ошибка при выполнении расклада:', error);
             alert('Произошла ошибка. Попробуйте обновить страницу.');
         }
+    },
+
+    /** Сегодняшняя дата в виде 2026-09-10 — часть зерна расклада. */
+    today() {
+        const d = new Date();
+        const p = (n) => String(n).padStart(2, '0');
+        return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+    },
+
+    /** Записывает расклад в адресную строку (или убирает оттуда). */
+    setLink(state) {
+        const hash = state
+            ? '#' + new URLSearchParams({
+                s: state.spreadKey, d: state.day, q: state.question
+            }).toString()
+            : '';
+
+        // replaceState предпочтительнее: он не засоряет историю браузера, и
+        // «назад» уводит со страницы, а не отматывает расклады по одному.
+        try {
+            if (typeof history !== 'undefined' && history.replaceState) {
+                history.replaceState(null, '', hash || location.pathname + location.search);
+                return;
+            }
+        } catch (e) {
+            // На странице, открытой как файл, браузер запрещает replaceState.
+            // Тогда ссылка важнее чистой истории.
+        }
+
+        try {
+            location.hash = hash;
+        } catch (e) {
+            // Адресная строка — украшение, ради неё падать не стоит.
+        }
+    },
+
+    /** Читает расклад из адресной строки. Возвращает null, если его там нет. */
+    readLink() {
+        const raw = String(location.hash || '').replace(/^#/, '');
+        if (!raw) return null;
+        const p = new URLSearchParams(raw);
+        const spreadKey = p.get('s');
+        if (!spreadKey || !Spreads.types[spreadKey]) return null;
+        return {
+            spreadKey,
+            question: (p.get('q') || '').slice(0, 200),
+            day: /^\d{4}-\d{2}-\d{2}$/.test(p.get('d') || '') ? p.get('d') : this.today()
+        };
+    },
+
+    /** Копирует ссылку на текущий расклад. */
+    async shareSpread() {
+        const url = location.href;
+        try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(url);
+                UI.flashShare('Ссылка скопирована');
+                return;
+            }
+        } catch (e) {
+            // Буфер обмена может быть запрещён — тогда показываем ссылку.
+        }
+        UI.flashShare(url);
     },
 
     /**
@@ -166,6 +249,14 @@ window.App = {
                     'Не удалось загрузить data/cards.json. Проверьте консоль (F12).</p>';
             }
             return;
+        }
+
+        // Пришли по ссылке на расклад — сразу его и показываем.
+        const link = this.readLink();
+        if (link) {
+            this.doSpread(link.spreadKey, { question: link.question, day: link.day });
+            const field = document.getElementById('questionInput');
+            if (field) field.value = link.question;
         }
 
         const testDeck = Deck.create();

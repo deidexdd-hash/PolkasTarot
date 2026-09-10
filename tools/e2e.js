@@ -270,6 +270,56 @@ const ok = (cond, msg) => {
         ok(false, 'не удалось определить выпавшую карту');
     }
 
+    console.log('\n--- расклад по вопросу ---');
+    // Вопрос задаёт зерно: те же карты в тот же день, и по ссылке тоже.
+    const cardsOf = () => [...w.document.querySelectorAll('.card-title-under')]
+        .map((el) => el.textContent.trim()).join(' | ');
+
+    const ask = (q, day) => {
+        w.App.doSpread('threecards', { question: q, day: day || '2026-09-10' });
+        return cardsOf();
+    };
+
+    const first = ask('стоит ли менять работу');
+    const again = ask('стоит ли менять работу');
+    ok(first === again, `один вопрос в один день — один расклад (${first.slice(0, 40)}…)`);
+
+    const other = ask('стоит ли менять работу?');
+    ok(first !== other, 'другой вопрос — другой расклад');
+
+    const tomorrow = ask('стоит ли менять работу', '2026-09-11');
+    ok(first !== tomorrow, 'тот же вопрос назавтра — новый расклад');
+
+    // Без вопроса раздача остаётся случайной. Совпадение двух подряд из 78
+    // карт по трём позициям практически невозможно, но чтобы тест не мигал
+    // раз в вечность, считаем удачей несовпадение хотя бы одной из пяти пар.
+    const blind = [];
+    for (let i = 0; i < 5; i += 1) { w.App.doSpread('threecards', { question: '' }); blind.push(cardsOf()); }
+    ok(new Set(blind).size > 1, 'без вопроса расклады разные');
+
+    ok(!/[?#]/.test(w.location.hash) || w.location.hash === '',
+       `без вопроса ссылка не подставляется (hash: «${w.location.hash}»)`);
+
+    // Ссылка: собрали её на одном раскладе, разобрали и повторили.
+    ask('что меня ждёт этой осенью');
+    const link = w.location.hash;
+    ok(/^#s=threecards/.test(link), `ссылка собрана (${link.slice(0, 30)}…)`);
+
+    const parsed = w.App.readLink();
+    ok(parsed && parsed.spreadKey === 'threecards' && parsed.question === 'что меня ждёт этой осенью'
+       && parsed.day === '2026-09-10', 'ссылка разбирается обратно');
+
+    const byLink = ask(parsed.question, parsed.day);
+    ok(byLink === cardsOf(), 'расклад по ссылке совпадает с исходным');
+
+    // Вопрос — это чужой текст в разметке. Проверяем, что он не выполняется.
+    w.App.doSpread('daily', { question: '<img src=x onerror=alert(1)>злой вопрос', day: '2026-09-10' });
+    const asked = w.document.querySelector('.spread-asked').innerHTML;
+    ok(!/<img/i.test(asked) && asked.includes('&lt;img'), 'вопрос экранирован, а не вставлен как разметка');
+    ok(w.document.querySelectorAll('.spread-asked img').length === 0, 'из вопроса не появилось тега');
+
+    w.location.hash = '';
+
     console.log('\n--- консоль страницы ---');
     console.log(errors.length ? '  ' + errors.join('\n  ') : '  чисто');
 
