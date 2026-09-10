@@ -281,21 +281,56 @@ function jpegWidth(buf) {
     return null;
 }
 
+/** Адрес без вопросительного знака и всего, что за ним. */
+const stripQuery = (url) => String(url).split('?')[0];
+
+/**
+ * Тот же адрес уменьшенной копии, но с другой шириной.
+ *
+ * Викисклад не обязан отдавать копию ровно той ширины, которую просили:
+ * на запрос 720 px он вернул ссылку на копию 960 px. Зато вернул именно
+ * ссылку на копию, а в ней ширина стоит прямо в имени файла — её и
+ * переписываем:
+ *
+ *   .../thumb/9/90/Имя.jpg/960px-Имя.jpg?utm_source=…
+ *   .../thumb/9/90/Имя.jpg/720px-Имя.jpg
+ *
+ * Хвост с utm_source отбрасываем: он не нужен для загрузки, а раньше
+ * ломал разбор адреса — именно из-за него не сработала попытка собрать
+ * ссылку заново.
+ */
+function retargetThumb(url, width) {
+    const clean = stripQuery(url);
+    const m = clean.match(/^(.*\/)(\d+)px-([^/]+)$/);
+    if (!m) return null;
+    if (Number(m[2]) === width) return null;      // уже нужная ширина
+    return `${m[1]}${width}px-${m[3]}`;
+}
+
 /**
  * Ссылка на уменьшенную копию, собранная из ссылки на оригинал.
  *
- * Обычно нужный адрес приходит от API в thumburl. Но прийти может и адрес
- * оригинала — и тогда вместо 720 px качается всё, что лежит на Викискладе.
- * Один такой прогон дал колоду в 40 МБ вместо ожидаемых, при том что
- * в заголовке честно стояло «ширина 720 px». Схема адресов у Викисклада
- * стабильная и документированная, так что собрать нужный адрес можно
- * самим:  .../commons/a/ab/Имя.jpg  ->  .../commons/thumb/a/ab/Имя.jpg/720px-Имя.jpg
+ * Запасной путь на случай, если в thumburl придёт адрес оригинала, а не
+ * копии, и переписывать в нём будет нечего. Схема адресов у Викисклада
+ * стабильная:  .../commons/a/ab/Имя.jpg  ->  .../commons/thumb/a/ab/Имя.jpg/720px-Имя.jpg
  */
 function thumbFromOriginal(url, width) {
-    const m = String(url).match(/^(https?:\/\/[^/]+\/wikipedia\/commons)\/([0-9a-f])\/([0-9a-f]{2})\/(.+)$/);
+    const m = stripQuery(url).match(/^(https?:\/\/[^/]+\/wikipedia\/commons)\/([0-9a-f])\/([0-9a-f]{2})\/([^/]+)$/);
     if (!m) return null;
     const [, base, a, ab, name] = m;
     return `${base}/thumb/${a}/${ab}/${name}/${width}px-${name}`;
+}
+
+/**
+ * Куда ещё сходить за копией нужной ширины, если пришла не та.
+ * Два способа могут дать один и тот же адрес — тогда и ходить туда стоит
+ * один раз, и в сообщении об ошибке он должен стоять один раз.
+ */
+function altUrls(item) {
+    return [...new Set([
+        retargetThumb(item.info.thumburl, WIDTH),
+        thumbFromOriginal(item.info.url || item.info.thumburl, WIDTH),
+    ].filter(Boolean))];
 }
 
 async function main() {
@@ -394,22 +429,28 @@ async function main() {
         // этой проверки разница видна только по весу репозитория.
         let w = jpegWidth(data);
         if (w && w > WIDTH * 1.1) {
-            const alt = thumbFromOriginal(item.info.url || item.info.thumburl, WIDTH);
-            if (alt) {
+            // Сначала переписываем ширину в том адресе, который дал сам
+            // Викисклад, и только если переписывать нечего — собираем
+            // адрес из ссылки на оригинал.
+            const candidates = altUrls(item);
+
+            for (const alt of candidates) {
                 try {
                     const retry = await get(alt);
                     const rw = jpegWidth(retry);
                     if (retry.length >= 2048 && rw && rw <= WIDTH * 1.1) {
                         data = retry; w = rw; widened += 1;
+                        break;
                     }
-                } catch (e) { /* не вышло — разберёмся ниже */ }
+                } catch (e) { /* не вышло — пробуем следующий */ }
             }
         }
         if (w && w > WIDTH * 1.1) {
             throw new Error(
                 `${item.name}: просили ${WIDTH} px, а пришло ${w} px.\n` +
-                `  Викисклад отдал не уменьшенную копию: ${item.info.thumburl}\n` +
-                `  Собрать её самим тоже не вышло. Запустите с --width ${w} либо разберитесь с адресом.`
+                `  Викисклад дал: ${item.info.thumburl}\n` +
+                `  Пробовали: ${altUrls(item).join('\n             ') || 'нечего'}\n` +
+                `  Ни один не дал ${WIDTH} px. Запустите с --width ${w} либо разберитесь с адресом.`
             );
         }
 
@@ -419,7 +460,7 @@ async function main() {
     }
     progressDone();
     if (widened) {
-        console.log(`  у ${widened} файлов Викисклад отдавал оригинал вместо копии — адрес собран заново`);
+        console.log(`  у ${widened} файлов пришла копия не того размера — адрес переписан на ${WIDTH} px`);
     }
     const widths = new Set(fs.readdirSync(STAGE_DIR)
         .map((f) => jpegWidth(fs.readFileSync(path.join(STAGE_DIR, f)))).filter(Boolean));
