@@ -120,6 +120,21 @@ function get(url) {
 }
 
 /** Викисклад отдаёт не больше 50 файлов за запрос. */
+/**
+ * Ключ для сопоставления ответа с запросом.
+ *
+ * MediaWiki нормализует заголовки: подчёркивания превращаются в пробелы,
+ * первая буква — в заглавную. На запрос про «RWS_Tarot_00_Fool.jpg» ответ
+ * приходит про «RWS Tarot 00 Fool.jpg», и наивное сопоставление по строке
+ * промахивается — файл есть, а мы считаем, что его нет. Именно так все 22
+ * старших аркана числились ненайденными, пока 56 младших, в чьих именах
+ * подчёркиваний нет, находились прекрасно.
+ */
+function titleKey(title) {
+    const t = String(title).replace(/^File:/, '').replace(/_/g, ' ').trim();
+    return t.charAt(0).toUpperCase() + t.slice(1);
+}
+
 async function queryBatch(titles) {
     const url = `${API}?${new URLSearchParams({
         action: 'query', format: 'json', formatversion: '2',
@@ -131,7 +146,12 @@ async function queryBatch(titles) {
     const body = JSON.parse((await get(url)).toString('utf8'));
     const out = new Map();
     for (const page of (body.query && body.query.pages) || []) {
-        out.set(String(page.title).replace(/^File:/, ''), page);
+        out.set(titleKey(page.title), page);
+    }
+    // API ещё и прямо сообщает, что во что нормализовал, — используем и это.
+    for (const n of (body.query && body.query.normalized) || []) {
+        const page = out.get(titleKey(n.to));
+        if (page) out.set(titleKey(n.from), page);
     }
     return out;
 }
@@ -238,7 +258,7 @@ async function resolve(list) {
         const batch = list.slice(i, i + 50);
         const pages = await queryBatch(batch.map((it) => it.title));
         for (const item of batch) {
-            const page = pages.get(item.title);
+            const page = pages.get(titleKey(item.title));
             if (page && !page.missing && page.imageinfo && page.imageinfo[0]) {
                 item.info = page.imageinfo[0];
             }
@@ -246,6 +266,36 @@ async function resolve(list) {
         progress(`  ${Math.min(i + 50, list.length)}/${list.length}`);
     }
     progressDone();
+}
+
+/** Ширина JPEG из заголовка файла. null, если это не JPEG. */
+function jpegWidth(buf) {
+    let i = 2;
+    while (i + 9 < buf.length) {
+        if (buf[i] !== 0xff) { i += 1; continue; }
+        const marker = buf[i + 1];
+        if (marker >= 0xc0 && marker <= 0xc3) return buf.readUInt16BE(i + 7);
+        if (marker === 0xd8 || marker === 0xd9 || (marker >= 0xd0 && marker <= 0xd7)) { i += 2; continue; }
+        i += 2 + buf.readUInt16BE(i + 2);
+    }
+    return null;
+}
+
+/**
+ * Ссылка на уменьшенную копию, собранная из ссылки на оригинал.
+ *
+ * Обычно нужный адрес приходит от API в thumburl. Но прийти может и адрес
+ * оригинала — и тогда вместо 720 px качается всё, что лежит на Викискладе.
+ * Один такой прогон дал колоду в 40 МБ вместо ожидаемых, при том что
+ * в заголовке честно стояло «ширина 720 px». Схема адресов у Викисклада
+ * стабильная и документированная, так что собрать нужный адрес можно
+ * самим:  .../commons/a/ab/Имя.jpg  ->  .../commons/thumb/a/ab/Имя.jpg/720px-Имя.jpg
+ */
+function thumbFromOriginal(url, width) {
+    const m = String(url).match(/^(https?:\/\/[^/]+\/wikipedia\/commons)\/([0-9a-f])\/([0-9a-f]{2})\/(.+)$/);
+    if (!m) return null;
+    const [, base, a, ab, name] = m;
+    return `${base}/thumb/${a}/${ab}/${name}/${width}px-${name}`;
 }
 
 async function main() {
@@ -334,15 +384,46 @@ async function main() {
     fs.rmSync(STAGE_DIR, { recursive: true, force: true });
     fs.mkdirSync(STAGE_DIR, { recursive: true });
     let bytes = 0;
+    let widened = 0;
     for (const [i, item] of items.entries()) {
-        const data = await get(item.info.thumburl);
+        let data = await get(item.info.thumburl);
         if (data.length < 2048) throw new Error(`${item.name}: подозрительно маленький файл`);
+
+        // Проверяем не обещание, а факт: сколько пикселей в скачанном файле.
+        // Викисклад может отдать под видом уменьшенной копии оригинал, и без
+        // этой проверки разница видна только по весу репозитория.
+        let w = jpegWidth(data);
+        if (w && w > WIDTH * 1.1) {
+            const alt = thumbFromOriginal(item.info.url || item.info.thumburl, WIDTH);
+            if (alt) {
+                try {
+                    const retry = await get(alt);
+                    const rw = jpegWidth(retry);
+                    if (retry.length >= 2048 && rw && rw <= WIDTH * 1.1) {
+                        data = retry; w = rw; widened += 1;
+                    }
+                } catch (e) { /* не вышло — разберёмся ниже */ }
+            }
+        }
+        if (w && w > WIDTH * 1.1) {
+            throw new Error(
+                `${item.name}: просили ${WIDTH} px, а пришло ${w} px.\n` +
+                `  Викисклад отдал не уменьшенную копию: ${item.info.thumburl}\n` +
+                `  Собрать её самим тоже не вышло. Запустите с --width ${w} либо разберитесь с адресом.`
+            );
+        }
+
         fs.writeFileSync(path.join(STAGE_DIR, item.target), data);
         bytes += data.length;
         progress(`  ${i + 1}/${items.length}`);
     }
     progressDone();
-    console.log(`  скачано ${(bytes / 1048576).toFixed(1)} МБ`);
+    if (widened) {
+        console.log(`  у ${widened} файлов Викисклад отдавал оригинал вместо копии — адрес собран заново`);
+    }
+    const widths = new Set(fs.readdirSync(STAGE_DIR)
+        .map((f) => jpegWidth(fs.readFileSync(path.join(STAGE_DIR, f)))).filter(Boolean));
+    console.log(`  скачано ${(bytes / 1048576).toFixed(1)} МБ, ширина ${[...widths].sort((a, b) => a - b).join('/')} px`);
 
     console.log('\n3. Заменяю');
     for (const item of items) {

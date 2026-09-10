@@ -106,8 +106,24 @@ jobs:
           Прогон: $RUN_URL
           BODY
 
-          gh pr create --draft \
-            --base "${{ github.ref_name }}" \
-            --head "$BRANCH" \
-            --title "Картинки колоды со сканов Викисклада ($WIDTH px)" \
-            --body-file /tmp/pr-body.md
+          # Открыть PR получается не всегда: в настройках репозитория может
+          # стоять запрет Actions создавать pull request'ы. Ронять из-за
+          # этого весь прогон нельзя — картинки уже скачаны, проверены и
+          # лежат в ветке. Достаточно сказать, где они и что нажать.
+          if gh pr create --draft \
+               --base "${{ github.ref_name }}" \
+               --head "$BRANCH" \
+               --title "Картинки колоды со сканов Викисклада ($WIDTH px)" \
+               --body-file /tmp/pr-body.md
+          then
+            echo "PR открыт."
+          else
+            echo
+            echo "PR открыть не удалось, но картинки скачаны, проверены и лежат в ветке $BRANCH."
+            echo "Откройте PR вручную:"
+            echo "  ${{ github.server_url }}/${{ github.repository }}/compare/${{ github.ref_name }}...$BRANCH?expand=1"
+            echo
+            echo "Чтобы в следующий раз PR открывался сам, включите:"
+            echo "  Settings -> Actions -> General -> Workflow permissions ->"
+            echo "  «Allow GitHub Actions to create and approve pull requests»"
+          fi
