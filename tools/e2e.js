@@ -112,6 +112,37 @@ const ok = (cond, msg) => {
     const missing = imgs.filter((p) => !fs.existsSync(path.join(ROOT, p)));
     ok(missing.length === 0, `битых путей к картинкам: ${missing.length}`);
 
+    console.log('\n--- честность тасовки ---');
+    // crypto.getRandomValues в jsdom очень медленный (полторы миллисекунды
+    // на тасовку), а проверяем мы алгоритм, а не источник случайности —
+    // на время замера подменяем его быстрым.
+    const realRng = w.crypto.getRandomValues.bind(w.crypto);
+    w.crypto.getRandomValues = (a) => {
+        for (let i = 0; i < a.length; i++) a[i] = Math.floor(Math.random() * 4294967296);
+        return a;
+    };
+
+    const RUNS = 30000;
+    const tally = new Map();
+    for (let r = 0; r < RUNS; r++) {
+        const d = w.Utils.shuffle(deck);
+        const card = d[d.length - 1].name;      // Deck.draw() берёт с конца
+        tally.set(card, (tally.get(card) || 0) + 1);
+    }
+    w.crypto.getRandomValues = realRng;
+
+    const expect = RUNS / deck.length;
+    const chi = [...tally.values()].reduce((s, c) => s + (c - expect) ** 2 / expect, 0)
+              + (deck.length - tally.size) * expect;
+    const skew = Math.max(...tally.values()) / Math.min(...tally.values());
+
+    // 77 степеней свободы: у честной тасовки хи-квадрат около 77, порог взят
+    // с большим запасом. Прежняя тасовка через sort со случайным
+    // компаратором давала здесь тысячи, а перекос между самой частой
+    // и самой редкой картой доходил до 13.9 раза.
+    ok(chi < 200, `карты выпадают равномерно: хи-квадрат ${chi.toFixed(0)} (у честной ~77)`);
+    ok(skew < 2, `перекос между картами ${skew.toFixed(1)}x (у сломанной тасовки был 13.9x)`);
+
     console.log('\n--- галерея ---');
     w.UI.renderDeckGallery();
     const gallery = w.document.getElementById('spread-container').innerHTML;
