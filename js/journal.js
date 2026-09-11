@@ -74,7 +74,7 @@ window.Journal = {
         const known = new Map(this.cards().map(c => [c.code,c]));
         if (new Set(item.cards.map(c => c?.cardId)).size !== item.cards.length) return false;
         if (!item.cards.every(c => c && known.has(c.cardId) && c.img === known.get(c.cardId).img && ['direct','reversed'].includes(c.orientation) && typeof c.name === 'string')) return false;
-        return ['notes','tags','question','spreadName','date','day'].every(k => item[k] == null || (typeof item[k] === 'string' && item[k].length <= 10000));
+        return ['notes','tags','question','spreadName','date','day','firstLook','followUp'].every(k => item[k] == null || (typeof item[k] === 'string' && item[k].length <= 10000));
     },
     async importData(input) {
         const file = input.files[0];
@@ -130,6 +130,6 @@ UI.renderHistory = function() {
     const query = (document.getElementById('journalSearch')?.value || '').toLocaleLowerCase();
     const favorite = document.getElementById('favoritesOnly')?.checked;
     const items = State.history.map((item,index)=>({item,index})).filter(({item})=>(!favorite || item.favorite) &&
-        [item.question,item.notes,item.tags,item.spreadName,item.name,...(Array.isArray(item.cards)?item.cards.map(c=>c.name):[])].join(' ').toLocaleLowerCase().includes(query));
+        [item.question,item.notes,item.firstLook,item.followUp,item.tags,item.spreadName,item.name,...(Array.isArray(item.cards)?item.cards.map(c=>c.name):[])].join(' ').toLocaleLowerCase().includes(query));
     list.innerHTML = items.length ? items.map(({item,index})=>`<li class="journal-row"><div class="row-body"><span class="row-title">${item.favorite ? '★ ' : ''}${this.escape(item.spreadName || 'Расклад')}</span><span class="row-note">${this.escape(item.question || item.name || '')}</span><small>${this.escape(item.date || '')}${item.tags ? ' · '+this.escape(item.tags) : ''}</small>${item.schemaVersion !== 2 ? '<small>Старая запись — полный расклад не сохранялся</small>' : ''}</div>${item.schemaVersion === 2 ? `<button class="text-btn" onclick="Journal.open(${index})">Открыть</button>` : ''}</li>`).join('') : '<li class="empty-msg">'+(query || favorite ? 'Записей не найдено' : 'Здесь появятся ваши расклады')+'</li>';
 };
