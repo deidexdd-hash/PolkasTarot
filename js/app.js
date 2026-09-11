@@ -1,11 +1,26 @@
 // js/app.js - Главная логика приложения
 window.App = {
+    showHome() {
+        document.body.classList.remove('reading-active');
+        document.querySelectorAll('[data-spread]').forEach(el => el.removeAttribute('aria-current'));
+        document.getElementById('spread-container').innerHTML = this.homeMarkup || '';
+        this.setLink(null);
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    },
+    setView(key) {
+        document.body.classList.add('reading-active');
+        document.querySelectorAll('[data-spread]').forEach(el => {
+            if (el.dataset.spread === key) el.setAttribute('aria-current', 'true');
+            else el.removeAttribute('aria-current');
+        });
+    },
     /**
      * Показать всю колоду
      */
     showDeck() {
         if (!this.deckReady()) return;
         try {
+            this.setView("deck");
             UI.renderDeckGallery();
             this.scrollToResults();
         } catch (error) {
@@ -103,6 +118,7 @@ window.App = {
             HistoryStore.save();
             
             // Отображаем результаты
+            this.setView(spreadKey);
             UI.renderSpread(config.title, results, config, { question, day, spreadKey });
 
             // Ссылка держится в hash: он не уходит на сервер, то есть вопрос
@@ -225,7 +241,7 @@ window.App = {
      * Инициализация приложения
      */
     async init() {
-        console.log('🔮 Tarot Professional System initialized');
+        this.homeMarkup = document.getElementById('spread-container').innerHTML;
 
         // История необязательна: что бы с ней ни случилось, колода должна
         // загрузиться. Поэтому её ошибки сюда не поднимаются.

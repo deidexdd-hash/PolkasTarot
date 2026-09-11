@@ -14,12 +14,12 @@ window.UI = {
             const imgPath = item.img || 'img/cards/card_back.jpg';
             const orientation = item.orientation || 'direct';
             const orientationText = orientation === 'reversed' ? 'Перевернутая' : 'Прямая';
-            const orientationEmoji = orientation === 'reversed' ? '🔄' : '✨';
+            const orientationEmoji = orientation === 'reversed' ? '' : '';
 
             return `
                 <div class="card-item ${orientation}" style="grid-area: p${index + 1}">
                     <div class="pos-label">${item.label || `Позиция ${index + 1}`}</div>
-                    <div class="card-flipper" onclick="this.classList.toggle('flipped')" title="Нажмите, чтобы перевернуть карту">
+                    <div class="card-flipper" role="button" tabindex="0" aria-label="Перевернуть карту" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" onclick="this.classList.toggle('flipped')" title="Нажмите, чтобы перевернуть карту">
                         <div class="card-inner">
                             <div class="card-back"></div>
                             <div class="card-front">
@@ -39,7 +39,7 @@ window.UI = {
         // Генерация HTML для интерпретаций
         const infoHtml = cards.map((item, index) => {
             const orientationText = item.orientation === 'reversed' ? 'Перевернутая' : 'Прямая';
-            const orientationColor = item.orientation === 'reversed' ? '#ff6b9d' : '#00d2ff';
+            const orientationColor = item.orientation === 'reversed' ? 'var(--pink)' : 'var(--accent)';
 
             return `
                 <div class="info-block">
@@ -50,9 +50,9 @@ window.UI = {
                     ${UI.renderCorrespondences(item.correspondences)}
                     <div class="info-content-wrapper">
                         <div class="info-main-text">
-                            <p><strong>📖 Общее значение:</strong><br>${item.general || "Описание отсутствует"}</p>
+                            <p><strong> Общее значение:</strong><br>${item.general || "Описание отсутствует"}</p>
                             <div class="advice-box">
-                                <strong>💡 Совет:</strong>
+                                <strong> Совет:</strong>
                                 ${UI.hasValue(item.advice)
                                     ? UI.renderValue(item.advice)
                                     : '<p>Слушайте свою интуицию</p>'}
@@ -60,20 +60,20 @@ window.UI = {
                         </div>
                         <div class="info-sub-details">
                             <p>
-                                <strong>❤️ Любовь и отношения</strong>
+                                <strong> Любовь и отношения</strong>
                                 ${item.love || "Информация отсутствует"}
                             </p>
                             <p>
-                                <strong>💼 Работа и карьера</strong>
+                                <strong> Работа и карьера</strong>
                                 ${item.work || "Информация отсутствует"}
                             </p>
                             <p>
-                                <strong>💰 Финансы</strong>
+                                <strong> Финансы</strong>
                                 ${item.finance || "Информация отсутствует"}
                             </p>
                             ${item.health ? `
                             <p>
-                                <strong>🏥 Здоровье</strong>
+                                <strong> Здоровье</strong>
                                 ${item.health}
                             </p>
                             ` : ''}
@@ -85,7 +85,7 @@ window.UI = {
                             ` : ''}
                             ${item.yes_no ? `
                             <p>
-                                <strong>🔮 Ответ да/нет</strong>
+                                <strong> Ответ да/нет</strong>
                                 ${item.yes_no}
                             </p>
                             ` : ''}
@@ -174,7 +174,7 @@ window.UI = {
             
             <div class="deck-section" data-type="major" style="display: none;">
                 <h3 class="deck-section-title">
-                    🌟 Старшие арканы
+                     Старшие арканы
                     <span class="count">${db.major.length} карт</span>
                 </h3>
                 ${this.renderCardGrid(db.major)}
@@ -182,7 +182,7 @@ window.UI = {
             
             <div class="deck-section" data-type="wands" style="display: none;">
                 <h3 class="deck-section-title">
-                    🔥 Жезлы
+                     Жезлы
                     <span class="count">${db.minor.wands.length} карт</span>
                 </h3>
                 ${this.renderCardGrid(db.minor.wands)}
@@ -190,7 +190,7 @@ window.UI = {
             
             <div class="deck-section" data-type="cups" style="display: none;">
                 <h3 class="deck-section-title">
-                    💧 Кубки
+                     Кубки
                     <span class="count">${db.minor.cups.length} карт</span>
                 </h3>
                 ${this.renderCardGrid(db.minor.cups)}
@@ -198,7 +198,7 @@ window.UI = {
             
             <div class="deck-section" data-type="swords" style="display: none;">
                 <h3 class="deck-section-title">
-                    ⚔️ Мечи
+                     Мечи
                     <span class="count">${db.minor.swords.length} карт</span>
                 </h3>
                 ${this.renderCardGrid(db.minor.swords)}
@@ -206,7 +206,7 @@ window.UI = {
             
             <div class="deck-section" data-type="pentacles" style="display: none;">
                 <h3 class="deck-section-title">
-                    🪙 Пентакли
+                     Пентакли
                     <span class="count">${db.minor.pentacles.length} карт</span>
                 </h3>
                 ${this.renderCardGrid(db.minor.pentacles)}
@@ -446,20 +446,20 @@ window.UI = {
     // развёрнутыми они растягивают карточку до бесконечного скролла.
     // У младших арканов таких полей нет вовсе, и раскрывашка не рисуется.
     MEANING_FIELDS: [
-        { key: 'general',       label: '📖 Общее значение' },
-        { key: 'love',          label: '❤️ Любовь и отношения' },
-        { key: 'relations',     label: '👥 Отношения с окружающими' },
-        { key: 'work',          label: '💼 Работа и карьера' },
-        { key: 'finance',       label: '💰 Финансы' },
-        { key: 'health',        label: '🏥 Здоровье' },
-        { key: 'advice',        label: '💡 Совет' },
-        { key: 'yes_no',        label: '🔮 Ответ да/нет' },
+        { key: 'general',       label: ' Общее значение' },
+        { key: 'love',          label: ' Любовь и отношения' },
+        { key: 'relations',     label: ' Отношения с окружающими' },
+        { key: 'work',          label: ' Работа и карьера' },
+        { key: 'finance',       label: ' Финансы' },
+        { key: 'health',        label: ' Здоровье' },
+        { key: 'advice',        label: ' Совет' },
+        { key: 'yes_no',        label: ' Ответ да/нет' },
 
-        { key: 'symbolism',     label: '🖼️ Символика',                  deep: true },
-        { key: 'psychological', label: '🧠 Психологический аспект',      deep: true },
-        { key: 'spiritual',     label: '🕊️ Духовный аспект',            deep: true },
+        { key: 'symbolism',     label: ' Символика',                  deep: true },
+        { key: 'psychological', label: ' Психологический аспект',      deep: true },
+        { key: 'spiritual',     label: ' Духовный аспект',            deep: true },
         { key: 'time_frames',   label: '⏳ Сроки',                       deep: true },
-        { key: 'combinations',  label: '🔗 Сочетания с другими картами', deep: true }
+        { key: 'combinations',  label: ' Сочетания с другими картами', deep: true }
     ],
 
     renderMeaningItems(meanings, skip) {

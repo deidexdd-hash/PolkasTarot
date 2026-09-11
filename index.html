@@ -4,121 +4,69 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="description" content="Профессиональная система гадания на картах Таро онлайн">
-    <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#171219" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#171219" media="(prefers-color-scheme: dark)">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <title>Таро</title>
+    <title>Polkas Tarot — пространство ваших вопросов</title>
     <!-- Иконка вкладки: браузер запрашивает favicon.ico сам, и без неё
          каждая загрузка страницы давала 404. -->
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%94%AE%3C/text%3E%3C/svg%3E">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/premium.css">
 </head>
 <body>
 
 <header class="nav-bar">
     <div class="nav-row">
-        <span class="nav-title">Таро</span>
-        <button onclick="App.showDeck()" class="nav-action" aria-label="Открыть колоду">
-            <span aria-hidden="true">🎴</span>
-            <span>Колода</span>
-        </button>
+        <button class="brand" onclick="App.showHome()" aria-label="Polkas Tarot — главная">polkas<span>tarot</span><i aria-hidden="true">✳</i></button>
+        <nav class="primary-nav" aria-label="Основная навигация">
+            <button class="nav-action" onclick="App.showHome()">Расклады</button>
+            <button class="nav-action" onclick="App.showDeck()">Колода <span class="nav-count">78</span></button>
+            <button class="nav-action" onclick="document.getElementById('history-sidebar').scrollIntoView({behavior:'smooth'})">История</button>
+        </nav>
+        <span class="nav-edition">ЛИЧНОЕ ПРОСТРАНСТВО</span>
     </div>
-
-    <nav class="spread-strip" role="navigation" aria-label="Выбор расклада">
-        <button onclick="App.doSpread('daily')" class="spread-chip">
-            <span class="chip-icon" aria-hidden="true">☀️</span>
-            <span class="chip-text">Карта дня</span>
-        </button>
-        <button onclick="App.doSpread('threecards')" class="spread-chip">
-            <span class="chip-icon" aria-hidden="true">🔮</span>
-            <span class="chip-text">Три карты</span>
-        </button>
-        <button onclick="App.doSpread('cross')" class="spread-chip">
-            <span class="chip-icon" aria-hidden="true">✨</span>
-            <span class="chip-text">Крест</span>
-        </button>
-        <button onclick="App.doSpread('celtic')" class="spread-chip">
-            <span class="chip-icon" aria-hidden="true">🍀</span>
-            <span class="chip-text">Кельтский крест</span>
-        </button>
-        <button onclick="App.doSpread('pyramid')" class="spread-chip">
-            <span class="chip-icon" aria-hidden="true">💕</span>
-            <span class="chip-text">Любовь</span>
-        </button>
-        <button onclick="App.doSpread('choice')" class="spread-chip">
-            <span class="chip-icon" aria-hidden="true">🔄</span>
-            <span class="chip-text">Выбор</span>
-        </button>
-        <button onclick="App.doSpread('year')" class="spread-chip">
-            <span class="chip-icon" aria-hidden="true">🎯</span>
-            <span class="chip-text">Год вперёд</span>
-        </button>
-        <button onclick="App.doSpread('career')" class="spread-chip">
-            <span class="chip-icon" aria-hidden="true">💼</span>
-            <span class="chip-text">Карьера</span>
-        </button>
-    </nav>
 </header>
-
 <main role="main">
-    <!-- Вопрос задаёт зерно расклада: тот же вопрос в тот же день даёт те же
-         карты, и на такой расклад можно дать ссылку.
-
-         Поле лежит в начале страницы, а не в липкой шапке: в шапке оно
-         занимало бы 48 px экрана всегда, на всех экранах, ради того, чем
-         пользуются изредка. Здесь оно уезжает при прокрутке, но остаётся
-         ровно там, куда возвращаешься начать новый расклад. Внутрь
-         #spread-container его класть нельзя — расклад подменяет его целиком. -->
-    <div class="question-row">
-        <label class="question-field">
-            <span class="question-icon" aria-hidden="true">✍️</span>
-            <input id="questionInput" type="text" maxlength="200" autocomplete="off"
-                   placeholder="Ваш вопрос (необязательно)"
-                   aria-label="Вопрос к картам">
-        </label>
-    </div>
-
-    <div id="spread-container">
-        <section class="welcome-screen">
-            <h1 class="welcome-title">Загляните в карты</h1>
-            <p class="welcome-subtitle">Выберите расклад наверху или откройте всю колоду</p>
-
-            <ul class="inset-list" role="list">
-                <li>
-                    <span class="row-icon" aria-hidden="true">🎴</span>
-                    <span class="row-body">
-                        <span class="row-title">78 карт Райдера-Уэйта</span>
-                        <span class="row-note">Полная колода с подробными толкованиями</span>
-                    </span>
-                </li>
-                <li>
-                    <span class="row-icon" aria-hidden="true">✨</span>
-                    <span class="row-body">
-                        <span class="row-title">8 раскладов</span>
-                        <span class="row-note">От карты дня до Кельтского креста</span>
-                    </span>
-                </li>
-                <li>
-                    <span class="row-icon" aria-hidden="true">📖</span>
-                    <span class="row-body">
-                        <span class="row-title">13 разделов на карту</span>
-                        <span class="row-note">Любовь, работа, финансы, здоровье и другие</span>
-                    </span>
-                </li>
-            </ul>
-        </section>
-    </div>
-
-    <aside id="history-sidebar" role="complementary" aria-label="История сеансов">
-        <div class="section-head">
-            <h2>История</h2>
-            <button onclick="App.clearHistory()" class="text-btn" aria-label="Очистить историю">Очистить</button>
+    <section class="reading-studio" aria-labelledby="studio-title">
+        <div class="studio-copy">
+            <p class="eyebrow">ТАРО · РАЙДЕР — УЭЙТ — СМИТ</p>
+            <h1 id="studio-title">Всё начинается<br>с <em>вашего вопроса.</em></h1>
+            <p class="studio-description">Сделайте паузу. Прислушайтесь к себе.<br>Выберите расклад и откройте карты.</p>
+            <div class="question-row">
+                <label class="question-field" for="questionInput">
+                    <span class="field-caption">О ЧЁМ ВЫ ХОТИТЕ СПРОСИТЬ?</span>
+                    <input id="questionInput" type="text" maxlength="200" autocomplete="off" placeholder="Ваш вопрос — если он есть" aria-label="Вопрос к картам">
+                </label>
+            </div>
+            <button class="primary-button" onclick="App.doSpread('daily')">Открыть карту дня <span aria-hidden="true">↗</span></button>
+            <span class="button-note">Одна карта. Фокус на сегодня.</span>
         </div>
-        <ul id="historyList" class="inset-list"></ul>
-    </aside>
+        <div class="studio-art" aria-label="Карты Звезда, Солнце и Луна из колоды Райдера — Уэйта">
+            <div class="art-orbit" aria-hidden="true"></div>
+            <img class="art-card art-left" src="img/cards/maj17.jpg" alt="Звезда" width="350" height="600">
+            <img class="art-card art-right" src="img/cards/maj18.jpg" alt="Луна" width="350" height="600">
+            <img class="art-card art-center" src="img/cards/maj19.jpg" alt="Солнце" width="350" height="600">
+            <span class="art-caption">THE ART OF LOOKING WITHIN</span>
+        </div>
+    </section>
+    <section class="spread-selection" aria-labelledby="selection-title">
+        <div class="selection-heading"><h2 id="selection-title">Ваш расклад</h2><span>08 способов посмотреть глубже</span></div>
+        <nav class="spread-strip" aria-label="Выбор расклада">
+<button onclick="App.doSpread('daily')" class="spread-chip" data-spread="daily"><span class="chip-number">01</span><span class="chip-text">Карта дня</span><span class="chip-note">1 карта · Здесь и сейчас</span><span class="chip-arrow" aria-hidden="true">↗</span></button>
+<button onclick="App.doSpread('threecards')" class="spread-chip" data-spread="threecards"><span class="chip-number">02</span><span class="chip-text">Три карты</span><span class="chip-note">3 карты · Взгляд на ситуацию</span><span class="chip-arrow" aria-hidden="true">↗</span></button>
+<button onclick="App.doSpread('cross')" class="spread-chip" data-spread="cross"><span class="chip-number">03</span><span class="chip-text">Крест</span><span class="chip-note">4 карты · Найти опору</span><span class="chip-arrow" aria-hidden="true">↗</span></button>
+<button onclick="App.doSpread('celtic')" class="spread-chip" data-spread="celtic"><span class="chip-number">04</span><span class="chip-text">Кельтский крест</span><span class="chip-note">10 карт · Полная картина</span><span class="chip-arrow" aria-hidden="true">↗</span></button>
+<button onclick="App.doSpread('pyramid')" class="spread-chip" data-spread="pyramid"><span class="chip-number">05</span><span class="chip-text">Любовь</span><span class="chip-note">4 карты · Между вами</span><span class="chip-arrow" aria-hidden="true">↗</span></button>
+<button onclick="App.doSpread('choice')" class="spread-chip" data-spread="choice"><span class="chip-number">06</span><span class="chip-text">Выбор</span><span class="chip-note">5 карт · Два пути</span><span class="chip-arrow" aria-hidden="true">↗</span></button>
+<button onclick="App.doSpread('year')" class="spread-chip" data-spread="year"><span class="chip-number">07</span><span class="chip-text">Год вперёд</span><span class="chip-note">12 карт · Ваши перспективы</span><span class="chip-arrow" aria-hidden="true">↗</span></button>
+<button onclick="App.doSpread('career')" class="spread-chip" data-spread="career"><span class="chip-number">08</span><span class="chip-text">Карьера</span><span class="chip-note">5 карт · Движение к цели</span><span class="chip-arrow" aria-hidden="true">↗</span></button>
+        </nav>
+    </section>
+    <div id="spread-container"><section class="welcome-screen"><span class="welcome-mark" aria-hidden="true">✳</span><p>У каждого вопроса — своя глубина.</p><span>Выберите расклад, чтобы начать.</span></section></div>
+    <aside id="history-sidebar" role="complementary" aria-label="История сеансов"><div class="section-head"><h2>Ваши сеансы</h2><button onclick="App.clearHistory()" class="text-btn" aria-label="Очистить историю">Очистить</button></div><ul id="historyList" class="inset-list"></ul></aside>
 </main>
-
 <!-- Карточка карты: выезжающий снизу лист -->
 <div id="cardModal" class="sheet-backdrop" onclick="UI.closeCard()">
     <div class="sheet" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-label="Значение карты">
@@ -129,7 +77,7 @@
 </div>
 
 <footer role="contentinfo">
-    <p>Для развлекательных целей</p>
+    <span class="footer-brand">polkas tarot</span><p>Для размышления и развлечения</p><span>РАЙДЕР — УЭЙТ — СМИТ · 78 КАРТ</span>
 </footer>
 
 <!-- Core Scripts -->
