@@ -42,6 +42,7 @@ window.App = {
             }
 
             const opts = options || {};
+            const reversals = opts.reversals != null ? !!opts.reversals : (window.Academy?.state.settings.reversals !== false);
             if (opts.manualCards && !Journal.validManual(opts.manualCards, config.count)) {
                 alert('Выберите разные карты для всех позиций.');
                 return;
@@ -76,7 +77,7 @@ window.App = {
                     continue;
                 }
 
-                const orientation = cardData.reversed ? 'reversed' : 'direct';
+                const orientation = cardData.reversed && (opts.manualCards || reversals) ? 'reversed' : 'direct';
 
                 // Толкования берутся из карты: data/cards.json содержит
                 // полный текст для всех 78 карт в обоих положениях.
@@ -117,7 +118,7 @@ window.App = {
 
             // Ссылка держится в hash: он не уходит на сервер, то есть вопрос
             // остаётся между человеком и тем, кому он сам дал ссылку.
-            this.setLink(question && !opts.manualCards ? { question, day, spreadKey } : null);
+            this.setLink(question && !opts.manualCards ? { question, day, spreadKey, reversals } : null);
             UI.renderHistory();
             
             // Скроллим к результатам
@@ -140,7 +141,7 @@ window.App = {
     setLink(state) {
         const hash = state
             ? '#' + new URLSearchParams({
-                s: state.spreadKey, d: state.day, q: state.question
+                s: state.spreadKey, d: state.day, q: state.question, r: state.reversals === false ? '0' : '1'
             }).toString()
             : '';
 
@@ -173,6 +174,7 @@ window.App = {
         return {
             spreadKey,
             question: (p.get('q') || '').slice(0, 200),
+            reversals: p.get('r') !== '0',
             day: /^\d{4}-\d{2}-\d{2}$/.test(p.get('d') || '') ? p.get('d') : this.today()
         };
     },
@@ -264,7 +266,7 @@ window.App = {
         // Пришли по ссылке на расклад — сразу его и показываем.
         const link = this.readLink();
         if (link) {
-            this.doSpread(link.spreadKey, { question: link.question, day: link.day });
+            this.doSpread(link.spreadKey, { question: link.question, day: link.day, reversals: link.reversals });
             const field = document.getElementById('questionInput');
             if (field) field.value = link.question;
         }
