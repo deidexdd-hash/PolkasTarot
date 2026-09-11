@@ -1,32 +1,28 @@
-// js/history.js
+// Preserve the original history key as a migration backup.
 window.HistoryStore = (() => {
-  const KEY = 'tarot-history';
-
-  // localStorage доступен не всегда: приватный режим, запрет на данные сайта,
-  // открытие страницы с диска. Обращение к нему тогда бросает исключение.
-  // История — вещь необязательная, и ронять из-за неё загрузку колоды нельзя.
+  const KEY = 'tarot-history-v2';
   function load() {
     try {
-      const data = localStorage.getItem(KEY);
-      if (data && window.State) {
-        const parsed = JSON.parse(data);
-        if (Array.isArray(parsed)) {
-          State.history = parsed;
-        }
-      }
+      const raw = localStorage.getItem(KEY);
+      const data = JSON.parse(raw === null ? (localStorage.getItem('tarot-history') || '[]') : raw);
+      if (!Array.isArray(data)) throw new Error('Неверный формат дневника');
+      State.history = data.filter(x => x && typeof x === 'object');
     } catch (error) {
-      console.warn('История недоступна, продолжаем без неё:', error.message);
+      console.warn('Дневник недоступен:', error.message);
+      const el = document.getElementById('journalStatus');
+      if (el) el.textContent = 'Не удалось прочитать дневник. Экспортируйте доступные записи перед очисткой данных браузера.';
     }
   }
-
   function save() {
-    if (!window.State) return;
     try {
       localStorage.setItem(KEY, JSON.stringify(State.history));
+      return true;
     } catch (error) {
-      console.warn('Не удалось сохранить историю:', error.message);
+      console.warn('Не удалось сохранить дневник:', error.message);
+      const el = document.getElementById('journalStatus');
+      if (el) el.textContent = 'Изменения только в этой вкладке: хранилище недоступно или заполнено. Сделайте экспорт.';
+      return false;
     }
   }
-
-  return { load, save };
+  return {load, save};
 })();
