@@ -66,6 +66,7 @@ window.Journal = {
         this.status('Экспорт подготовлен. Файл содержит ваши вопросы и заметки.');
     },
     validate(item) {
+        if (item?.dailyPractice != null && typeof item.dailyPractice !== 'boolean') return false;
         if (!item || item.schemaVersion !== 2 || typeof item.id !== 'string' || item.id.length > 100 || !Spreads.types[item.spreadKey]) return false;
         if (!Array.isArray(item.cards) || item.cards.length < 1 || item.cards.length > 12) return false;
         const cfg = item.config;

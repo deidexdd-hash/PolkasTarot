@@ -35,3 +35,21 @@ A.saveReflection('firstLook','firstLookNote');assert.equal(ctx.State.history[0].
 A.currentCode=cards[77].code;get('personalCardNote').value='Моя заметка';A.saveCardNote();A.read();assert.equal(A.state.notes[cards[77].code],'Моя заметка');
 denied=true;assert.equal(A.save(),false);A.saveCardNote();assert(get('cardNoteStatus').textContent.includes('Не сохранено'));
 console.log('PASS: 22 study cards / 66 symbols; search and suit filters; persistence for all 78 card notes; training scheduling and duplicate-rating guard; reversals and legacy/shared links; manual orientation; dated statistics; comparison; reflection escaping; storage failures');
+
+// Daily snapshots persist across reloads and local calendar days.
+denied=false;ctx.State.history=[];
+vm.runInContext(fs.readFileSync(path.join(root,'js/daily.js'),'utf8'),ctx);
+ctx.Daily.decorate=()=>{};
+ctx.App.today=()=> '2026-09-11';
+ctx.App.doSpread('daily');
+assert.equal(ctx.State.history.length,1);assert.equal(ctx.State.history[0].dailyPractice,true);
+const dailyId=ctx.State.history[0].id;
+ctx.State.history[0].firstLook='Утро';ctx.State.history[0].followUp='Вечер';ctx.HistoryStore.save();
+ctx.State.history=[];ctx.HistoryStore.load();ctx.App.doSpread('daily');
+assert.equal(ctx.State.history.length,1);assert.equal(ctx.State.history[0].id,dailyId);
+assert.equal(ctx.State.history[0].followUp,'Вечер');
+ctx.App.today=()=> '2026-09-12';ctx.App.doSpread('daily');assert.equal(ctx.State.history.length,2);
+ctx.App.doSpread('daily',{question:'Shared',day:'2026-09-12'});assert.equal(ctx.State.history.length,3);
+assert.equal(ctx.State.history[0].dailyPractice,undefined,'Shared readings do not replace daily practice');
+denied=true;ctx.App.today=()=> '2026-09-13';ctx.App.doSpread('daily');ctx.App.doSpread('daily');assert.equal(ctx.State.history.length,4);
+console.log('PASS: daily reuse, reload, morning/evening persistence, midnight, shared reading isolation, denied storage');
