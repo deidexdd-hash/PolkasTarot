@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="css/premium.css">
     <link rel="stylesheet" href="css/academy.css">
     <link rel="stylesheet" href="css/practice.css">
+    <link rel="stylesheet" href="css/book.css">
 </head>
 <body>
 
@@ -27,6 +28,7 @@
             <button class="nav-action" onclick="App.showDeck()">Колода <span class="nav-count">78</span></button>
             <button class="nav-action" onclick="document.getElementById('history-sidebar').scrollIntoView({behavior:'smooth'})">История</button>
         </nav>
+        <button class="nav-action" onclick="Book.open()">Книга</button>
         <button class="nav-action academy-nav" onclick="Academy.home()">Изучать Таро ↗</button>
     </div>
 </header>
@@ -53,7 +55,7 @@
             <span class="art-caption">THE ART OF LOOKING WITHIN</span>
         </div>
     </section>
-    <div class="practice-toolbar"><button class="text-btn" onclick="Academy.home()">Обучение</button><button class="text-btn" onclick="Academy.compare()">Сравнить карты</button><button class="text-btn" onclick="Academy.stats()">Статистика</button><details class="practice-settings"><summary>Настройки практики</summary><label><input id="useReversals" type="checkbox" checked onchange="Academy.setSetting('reversals',this.checked)"> Перевёрнутые карты в новых раскладах</label><label><input id="firstLookSetting" type="checkbox" onchange="Academy.setSetting('firstLook',this.checked)"> Сначала мой взгляд, потом толкование</label><button class="text-btn" onclick="Academy.backup()">Скачать копию обучения</button><label class="import-label">Восстановить обучение<input type="file" accept=".json,application/json" onchange="Academy.restore(this)"></label><p>Настройки не меняют старые расклады. Копия обучения содержит личные ассоциации и прогресс; дневник экспортируется отдельно.</p></details></div><p id="academyStatus" role="status" aria-live="polite"></p><div class="manual-entry"><button class="text-btn" onclick="Journal.showManual()">У меня своя колода — ввести карты ↗</button></div><section class="spread-selection" aria-labelledby="selection-title">
+    <div class="practice-toolbar"><button class="text-btn" onclick="Book.open()">Карта как зеркало · книга</button><button class="text-btn" onclick="Academy.home()">Обучение</button><button class="text-btn" onclick="Academy.compare()">Сравнить карты</button><button class="text-btn" onclick="Academy.stats()">Статистика</button><details class="practice-settings"><summary>Настройки практики</summary><label><input id="useReversals" type="checkbox" checked onchange="Academy.setSetting('reversals',this.checked)"> Перевёрнутые карты в новых раскладах</label><label><input id="firstLookSetting" type="checkbox" onchange="Academy.setSetting('firstLook',this.checked)"> Сначала мой взгляд, потом толкование</label><button class="text-btn" onclick="Academy.backup()">Скачать копию обучения</button><label class="import-label">Восстановить обучение<input type="file" accept=".json,application/json" onchange="Academy.restore(this)"></label><p>Настройки не меняют старые расклады. Копия обучения содержит личные ассоциации и прогресс; дневник экспортируется отдельно.</p></details></div><p id="academyStatus" role="status" aria-live="polite"></p><div class="manual-entry"><button class="text-btn" onclick="Journal.showManual()">У меня своя колода — ввести карты ↗</button></div><section class="spread-selection" aria-labelledby="selection-title">
         <div class="selection-heading"><h2 id="selection-title">Ваш расклад</h2><span>08 способов посмотреть глубже</span></div>
         <nav class="spread-strip" aria-label="Выбор расклада">
 <button onclick="App.doSpread('daily')" class="spread-chip" data-spread="daily"><span class="chip-number">01</span><span class="chip-text">Карта дня</span><span class="chip-note">1 карта · Здесь и сейчас</span><span class="chip-arrow" aria-hidden="true">↗</span></button>
@@ -108,6 +110,7 @@
 <script src="js/knowledge.js"></script>
 <script src="js/academy.js"></script>
 <script src="js/daily.js"></script>
+<script src="js/book.js"></script>
 
 </body>
 </html>

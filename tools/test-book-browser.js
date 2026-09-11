@@ -1,0 +1,31 @@
+const path=require('node:path'),fs=require('node:fs');
+const {chromium}=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES?path.join(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES,'playwright'):'playwright');
+const out=path.resolve(__dirname,'../screenshots');fs.mkdirSync(out,{recursive:true});
+const assert=require('node:assert/strict');
+(async()=>{
+ const browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH}:{})});const page=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1});
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto('http://127.0.0.1:8765');await page.waitForFunction(()=>DeckLoader.loaded);
+ await page.evaluate(()=>Book.open());await page.waitForSelector('.book-row');assert.equal(await page.locator('.book-row').count(),36);
+ await page.locator('#bookSearch').fill('геомантия');assert((await page.locator('.book-row').count())>0);
+ await page.evaluate(()=>Book.chapter('12'));assert.equal(await page.locator('.book-card-link').count(),22);
+ assert(await page.locator('.book-actions .primary-button').isVisible());
+ await page.evaluate(()=>Book.forCard('major_arcana.17'));await page.waitForFunction(()=>Book.position.block>0);
+ assert((await page.url()).includes('book=12'));
+ await page.evaluate(()=>Book.practice());await page.locator('#mirror-firstLook').fill('<img src=x onerror=alert(1)> Мои три детали');await page.locator('#mirror-notes').fill('Личная ассоциация');
+ 
+ await page.locator('.book-actions .primary-button').click();assert(await page.locator('#mirrorStatus').textContent().then(t=>t.includes('сохранена')));
+ assert(await page.evaluate(()=>Journal.validate(State.history[0])));
+ await page.reload();await page.waitForFunction(()=>DeckLoader.loaded);await page.evaluate(()=>Journal.open(0));
+ assert.equal(await page.locator('#mirror-notes').inputValue(),'Личная ассоциация');assert.equal(await page.locator('#mirror-firstLook').inputValue(),'<img src=x onerror=alert(1)> Мои три детали');assert.equal(await page.locator('#bookContent img').count(),1);
+ await page.locator('#mirror-followUp').fill('Небольшой шаг');await page.locator('.book-actions .primary-button').click();assert.equal(await page.evaluate(()=>State.history.length),1);
+ await page.screenshot({path:path.join(out,'book-practice-mobile.png'),fullPage:false});
+ await page.evaluate(()=>Book.open('12',5));await page.waitForSelector('.book-prose');await page.screenshot({path:path.join(out,'book-reader-mobile.png')});
+ assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Mobile overflow');
+ await page.setViewportSize({width:1280,height:900});await page.evaluate(()=>Book.open());await page.waitForSelector('.book-row');await page.screenshot({path:path.join(out,'book-desktop.png')});
+ assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Desktop overflow');
+ await page.goto('http://127.0.0.1:8765/#book=13');await page.waitForSelector('.book-prose');assert.equal(await page.evaluate(()=>Book.current.id),'13');
+ const denied=await browser.newPage();await denied.addInitScript(()=>{Storage.prototype.setItem=function(){throw Error('denied');};});await denied.goto('http://127.0.0.1:8765/#book=12');await denied.waitForSelector('.book-prose');assert((await denied.locator('#bookStatus').textContent()).includes('не сохранено'));
+ await denied.waitForFunction(()=>DeckLoader.loaded);await denied.evaluate(()=>Book.practice());await denied.locator('.book-actions .primary-button').click();assert((await denied.locator('#mirrorStatus').textContent()).includes('Не сохранено'));
+ assert.deepEqual(errors,[]);console.log('PASS: manuscript, card links, search, deep links, practice persistence and escaping, duplicate save, denied storage, mobile/desktop overflow');await browser.close();
+})().catch(e=>{console.error(e);process.exit(1);});
