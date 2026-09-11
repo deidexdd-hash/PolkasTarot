@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/premium.css">
     <link rel="stylesheet" href="css/academy.css">
+    <link rel="stylesheet" href="css/practice.css">
 </head>
 <body>
 
@@ -68,6 +69,13 @@
     <div id="spread-container"><section class="welcome-screen"><span class="welcome-mark" aria-hidden="true">✳</span><p>У каждого вопроса — своя глубина.</p><span>Выберите расклад, чтобы начать.</span></section></div>
     <aside id="history-sidebar" role="complementary" aria-label="История сеансов"><div class="section-head"><h2>Ваши сеансы</h2><button onclick="App.clearHistory()" class="text-btn" aria-label="Очистить историю">Очистить</button></div><div class="journal-tools"><input type="search" id="journalSearch" placeholder="Найти вопрос, карту или заметку" aria-label="Поиск в дневнике" oninput="UI.renderHistory()"><label class="favorite-filter"><input type="checkbox" id="favoritesOnly" onchange="UI.renderHistory()"> Избранное</label><button class="text-btn" onclick="Journal.exportData()">Экспорт</button><label class="import-label">Импорт<input type="file" accept=".json,application/json" onchange="Journal.importData(this)"></label></div><p id="journalStatus" role="status" aria-live="polite"></p><ul id="historyList" class="inset-list"></ul></aside>
 </main>
+<nav class="mobile-dock" aria-label="Разделы сайта">
+<button data-section="home" onclick="App.showHome()">Расклады</button>
+<button data-section="daily" onclick="Daily.open()">Сегодня</button>
+<button data-section="deck" onclick="App.showDeck()">Атлас</button>
+<button data-section="academy" onclick="Academy.home()">Учиться</button>
+<button data-section="journal" onclick="Daily.journal()">Дневник</button>
+</nav>
 <!-- Карточка карты: выезжающий снизу лист -->
 <div id="cardModal" class="sheet-backdrop" onclick="UI.closeCard()">
     <div class="sheet" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-label="Значение карты">
@@ -99,6 +107,7 @@
 <script src="js/journal.js"></script>
 <script src="js/knowledge.js"></script>
 <script src="js/academy.js"></script>
+<script src="js/daily.js"></script>
 
 </body>
 </html>

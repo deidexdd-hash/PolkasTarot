@@ -34,6 +34,7 @@ window.App = {
      */
     doSpread(spreadKey, options) {
         if (!this.deckReady()) return;
+        if (spreadKey === 'daily' && !options && window.Daily) return Daily.open();
         try {
             const config = Spreads.types[spreadKey];
             if (!config) {
@@ -108,6 +109,7 @@ window.App = {
 
             const session = Journal.create(spreadKey, results, config, question, day,
                 opts.manualCards ? 'manual' : 'virtual');
+            if (opts.dailyPractice) session.dailyPractice = true;
             State.history.unshift(session);
             const saved = HistoryStore.save();
 

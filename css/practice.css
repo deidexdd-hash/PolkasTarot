@@ -1,0 +1,26 @@
+/* Shared surfaces for the atlas, diary and daily ritual. */
+.academy,.reading-editor,.first-look-panel,.follow-up-panel,.info-block{--practice-radius:18px;border-radius:var(--practice-radius)}
+.academy-tiles button,.comparison-grid article,.stat-cards>div{background:var(--surface-sunk);border-radius:18px}
+.academy-tiles button:hover,.academy-tiles button:focus-visible{border-color:var(--accent)}
+.daily-heading{margin:28px 0;padding:24px 0;border-bottom:1px solid var(--separator)}
+.daily-heading .eyebrow{margin-bottom:12px}.daily-heading p{font-size:16px}.daily-heading span{display:block;max-width:650px;font-size:14px;line-height:1.7;color:var(--label-2)}
+.mobile-dock{display:none}
+button,a,input,textarea,select,summary{-webkit-tap-highlight-color:transparent}
+button:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.academy,.comparison-grid article,.reading-editor,.journal-row .row-body{min-width:0;overflow-wrap:anywhere}
+#history-sidebar,#spread-container{scroll-margin-top:110px}
+@media(max-width:699px){
+ body{padding-bottom:calc(82px + env(safe-area-inset-bottom))}
+ .mobile-dock{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));position:fixed;bottom:0;left:0;right:0;z-index:90;padding:8px max(8px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));background:var(--bg);border-top:1px solid var(--separator);box-shadow:0 -12px 30px #0003}
+ .mobile-dock button{min-width:0;min-height:48px;padding:8px 2px;border:0;border-radius:12px;background:transparent;color:var(--label-2);font:inherit;font-size:14px;line-height:1.4;overflow-wrap:anywhere}
+ .mobile-dock button[aria-current]{color:var(--accent);background:var(--accent-soft)}
+ .keyboard-open .mobile-dock{display:none}
+ .primary-nav{display:none!important}.nav-row{justify-content:space-between;flex-wrap:nowrap;min-height:68px}
+ .academy-tiles strong{font-size:24px;line-height:1.2}.academy-tiles button{min-height:128px}
+ .practice-toolbar{padding-top:18px}.practice-toolbar>.text-btn{min-height:44px}
+ .stat-cards{grid-template-columns:repeat(3,minmax(0,1fr))}.stat-cards span{overflow-wrap:anywhere}
+ .journal-tools input[type=search]{min-width:0}.sheet{overscroll-behavior:contain}.sheet-backdrop{z-index:200}
+ textarea,input,select{font-size:16px!important}textarea{scroll-margin-block:100px}
+ .daily-heading{margin-top:18px}.studio-art{height:230px}.studio-copy h1{font-size:clamp(34px,8vw,48px)}
+}
+@media(max-width:360px){.academy-tiles{grid-template-columns:1fr}.mobile-dock button{font-size:14px}.stat-cards{grid-template-columns:1fr}.stat-cards>div{flex-direction:row;gap:16px;align-items:center}}
