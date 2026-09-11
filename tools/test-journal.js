@@ -31,7 +31,8 @@ for(const key of Object.keys(ctx.Spreads.types)) {
 assert.equal(ctx.State.history.length,9);assert.equal(storage.get('tarot-history'),JSON.stringify([legacy]));
 const before=JSON.stringify(ctx.State.history[0].cards);
 ctx.State.history=[];ctx.HistoryStore.load();ctx.Journal.open(0);
-assert.equal(JSON.stringify(rendered.cards),before);assert.equal(ctx.State.history.length,9);
+assert.equal(JSON.stringify(ctx.State.history[0].cards),before,'Stored snapshot is unchanged');
+assert.equal(JSON.stringify(rendered.cards),JSON.stringify(ctx.Journal.safe(JSON.parse(before))),'Render boundary escapes text');assert.equal(ctx.State.history.length,9);
 get('readingNotes').value='<script>alert(1)</script>';get('readingTags').value='работа';get('readingFavorite').checked=true;
 ctx.Journal.draft();ctx.State.history=[];ctx.HistoryStore.load();assert.equal(ctx.State.history[0].notes,'<script>alert(1)</script>');
 ctx.Journal.open(0);assert.equal(ctx.State.history[0].favorite,true);
