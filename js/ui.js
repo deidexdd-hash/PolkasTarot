@@ -109,7 +109,7 @@ window.UI = {
         const askedHtml = info.question ? `
             <div class="spread-asked">
                 <p class="asked-text">«${this.escape(info.question)}»</p>
-                <button type="button" class="text-btn" onclick="App.shareSpread()">Ссылка на расклад</button>
+                ${info.manual ? '' : '<button type="button" class="text-btn" onclick="App.shareSpread()">Ссылка на расклад</button>'}
                 <span id="shareNote" class="share-note" role="status" aria-live="polite"></span>
             </div>
         ` : '';

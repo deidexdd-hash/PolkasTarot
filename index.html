@@ -51,7 +51,7 @@
             <span class="art-caption">THE ART OF LOOKING WITHIN</span>
         </div>
     </section>
-    <section class="spread-selection" aria-labelledby="selection-title">
+    <div class="manual-entry"><button class="text-btn" onclick="Journal.showManual()">У меня своя колода — ввести карты ↗</button></div><section class="spread-selection" aria-labelledby="selection-title">
         <div class="selection-heading"><h2 id="selection-title">Ваш расклад</h2><span>08 способов посмотреть глубже</span></div>
         <nav class="spread-strip" aria-label="Выбор расклада">
 <button onclick="App.doSpread('daily')" class="spread-chip" data-spread="daily"><span class="chip-number">01</span><span class="chip-text">Карта дня</span><span class="chip-note">1 карта · Здесь и сейчас</span><span class="chip-arrow" aria-hidden="true">↗</span></button>
@@ -65,7 +65,7 @@
         </nav>
     </section>
     <div id="spread-container"><section class="welcome-screen"><span class="welcome-mark" aria-hidden="true">✳</span><p>У каждого вопроса — своя глубина.</p><span>Выберите расклад, чтобы начать.</span></section></div>
-    <aside id="history-sidebar" role="complementary" aria-label="История сеансов"><div class="section-head"><h2>Ваши сеансы</h2><button onclick="App.clearHistory()" class="text-btn" aria-label="Очистить историю">Очистить</button></div><ul id="historyList" class="inset-list"></ul></aside>
+    <aside id="history-sidebar" role="complementary" aria-label="История сеансов"><div class="section-head"><h2>Ваши сеансы</h2><button onclick="App.clearHistory()" class="text-btn" aria-label="Очистить историю">Очистить</button></div><div class="journal-tools"><input type="search" id="journalSearch" placeholder="Найти вопрос, карту или заметку" aria-label="Поиск в дневнике" oninput="UI.renderHistory()"><label class="favorite-filter"><input type="checkbox" id="favoritesOnly" onchange="UI.renderHistory()"> Избранное</label><button class="text-btn" onclick="Journal.exportData()">Экспорт</button><label class="import-label">Импорт<input type="file" accept=".json,application/json" onchange="Journal.importData(this)"></label></div><p id="journalStatus" role="status" aria-live="polite"></p><ul id="historyList" class="inset-list"></ul></aside>
 </main>
 <!-- Карточка карты: выезжающий снизу лист -->
 <div id="cardModal" class="sheet-backdrop" onclick="UI.closeCard()">
@@ -95,6 +95,7 @@
 <script src="js/history.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/app.js"></script>
+<script src="js/journal.js"></script>
 
 </body>
 </html>

@@ -42,6 +42,10 @@ window.App = {
             }
 
             const opts = options || {};
+            if (opts.manualCards && !Journal.validManual(opts.manualCards, config.count)) {
+                alert('Выберите разные карты для всех позиций.');
+                return;
+            }
             // Вопрос берём из поля, если его не передали явно (по ссылке).
             const field = document.getElementById('questionInput');
             const question = String(
@@ -66,7 +70,7 @@ window.App = {
             // Тянем карты
             const results = [];
             for (let i = 0; i < config.count; i++) {
-                const cardData = Deck.draw(fullDeck, rng);
+                const cardData = opts.manualCards ? opts.manualCards[i] : Deck.draw(fullDeck, rng);
                 if (!cardData) {
                     console.error('Ошибка при вытягивании карты');
                     continue;
@@ -81,6 +85,7 @@ window.App = {
                     : {};
 
                 results.push({
+                    cardId: cardData.code,
                     name: cardData.name,
                     img: cardData.img,
                     orientation: orientation,
@@ -100,30 +105,19 @@ window.App = {
                 });
             }
 
-            // Сохраняем в историю
-            State.history.unshift({
-                name: results[0].name,
-                date: Utils.formatDate(),
-                spreadName: config.title,
-                spreadKey: spreadKey,
-                question: question || null,
-                cardsCount: results.length
-            });
+            const session = Journal.create(spreadKey, results, config, question, day,
+                opts.manualCards ? 'manual' : 'virtual');
+            State.history.unshift(session);
+            const saved = HistoryStore.save();
 
-            // Ограничиваем историю 50 записями
-            if (State.history.length > 50) {
-                State.history = State.history.slice(0, 50);
-            }
-
-            HistoryStore.save();
-            
             // Отображаем результаты
             this.setView(spreadKey);
-            UI.renderSpread(config.title, results, config, { question, day, spreadKey });
+            UI.renderSpread(config.title, results, config, { question, day, spreadKey, manual: !!opts.manualCards });
+            Journal.showEditor(session, saved);
 
             // Ссылка держится в hash: он не уходит на сервер, то есть вопрос
             // остаётся между человеком и тем, кому он сам дал ссылку.
-            this.setLink(question ? { question, day, spreadKey } : null);
+            this.setLink(question && !opts.manualCards ? { question, day, spreadKey } : null);
             UI.renderHistory();
             
             // Скроллим к результатам
