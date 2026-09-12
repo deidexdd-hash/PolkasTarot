@@ -14,6 +14,7 @@ const assert=require('node:assert/strict');
  assert((await page.url()).includes('book=12'));
  await page.evaluate(()=>Book.practice());await page.locator('#mirror-firstLook').fill('<img src=x onerror=alert(1)> Мои три детали');await page.locator('#mirror-notes').fill('Личная ассоциация');
  
+ assert.equal(await page.evaluate(()=>State.history.length),1,'Typing creates one autosaved practice');
  await page.locator('.book-actions .primary-button').click();assert(await page.locator('#mirrorStatus').textContent().then(t=>t.includes('сохранена')));
  assert(await page.evaluate(()=>Journal.validate(State.history[0])));
  await page.reload();await page.waitForFunction(()=>DeckLoader.loaded);await page.evaluate(()=>Journal.open(0));
