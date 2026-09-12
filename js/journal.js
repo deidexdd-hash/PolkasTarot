@@ -66,6 +66,8 @@ window.Journal = {
         this.status('Экспорт подготовлен. Файл содержит ваши вопросы и заметки.');
     },
     validate(item) {
+        if (item?.bookPractice != null && typeof item.bookPractice !== 'boolean') return false;
+        if (item?.bookPractice === true && (!/^(prologue|epilogue|[1-9]|[12]\d|3[0-4])$/.test(item.bookChapter || '') || item.spreadKey !== 'daily' || item.cards?.length !== 1)) return false;
         if (item?.dailyPractice != null && typeof item.dailyPractice !== 'boolean') return false;
         if (!item || item.schemaVersion !== 2 || typeof item.id !== 'string' || item.id.length > 100 || !Spreads.types[item.spreadKey]) return false;
         if (!Array.isArray(item.cards) || item.cards.length < 1 || item.cards.length > 12) return false;

@@ -250,6 +250,10 @@ window.App = {
             console.warn('Не удалось восстановить историю:', error);
         }
 
+        const bookLink = new URLSearchParams(location.hash.slice(1));
+        const openingBook = bookLink.has('book') && window.Book;
+        if (openingBook) Book.open(bookLink.get('book') === 'contents' ? undefined : bookLink.get('book'), Number(bookLink.get('b')) || 0);
+
         // Колода приходит из data/cards.json, то есть асинхронно:
         // до её загрузки расклады и галерея недоступны.
         try {
@@ -257,7 +261,7 @@ window.App = {
         } catch (error) {
             console.error('Не удалось загрузить колоду:', error);
             const container = document.getElementById('spread-container');
-            if (container) {
+            if (container && !openingBook) {
                 container.innerHTML =
                     '<p style="text-align: center; padding: 40px;">' +
                     'Не удалось загрузить data/cards.json. Проверьте консоль (F12).</p>';
