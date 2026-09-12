@@ -66,6 +66,11 @@ window.Journal = {
         this.status('Экспорт подготовлен. Файл содержит ваши вопросы и заметки.');
     },
     validate(item) {
+        if (item?.bookExercise != null) {
+            const ex=item.bookExercise;
+            if(item.bookPractice!==true||!ex||typeof ex!=='object'||!Array.isArray(ex.steps)||ex.steps.length<1||ex.steps.length>10||
+                !ex.steps.every(s=>typeof s==='string'&&s.length<=4000)||typeof ex.closing!=='string'||ex.closing.length>2000)return false;
+        }
         if (item?.bookPractice != null && typeof item.bookPractice !== 'boolean') return false;
         if (item?.bookPractice === true && (!/^(prologue|epilogue|[1-9]|[12]\d|3[0-4])$/.test(item.bookChapter || '') || item.spreadKey !== 'daily' || item.cards?.length !== 1)) return false;
         if (item?.dailyPractice != null && typeof item.dailyPractice !== 'boolean') return false;
