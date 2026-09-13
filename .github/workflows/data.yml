@@ -51,6 +51,12 @@ jobs:
 
       - name: Прогнать приложение в jsdom
         run: |
+          node tools/test-spread-library.js
+          node tools/test-spread-library-dom.js
+          node tools/test-workbook.js
+          node tools/test-workbook-dom.js
+          node tools/test-author.js
+          node tools/test-book.js
           node tools/test-academy.js
           node tools/test-journal.js
           node tools/test-images.js

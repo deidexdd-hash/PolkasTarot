@@ -45,6 +45,7 @@ window.Academy = {
         if(!this.enter('Ближе к картам'))return;
         const seen=Object.keys(this.state.progress).length;
         document.getElementById('academyContent').innerHTML=`<p>Исследуйте символы, сравнивайте значения и сохраняйте свой взгляд.</p><div class="academy-tiles">
+        <button onclick="SpreadLibrary.open()"><strong>Каталог раскладов · 2026</strong><span>20 схем · подробные позиции · примеры чтения</span></button>
         <button onclick="Author.open()"><strong>Практическое продолжение</strong><span>78 карт · 34 урока · Ленорман · 8 практик</span></button>
         <button onclick="Author.open('pairs')"><strong>Учимся соединять карты</strong><span>24 сочетания · 8 разборов · придворные карты</span></button>
         <button onclick="Book.open()"><strong>Карта как зеркало</strong><span>Авторская книга · 34 главы и практика</span></button>

@@ -1,0 +1,57 @@
+/* The guide uses the book surface; diagrams retain the table shape on phones. */
+.layout-intro{font-size:18px;line-height:1.75;color:var(--label-2)}
+.layout-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 18px}
+.layout-filters>label:first-child{grid-column:1/-1}
+.layout-filters .academy-input{width:100%;max-width:100%;box-sizing:border-box;font-size:16px;min-height:48px;margin-bottom:0}
+.book-shell .layout-checkbox{display:flex;gap:12px;align-items:center;min-height:44px;cursor:pointer}
+.layout-checkbox input{width:20px;height:20px;flex-shrink:0;accent-color:var(--accent)}
+.layout-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.layout-tile{display:flex;flex-direction:column;gap:16px;min-width:0;padding:24px;border:1px solid var(--separator);border-radius:18px;background:var(--surface-sunk);color:var(--label);font:inherit;text-align:left;cursor:pointer;overflow-wrap:anywhere}
+.layout-tile strong{font:400 27px/1.25 Georgia,serif;letter-spacing:-.02em}
+.layout-tile>span:not(.layout-tile-meta){font-size:16px;line-height:1.6;color:var(--label-2)}
+.layout-tile small{margin-top:auto;font-size:14px;color:var(--accent)}
+.layout-tile small>span{float:right}
+.layout-tile-meta{display:flex;flex-wrap:wrap;gap:8px;font-size:12px;line-height:1.5;color:var(--label-2)}
+.layout-new{color:var(--accent)}
+.layout-tile:hover{border-color:var(--accent)}
+.layout-tile:focus-visible,.layout-presets button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.layout-start{margin:28px 0;padding:24px;border:1px solid var(--separator);border-radius:18px;background:var(--surface-sunk);font-size:16px;line-height:1.7}
+.layout-start h3{font:400 26px/1.3 Georgia,serif;margin:0 0 16px}
+.layout-start .book-meta{margin-bottom:0;line-height:1.7}
+.layout-presets{display:grid;gap:8px}
+.layout-presets .text-btn{padding:12px 14px;border:1px solid var(--separator);border-radius:12px;text-align:left;white-space:normal;font-size:16px;line-height:1.5;min-height:44px}
+.layout-start textarea{font-size:16px;scroll-margin-top:120px}
+.layout-diagram{margin:28px auto;max-width:430px}
+.layout-diagram svg{display:block;width:100%;max-height:540px;margin:auto}
+.layout-diagram rect{fill:var(--surface-sunk);stroke:var(--accent);stroke-width:1}
+.layout-diagram text{fill:var(--accent);font:24px Georgia,serif}
+.layout-diagram figcaption{margin-top:18px;font-size:14px;line-height:1.6;color:var(--label-2)}
+.layout-positions{padding:0;list-style:none}
+.layout-positions>li{border-top:1px solid var(--separator);padding:22px 0}
+.layout-positions h4{margin:0 0 12px;font-weight:500;font-size:19px;line-height:1.5;color:var(--accent)}
+.layout-positions p,.layout-details>p{font:19px/1.8 Georgia,serif;margin:12px 0}
+.layout-positions .layout-position-question{font-family:inherit;font-size:16px;line-height:1.7;color:var(--label-2)}
+.layout-steps{padding-left:24px;font:19px/1.8 Georgia,serif}
+.layout-steps li{padding-left:4px;margin:12px 0}
+.layout-details{margin:24px 0;padding:18px 0;border-top:1px solid var(--separator);border-bottom:1px solid var(--separator)}
+.layout-details summary{min-height:44px;display:list-item;font-size:18px;line-height:1.6;cursor:pointer;color:var(--accent)}
+.layout-details h4{font-size:19px;line-height:1.6}
+.layout-sources{padding-left:22px}
+.layout-sources li{margin-bottom:24px;padding-left:4px}
+.layout-source-meta{display:block;font-size:13px;color:var(--label-2);margin-top:6px}
+.layout-sources p{margin:8px 0}
+.layout-reading-guide{max-width:740px;margin:24px auto;padding:18px 22px;border:1px solid var(--separator);border-radius:16px;overflow-wrap:anywhere}
+.layout-reading-guide .text-btn{min-height:44px;white-space:normal;text-align:left;font-size:16px}
+.layout-reading-guide .layout-details{border-bottom:0;margin-bottom:0;padding-bottom:0}
+.layout-reading-position{padding:16px 20px;border-left:2px solid var(--accent);background:var(--surface-sunk);margin:20px 0;overflow-wrap:anywhere}
+.layout-reading-position h4{font-size:17px;line-height:1.6;color:var(--accent);margin:0 0 8px}
+.layout-reading-position p{font-size:16px;line-height:1.75;margin:8px 0}
+.selection-heading .layout-catalog-entry{white-space:normal;font-size:16px;min-height:44px}
+@media(max-width:699px){
+ .layout-grid,.layout-filters{grid-template-columns:minmax(0,1fr)}
+ .layout-tile{padding:22px 18px}.layout-tile strong{font-size:26px}
+ .layout-start{padding:20px 14px}.layout-start .book-actions>*{width:100%;justify-content:center}
+ .layout-positions p,.layout-details>p,.layout-steps{font-size:18px;line-height:1.75}
+ .layout-diagram{max-width:350px}.layout-reading-guide{padding:16px}.layout-reading-position{padding:14px}
+ .selection-heading{flex-wrap:wrap;gap:8px}.selection-heading .layout-catalog-entry{padding:8px 0}
+}
