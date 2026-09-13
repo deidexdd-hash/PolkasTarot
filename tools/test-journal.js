@@ -28,11 +28,11 @@ for(const key of Object.keys(ctx.Spreads.types)) {
     assert.equal(item.cards.length,ctx.Spreads.types[key].count);
     assert.equal(new Set(item.cards.map(c=>c.cardId)).size,item.cards.length);
 }
-assert.equal(ctx.State.history.length,9);assert.equal(storage.get('tarot-history'),JSON.stringify([legacy]));
+assert.equal(ctx.State.history.length,Object.keys(ctx.Spreads.types).length+1);assert.equal(storage.get('tarot-history'),JSON.stringify([legacy]));
 const before=JSON.stringify(ctx.State.history[0].cards);
 ctx.State.history=[];ctx.HistoryStore.load();ctx.Journal.open(0);
 assert.equal(JSON.stringify(ctx.State.history[0].cards),before,'Stored snapshot is unchanged');
-assert.equal(JSON.stringify(rendered.cards),JSON.stringify(ctx.Journal.safe(JSON.parse(before))),'Render boundary escapes text');assert.equal(ctx.State.history.length,9);
+assert.equal(JSON.stringify(rendered.cards),JSON.stringify(ctx.Journal.safe(JSON.parse(before))),'Render boundary escapes text');assert.equal(ctx.State.history.length,Object.keys(ctx.Spreads.types).length+1);
 get('readingNotes').value='<script>alert(1)</script>';get('readingTags').value='работа';get('readingFavorite').checked=true;
 ctx.Journal.draft();ctx.State.history=[];ctx.HistoryStore.load();assert.equal(ctx.State.history[0].notes,'<script>alert(1)</script>');
 ctx.Journal.open(0);assert.equal(ctx.State.history[0].favorite,true);
@@ -56,5 +56,5 @@ get('journalSearch').value='NO MATCH';ctx.UI.renderHistory();assert(get('history
  denied=true;assert.equal(ctx.HistoryStore.save(),false);
  const extra=JSON.parse(exported);extra.readings[0].id='new-reading';input.files[0].text=async()=>JSON.stringify(extra);
  await ctx.Journal.importData(input);assert.equal(ctx.State.history.length,count,'Failed import must roll back');
- console.log('PASS: 8 spreads; exact snapshot restoration; legacy backup; notes/favorites; manual orientation and duplicates; search; import round-trip/deduplication/rejection/rollback; storage failure');
+ console.log('PASS: ' + Object.keys(ctx.Spreads.types).length + ' spreads; exact snapshot restoration; legacy backup; notes/favorites; manual orientation and duplicates; search; import round-trip/deduplication/rejection/rollback; storage failure');
 })().catch(e=>{console.error(e);process.exitCode=1});

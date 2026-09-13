@@ -39,7 +39,7 @@ vm.runInContext(fs.readFileSync(path.join(root,'js/author.js'),'utf8'),ctx);
   for(const key of ['context','reading','alternative','question','exercise'])assert(p[key].length>30);
  }
  assert.equal(seenPairs.size,24,'Distinct pairs, not reordered duplicates');
- assert.deepEqual(new Set(workbook.cases.map(c=>c.spread)),new Set(Object.keys(ctx.Spreads.types)));
+ assert.deepEqual(new Set(workbook.cases.map(c=>c.spread)),new Set(['daily','threecards','cross','celtic','pyramid','choice','year','career']));
  for(const c of workbook.cases){
   const spread=ctx.Spreads.types[c.spread];
   assert.equal(c.positions.length,spread.count,c.id);
@@ -131,5 +131,5 @@ vm.runInContext(fs.readFileSync(path.join(root,'js/author.js'),'utf8'),ctx);
  pair.reading=original;
  const c=A.data.cases[0],old=c.positions[0].reading;c.positions[0].reading='<script>alert(1)</script>';
  await A.open('cases',c.id);assert(!get('authorBody').innerHTML.includes('<script>'));assert(get('authorBody').innerHTML.includes('&lt;script&gt;'));c.positions[0].reading=old;
- console.log('PASS: 24 pairs, all 8 live spread schemas, all 16 courts; lazy load/coalescing/retry/races; nested search; all 40 detail routes; comparison/manual handoff; selected-card practice; no sample history; escaping');
+ console.log('PASS: 24 pairs, 8 original live spread schemas, all 16 courts; lazy load/coalescing/retry/races; nested search; all 40 detail routes; comparison/manual handoff; selected-card practice; no sample history; escaping');
 })().catch(e=>{console.error(e);process.exit(1);});

@@ -253,8 +253,10 @@ window.App = {
         const bookLink = new URLSearchParams(location.hash.slice(1));
         const openingBook = bookLink.has('book') && window.Book;
         const openingAuthor = bookLink.has('study') && window.Author;
-        if (openingAuthor) Author.open(bookLink.get('study'), bookLink.get('id'));
-        if (openingBook && !openingAuthor) Book.open(bookLink.get('book') === 'contents' ? undefined : bookLink.get('book'), Number(bookLink.get('b')) || 0);
+        const openingLayouts = bookLink.has('layouts') && window.SpreadLibrary;
+        if (openingLayouts) SpreadLibrary.open(bookLink.get('layouts'));
+        if (openingAuthor && !openingLayouts) Author.open(bookLink.get('study'), bookLink.get('id'));
+        if (openingBook && !openingAuthor && !openingLayouts) Book.open(bookLink.get('book') === 'contents' ? undefined : bookLink.get('book'), Number(bookLink.get('b')) || 0);
 
         // Колода приходит из data/cards.json, то есть асинхронно:
         // до её загрузки расклады и галерея недоступны.
@@ -263,7 +265,7 @@ window.App = {
         } catch (error) {
             console.error('Не удалось загрузить колоду:', error);
             const container = document.getElementById('spread-container');
-            if (container && !openingBook && !openingAuthor && !container.querySelector('.book-shell')) {
+            if (container && !openingBook && !openingAuthor && !openingLayouts && !container.querySelector('.book-shell')) {
                 container.innerHTML =
                     '<p style="text-align: center; padding: 40px;">' +
                     'Не удалось загрузить data/cards.json. Проверьте консоль (F12).</p>';

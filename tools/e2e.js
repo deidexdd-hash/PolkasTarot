@@ -220,7 +220,7 @@ const ok = (cond, msg) => {
        `все расклады описаны верно${w.Spreads.errors.length ? ': ' + w.Spreads.errors.join('; ') : ''}`);
 
     const layoutNames = Object.keys(w.Spreads.types);
-    ok(layoutNames.length === 8, `раскладов собрано: ${layoutNames.length} из 8`);
+    ok(layoutNames.length === 20, `раскладов собрано: ${layoutNames.length} из 20`);
 
     const layoutBad = [];
     for (const key of layoutNames) {
