@@ -118,7 +118,8 @@ window.Journal = {
         if (!App.deckReady()) return;
         App.setView('manual'); App.setLink(null);
         const options = Object.entries(Spreads.types).map(([k,c])=>`<option value="${k}">${UI.escape(c.title)}</option>`).join('');
-        document.getElementById('spread-container').innerHTML = `<section class="manual-form"><h2 class="spread-main-title">Ваша колода</h2><p>Разложите карты перед собой и укажите, какие выпали в каждой позиции.</p><label for="manualSpread">Расклад</label><select id="manualSpread" onchange="Journal.manualFields()">${options}</select><div id="manualPositions"></div><button class="primary-button" onclick="Journal.submitManual()">Открыть толкование</button><p id="manualError" role="alert"></p></section>`;
+        const question = document.getElementById('questionInput')?.value || '';
+        document.getElementById('spread-container').innerHTML = `<section class="manual-form"><h2 class="spread-main-title">Ваша колода</h2><p>Разложите карты перед собой и укажите, какие выпали в каждой позиции.</p><label for="manualQuestion">Мой вопрос</label><input id="manualQuestion" class="academy-input" maxlength="200" value="${UI.escape(question.slice(0,200))}"><label for="manualSpread">Расклад</label><select id="manualSpread" onchange="Journal.manualFields()">${options}</select><div id="manualPositions"></div><button class="primary-button" onclick="Journal.submitManual()">Открыть толкование</button><p id="manualError" role="alert"></p></section>`;
         this.manualFields(); App.scrollToResults();
     },
     manualFields() {
@@ -130,7 +131,7 @@ window.Journal = {
         const key = document.getElementById('manualSpread').value, cfg = Spreads.types[key];
         const cards = cfg.labels.map((_,i)=> {const c=this.cards().find(c=>c.code===document.getElementById(`manualCard${i}`).value);return c ? {...c,reversed:document.getElementById(`manualReverse${i}`).checked} : null;});
         if (!this.validManual(cards,cfg.count)) {document.getElementById('manualError').textContent='Выберите карту в каждой позиции. Карты не должны повторяться.'; return;}
-        App.doSpread(key,{manualCards:cards});
+        App.doSpread(key,{manualCards:cards,question:document.getElementById('manualQuestion')?.value || ''});
     }
 };
 UI.renderHistory = function() {

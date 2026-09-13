@@ -45,6 +45,23 @@ const assert=require('node:assert/strict');
  }
  await page.setViewportSize({width:390,height:844});
  await page.screenshot({path:path.join(out,'author-lenormand-mobile.png')});
+ for(const [tab,id] of [['pairs','24'],['cases','year'],['courts','queens']]){
+  await page.goto('http://127.0.0.1:8765/#study='+tab+'&id='+id);await page.waitForSelector('.author-title');
+  assert.equal(await page.evaluate(()=>Author.tab),tab);
+  for(const width of [320,390,768,1280]){
+   await page.setViewportSize({width,height:844});
+   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),tab+' overflow at '+width);
+  }
+  await page.setViewportSize({width:390,height:844});
+  await page.screenshot({path:path.join(out,'author-'+tab+'-mobile.png')});
+ }
+ await page.evaluate(()=>Author.open('cases','choice'));await page.getByRole('button',{name:'Мой расклад по этой схеме',exact:true}).click();
+ assert.equal(await page.locator('#manualSpread').inputValue(),'choice');
+ assert.equal(await page.locator('#manualPositions fieldset').count(),5);
+ assert.equal(await page.locator('#manualCard0').inputValue(),'');
+ assert(await page.locator('#manualQuestion').inputValue());
+ assert(await page.getByRole('button',{name:'Открыть толкование',exact:true}).isVisible());
+ assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Manual form overflow');
  const denied=await browser.newPage();await denied.addInitScript(()=>{Storage.prototype.setItem=function(){throw Error('denied');};});await denied.goto('http://127.0.0.1:8765/#book=12');await denied.waitForSelector('.book-prose');assert((await denied.locator('#bookStatus').textContent()).includes('не сохранено'));
  await denied.waitForFunction(()=>DeckLoader.loaded);await denied.evaluate(()=>Book.practice());await denied.locator('.book-actions .primary-button').click();assert((await denied.locator('#mirrorStatus').textContent()).includes('Не сохранено'));
  assert.deepEqual(errors,[]);console.log('PASS: manuscript, card links, search, deep links, practice persistence and escaping, duplicate save, denied storage, mobile/desktop overflow');await browser.close();
