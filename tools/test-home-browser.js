@@ -17,7 +17,15 @@ const server=http.createServer((req,res)=>{
   try{
    const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:1,...(name==='webkit'?{isMobile:true,hasTouch:true}:{})});
    const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
-   const fits=async label=>assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),name+' '+label+' horizontal overflow');
+   const fits=async label=>{
+    const measure=await page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth,body:document.body.scrollWidth,
+     elements:Array.from(document.querySelectorAll('body *')).map(el=>{const r=el.getBoundingClientRect(),s=getComputedStyle(el);return {tag:el.tagName,id:el.id,cls:el.className?.baseVal??el.className,left:r.left,right:r.right,width:r.width,scroll:el.scrollWidth,display:s.display,position:s.position,text:el.textContent.slice(0,65)};}).filter(r=>r.width>0&&(r.right>innerWidth+.5||r.left<-.5)).slice(0,35)}));
+    if(measure.scroll>measure.width){
+     console.error(name+' '+label+' overflow details: '+JSON.stringify(measure));
+     await page.screenshot({path:path.join(out,name+'-'+label.replace(/\s+/g,'-')+'-overflow.png'),fullPage:true});
+    }
+    assert(measure.scroll<=measure.width,name+' '+label+' horizontal overflow');
+   };
    for(const width of [320,390,768,1440]){
     await page.setViewportSize({width,height:width<700?844:1000});await page.goto(url);await page.waitForFunction(()=>DeckLoader.loaded);
     await page.evaluate(()=>{document.querySelectorAll('img').forEach(img=>{img.loading='eager';});});
