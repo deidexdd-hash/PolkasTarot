@@ -19,7 +19,7 @@ const server=http.createServer((req,res)=>{
    const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
    const fits=async label=>{
     const measure=await page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth,body:document.body.scrollWidth,
-     elements:Array.from(document.querySelectorAll('body *')).map(el=>{const r=el.getBoundingClientRect(),s=getComputedStyle(el);return {tag:el.tagName,id:el.id,cls:el.className?.baseVal??el.className,left:r.left,right:r.right,width:r.width,scroll:el.scrollWidth,display:s.display,position:s.position,text:el.textContent.slice(0,65)};}).filter(r=>r.width>0&&(r.right>innerWidth+.5||r.left<-.5)).slice(0,35)}));
+     elements:Array.from(document.querySelectorAll('body *')).map(el=>{const r=el.getBoundingClientRect(),s=getComputedStyle(el);return {tag:el.tagName,id:el.id,cls:el.className?.baseVal??el.className,left:r.left,right:r.right,width:r.width,scroll:el.scrollWidth,client:el.clientWidth,display:s.display,position:s.position,font:s.font,fontSize:s.fontSize,whiteSpace:s.whiteSpace,transform:s.transform,textSizeAdjust:s.webkitTextSizeAdjust,text:el.textContent.slice(0,65)};}).filter(r=>r.width>0&&(r.right>innerWidth+.5||r.left<-.5||r.scroll>r.client+1)).slice(0,35)}));
     if(measure.scroll>measure.width){
      console.error(name+' '+label+' overflow details: '+JSON.stringify(measure));
      await page.screenshot({path:path.join(out,name+'-'+label.replace(/\s+/g,'-')+'-overflow.png'),fullPage:true});
