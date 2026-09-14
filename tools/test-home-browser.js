@@ -15,7 +15,7 @@ const server=http.createServer((req,res)=>{
  for(const [name,engine] of Object.entries({chromium,webkit})){
   const browser=await engine.launch({headless:true});
   try{
-   const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:1,...(name==='webkit'?{isMobile:true,hasTouch:true}:{})});
+   const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:1,reducedMotion:'reduce',...(name==='webkit'?{isMobile:true,hasTouch:true}:{})});
    const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
    const fits=async label=>{
     const measure=await page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth,body:document.body.scrollWidth,
@@ -30,6 +30,12 @@ const server=http.createServer((req,res)=>{
     await page.setViewportSize({width,height:width<700?844:1000});await page.goto(url);await page.waitForFunction(()=>DeckLoader.loaded);
     await page.evaluate(()=>{document.querySelectorAll('img').forEach(img=>{img.loading='eager';});});
     await page.waitForFunction(()=>Array.from(document.querySelectorAll('main img')).every(img=>img.complete&&img.naturalWidth>0));
+    const photos=await page.evaluate(async()=>{
+     const images=Array.from(document.querySelectorAll('main img'));
+     await Promise.all(images.map(img=>img.decode()));
+     return images.map(img=>{const r=img.getBoundingClientRect();return {src:img.getAttribute('src'),width:r.width,height:r.height};});
+    });
+    for(const photo of photos)assert(photo.width>40&&photo.height>40,name+' '+width+' collapsed image: '+JSON.stringify(photo));
     await fits('home '+width);
     assert(await page.locator('#homeStartReading').isVisible());assert(await page.locator('#questionInput').isVisible());
     assert(await page.locator('#homeStartReading').evaluate(el=>el.getBoundingClientRect().height>=44));
@@ -40,6 +46,9 @@ const server=http.createServer((req,res)=>{
      for(const button of await page.locator('.mobile-dock button').all())assert(await button.evaluate(el=>el.getBoundingClientRect().height>=44));
     }
     if([390,1440].includes(width)){
+     // Paint below-the-fold photos before taking a full-page capture.
+     for(const photo of await page.locator('main img').all())await photo.scrollIntoViewIfNeeded();
+     await page.evaluate(()=>window.scrollTo(0,0));
      await page.screenshot({path:path.join(out,`${name}-${width}-full.png`),fullPage:true});
      await page.screenshot({path:path.join(out,`${name}-${width}-hero.png`)});
     }
