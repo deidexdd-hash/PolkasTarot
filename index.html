@@ -3,60 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="description" content="Профессиональная система гадания на картах Таро онлайн">
-    <meta name="theme-color" content="#171219" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#171219" media="(prefers-color-scheme: dark)">
+    <meta name="description" content="Polkas Tarot — карты, авторская книга и личный дневник. 20 раскладов для внимательного разговора с собой.">
+    <meta name="theme-color" content="#f5f1e8">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>Polkas Tarot — пространство ваших вопросов</title>
-    <!-- Иконка вкладки: браузер запрашивает favicon.ico сам, и без неё
-         каждая загрузка страницы давала 404. -->
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%94%AE%3C/text%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="img/editorial/polkas-mark.svg">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/premium.css">
     <link rel="stylesheet" href="css/academy.css">
     <link rel="stylesheet" href="css/practice.css">
     <link rel="stylesheet" href="css/book.css">
     <link rel="stylesheet" href="css/spread-library.css">
+    <link rel="stylesheet" href="css/home.css">
 </head>
 <body>
 
+<a class="skip-link" href="#mainContent">Перейти к содержанию</a>
 <header class="nav-bar">
     <div class="nav-row">
-        <button class="brand" onclick="App.showHome()" aria-label="Polkas Tarot — главная">polkas<span>tarot</span><i aria-hidden="true">✳</i></button>
+        <button class="brand" onclick="App.showHome()" aria-label="Polkas Tarot — главная">
+            <svg class="brand-symbol" viewBox="0 0 28 40" aria-hidden="true" focusable="false"><ellipse cx="14" cy="20" rx="12" ry="18"/><ellipse cx="14" cy="20" rx="7" ry="13"/><path d="M14 0v40M10 20h8"/></svg>
+            <span class="brand-word">polkas <em>tarot</em></span>
+        </button>
         <nav class="primary-nav" aria-label="Основная навигация">
-            <button class="nav-action" onclick="SpreadLibrary.open()">Расклады</button>
-            <button class="nav-action" onclick="App.showDeck()">Колода <span class="nav-count">78</span></button>
-            <button class="nav-action" onclick="document.getElementById('history-sidebar').scrollIntoView({behavior:'smooth'})">История</button>
+            <button class="nav-action" onclick="Home.go('layouts')">Расклады</button>
+            <button class="nav-action" onclick="Home.go('deck')">Атлас карт</button>
+            <button class="nav-action" onclick="Home.go('book')">Книга</button>
+            <button class="nav-action" onclick="Home.go('study')">Практики</button>
         </nav>
-        <button class="nav-action" onclick="Book.open()">Книга</button>
-        <button class="nav-action academy-nav" onclick="Academy.home()">Изучать Таро ↗</button>
+        <button class="nav-action nav-journal" onclick="Home.go('journal')">Мой дневник <span aria-hidden="true">↗</span></button>
+        <button class="nav-menu-toggle" id="homeMenuToggle" onclick="Home.toggleMenu()" aria-controls="homeMenu" aria-expanded="false" aria-label="Открыть меню">Меню <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 8h18M3 16h18"/></svg></button>
     </div>
+    <nav class="home-menu" id="homeMenu" aria-label="Меню разделов" hidden>
+        <button onclick="Home.go('layouts')">Все расклады <span aria-hidden="true">↗</span></button>
+        <button onclick="Home.go('deck')">Атлас 78 карт <span aria-hidden="true">↗</span></button>
+        <button onclick="Home.go('book')">Карта как зеркало · книга <span aria-hidden="true">↗</span></button>
+        <button onclick="Home.go('study')">Обучение и практики <span aria-hidden="true">↗</span></button>
+        <button onclick="Home.go('journal')">Мой дневник <span aria-hidden="true">↗</span></button>
+        <p>Свой вопрос. Свой темп. Свой взгляд.</p>
+    </nav>
 </header>
-<main role="main">
-    <section class="reading-studio" aria-labelledby="studio-title">
+<main role="main" id="mainContent" tabindex="-1">
+    <section class="reading-studio home-hero" aria-labelledby="studio-title">
         <div class="studio-copy">
-            <p class="eyebrow">ТАРО · РАЙДЕР — УЭЙТ — СМИТ</p>
-            <h1 id="studio-title">Всё начинается<br>с <em>вашего вопроса.</em></h1>
-            <p class="studio-description">Сделайте паузу. Прислушайтесь к себе.<br>Выберите расклад и откройте карты.</p>
+            <p class="home-kicker home-only">Искусство быть ближе к себе</p>
+            <h1 id="studio-title">Сначала —<br><em>к себе.</em></h1>
+            <p class="studio-description">Карты, книга и небольшие практики,<br>чтобы увидеть свой вопрос яснее.</p>
             <div class="question-row">
                 <label class="question-field" for="questionInput">
-                    <span class="field-caption">О ЧЁМ ВЫ ХОТИТЕ СПРОСИТЬ?</span>
-                    <input id="questionInput" type="text" maxlength="200" autocomplete="off" placeholder="Ваш вопрос — если он есть" aria-label="Вопрос к картам">
+                    <span class="field-caption">ЧТО СЕЙЧАС ЗАНИМАЕТ ТВОИ МЫСЛИ?</span>
+                    <input id="questionInput" type="text" maxlength="200" autocomplete="off" placeholder="Твой вопрос — если он есть" aria-label="Вопрос к картам">
                 </label>
             </div>
-            <button class="primary-button" onclick="App.doSpread('daily')">Открыть карту дня <span aria-hidden="true">↗</span></button>
-            <span class="button-note">Одна карта. Фокус на сегодня.</span>
+            <div class="home-hero-actions home-only">
+                <button class="primary-button home-primary" id="homeStartReading" onclick="App.doSpread('threecards')">Открыть свой расклад <span aria-hidden="true">↗</span></button>
+                <button class="home-link" id="homeDaily" onclick="Daily.open()">Карта на сегодня <span aria-hidden="true">↗</span></button>
+            </div>
+            <span class="button-note home-only">Можно начать с вопроса. Можно — с тишины.</span>
         </div>
-        <div class="studio-art" aria-label="Карты Звезда, Солнце и Луна из колоды Райдера — Уэйта">
-            <div class="art-orbit" aria-hidden="true"></div>
-            <img class="art-card art-left" src="img/cards/maj17.jpg" alt="Звезда" width="350" height="600">
-            <img class="art-card art-right" src="img/cards/maj18.jpg" alt="Луна" width="350" height="600">
-            <img class="art-card art-center" src="img/cards/maj19.jpg" alt="Солнце" width="350" height="600">
-            <span class="art-caption">THE ART OF LOOKING WITHIN</span>
-        </div>
+        <figure class="studio-art home-hero-visual home-only">
+            <img src="img/editorial/quiet-cards-1024.webp" srcset="img/editorial/quiet-cards-640.webp 640w, img/editorial/quiet-cards-1024.webp 1024w" sizes="(max-width: 699px) calc(100vw - 44px), (max-width: 1408px) 43vw, 590px" width="1024" height="1536" alt="Руки раскладывают светлые карты на камне в тёплом солнечном свете" fetchpriority="high" decoding="async">
+            <figcaption><span>Небольшая пауза</span><strong>Одна карта.<br>Новый взгляд.</strong></figcaption>
+            <span class="home-photo-index" aria-hidden="true">POLKAS · ПРАКТИКА ВНИМАНИЯ</span>
+        </figure>
     </section>
-    <div class="practice-toolbar"><button class="text-btn" onclick="Book.open()">Карта как зеркало · книга</button><button class="text-btn" onclick="Academy.home()">Обучение</button><button class="text-btn" onclick="Academy.compare()">Сравнить карты</button><button class="text-btn" onclick="Academy.stats()">Статистика</button><details class="practice-settings"><summary>Настройки практики</summary><label><input id="useReversals" type="checkbox" checked onchange="Academy.setSetting('reversals',this.checked)"> Перевёрнутые карты в новых раскладах</label><label><input id="firstLookSetting" type="checkbox" onchange="Academy.setSetting('firstLook',this.checked)"> Сначала мой взгляд, потом толкование</label><button class="text-btn" onclick="Academy.backup()">Скачать копию обучения</button><label class="import-label">Восстановить обучение<input type="file" accept=".json,application/json" onchange="Academy.restore(this)"></label><p>Настройки не меняют старые расклады. Копия обучения содержит личные ассоциации и прогресс; дневник экспортируется отдельно.</p></details></div><p id="academyStatus" role="status" aria-live="polite"></p><div class="manual-entry"><button class="text-btn" onclick="Journal.showManual()">У меня своя колода — ввести карты ↗</button></div><section class="spread-selection" aria-labelledby="selection-title">
+    <nav class="home-index home-only" aria-label="Возможности пространства">
+        <button onclick="SpreadLibrary.open()"><strong data-home-count="spreads">20</strong><span>раскладов<small>под твой вопрос</small></span></button>
+        <button onclick="App.showDeck()"><strong>78</strong><span>образов<small>для нового взгляда</small></span></button>
+        <button onclick="Book.open()"><strong>34</strong><span>главы книги<small>чтобы идти глубже</small></span></button>
+    </nav>
+    <section class="spread-selection" aria-labelledby="selection-title">
+        <div class="home-section-intro home-only"><div><p class="home-kicker">01 / Твоя практика</p><h2 class="home-section-title">Что хочется<br>прояснить?</h2></div><p>Один вопрос или целая история. Выбери свою глубину — от карты дня до подробного исследования.</p></div>
         <div class="selection-heading"><h2 id="selection-title">Ваш расклад</h2><button class="text-btn layout-catalog-entry" onclick="SpreadLibrary.open()">Все 20 раскладов · схемы и руководства ↗</button></div>
         <nav class="spread-strip" aria-label="Выбор расклада">
 <button onclick="App.doSpread('daily')" class="spread-chip" data-spread="daily"><span class="chip-number">01</span><span class="chip-text">Карта дня</span><span class="chip-note">1 карта · Здесь и сейчас</span><span class="chip-arrow" aria-hidden="true">↗</span></button>
@@ -69,15 +87,30 @@
 <button onclick="App.doSpread('career')" class="spread-chip" data-spread="career"><span class="chip-number">08</span><span class="chip-text">Карьера</span><span class="chip-note">5 карт · Движение к цели</span><span class="chip-arrow" aria-hidden="true">↗</span></button>
         </nav>
     </section>
+<div class="manual-entry"><button class="text-btn" onclick="Journal.showManual()">У меня своя колода — ввести карты ↗</button></div>
+
+    <section class="home-book-feature home-only" aria-labelledby="homeBookTitle">
+        <figure class="home-book-photo"><img src="img/editorial/mirror-book-1280.webp" srcset="img/editorial/mirror-book-640.webp 640w, img/editorial/mirror-book-1280.webp 1280w" sizes="(max-width: 699px) calc(100vw - 44px), (max-width: 1408px) 47vw, 688px" width="1280" height="853" loading="lazy" decoding="async" alt="Книга «Карта как зеркало» в тканевом переплёте рядом с овальным зеркалом"></figure>
+        <div class="home-book-copy"><p class="home-kicker">02 / Авторская книга</p><h2 id="homeBookTitle">Карта<br>как зеркало</h2><p>От первого образа — к собственному прочтению. Книга о том, как замечать детали, задавать вопросы и находить связь с личным опытом.</p><button class="home-link" id="homeReadBook" onclick="Book.open()">Открыть книгу <span aria-hidden="true">↗</span></button><span class="home-book-meta">34 главы · Чтение на сайте · Практики</span></div>
+    </section>
+    <section class="home-atlas home-only" aria-labelledby="homeAtlasTitle">
+        <div class="home-atlas-copy"><p class="home-kicker">Знакомство с образами</p><h2 id="homeAtlasTitle">Не нужно знать<br>всё заранее.</h2><p>Рассмотри одну карту. Заметь деталь. Сохрани свою ассоциацию — и только потом загляни в толкование.</p><button class="home-link" id="homeOpenAtlas" onclick="App.showDeck()">Исследовать 78 карт <span aria-hidden="true">↗</span></button></div>
+        <div class="home-atlas-images"><img src="img/cards/maj17.jpg" alt="Звезда — карта XVII" width="350" height="600" loading="lazy" decoding="async"><img src="img/cards/maj19.jpg" alt="Солнце — карта XIX" width="350" height="600" loading="lazy" decoding="async"><img src="img/cards/maj18.jpg" alt="Луна — карта XVIII" width="350" height="600" loading="lazy" decoding="async"></div>
+    </section>
+    <section class="home-journal-feature home-only" aria-labelledby="homeJournalTitle">
+        <div class="home-journal-copy"><p class="home-kicker">03 / Личный дневник</p><h2 class="home-section-title" id="homeJournalTitle">У твоих мыслей<br>есть своё место.</h2><p>Сохраняй расклады, первые отклики и небольшие решения. Возвращайся позже, чтобы увидеть, что изменилось.</p><button class="home-link" id="homeOpenJournal" onclick="Daily.journal()">Перейти к своим записям <span aria-hidden="true">↗</span></button><p class="home-device-note">Записи остаются в этом браузере. Экспорт поможет сохранить отдельную копию.</p></div>
+        <figure class="home-journal-photo"><img src="img/editorial/personal-journal-1280.webp" srcset="img/editorial/personal-journal-640.webp 640w, img/editorial/personal-journal-1280.webp 1280w" sizes="(max-width: 699px) calc(100vw - 44px), (max-width: 1408px) 44vw, 600px" width="1280" height="853" loading="lazy" decoding="async" alt="Открытый дневник, перо в руке и светлая карта на деревянном столе"></figure>
+    </section>
+    <div class="practice-toolbar"><button class="text-btn" onclick="Book.open()">Карта как зеркало · книга</button><button class="text-btn" onclick="Academy.home()">Обучение</button><button class="text-btn" onclick="Academy.compare()">Сравнить карты</button><button class="text-btn" onclick="Academy.stats()">Статистика</button><details class="practice-settings"><summary>Настройки практики</summary><label><input id="useReversals" type="checkbox" checked onchange="Academy.setSetting('reversals',this.checked)"> Перевёрнутые карты в новых раскладах</label><label><input id="firstLookSetting" type="checkbox" onchange="Academy.setSetting('firstLook',this.checked)"> Сначала мой взгляд, потом толкование</label><button class="text-btn" onclick="Academy.backup()">Скачать копию обучения</button><label class="import-label">Восстановить обучение<input type="file" accept=".json,application/json" onchange="Academy.restore(this)"></label><p>Настройки не меняют старые расклады. Копия обучения содержит личные ассоциации и прогресс; дневник экспортируется отдельно.</p></details></div><p id="academyStatus" role="status" aria-live="polite"></p>
     <div id="spread-container"><section class="welcome-screen"><span class="welcome-mark" aria-hidden="true">✳</span><p>У каждого вопроса — своя глубина.</p><span>Выберите расклад, чтобы начать.</span></section></div>
-    <aside id="history-sidebar" role="complementary" aria-label="История сеансов"><div class="section-head"><h2>Ваши сеансы</h2><button onclick="App.clearHistory()" class="text-btn" aria-label="Очистить историю">Очистить</button></div><div class="journal-tools"><input type="search" id="journalSearch" placeholder="Найти вопрос, карту или заметку" aria-label="Поиск в дневнике" oninput="UI.renderHistory()"><label class="favorite-filter"><input type="checkbox" id="favoritesOnly" onchange="UI.renderHistory()"> Избранное</label><button class="text-btn" onclick="Journal.exportData()">Экспорт</button><label class="import-label">Импорт<input type="file" accept=".json,application/json" onchange="Journal.importData(this)"></label></div><p id="journalStatus" role="status" aria-live="polite"></p><ul id="historyList" class="inset-list"></ul></aside>
+    <aside id="history-sidebar" role="complementary" aria-label="История сеансов"><div class="section-head"><h2>Твои записи</h2><button onclick="App.clearHistory()" class="text-btn" aria-label="Очистить историю">Очистить</button></div><div class="journal-tools"><input type="search" id="journalSearch" placeholder="Найти вопрос, карту или заметку" aria-label="Поиск в дневнике" oninput="UI.renderHistory()"><label class="favorite-filter"><input type="checkbox" id="favoritesOnly" onchange="UI.renderHistory()"> Избранное</label><button class="text-btn" onclick="Journal.exportData()">Экспорт</button><label class="import-label">Импорт<input type="file" accept=".json,application/json" onchange="Journal.importData(this)"></label></div><p id="journalStatus" role="status" aria-live="polite"></p><ul id="historyList" class="inset-list"></ul></aside>
 </main>
 <nav class="mobile-dock" aria-label="Разделы сайта">
-<button data-section="home" onclick="App.showHome()">Расклады</button>
-<button data-section="daily" onclick="Daily.open()">Сегодня</button>
-<button data-section="deck" onclick="App.showDeck()">Атлас</button>
-<button data-section="academy" onclick="Academy.home()">Учиться</button>
-<button data-section="journal" onclick="Daily.journal()">Дневник</button>
+<button data-section="home" onclick="App.showHome()"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m3 10 9-7 9 7v10H3zM9 20v-7h6v7"/></svg><span>Главная</span></button>
+<button data-section="daily" onclick="Daily.open()"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 1v3m0 16v3M1 12h3m16 0h3M4 4l2 2m12 12 2 2M4 20l2-2M18 6l2-2"/></svg><span>Сегодня</span></button>
+<button data-section="deck" onclick="App.showDeck()"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="7" y="3" width="13" height="18" rx="2"/><path d="M4 5H3v15h2M10 7h7m-7 4h7"/></svg><span>Атлас</span></button>
+<button data-section="academy" onclick="Academy.home()"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5C9 3 5 3 2 4v15c4-1 7-1 10 1 3-2 6-2 10-1V4c-3-1-7-1-10 1v15"/></svg><span>Учиться</span></button>
+<button data-section="journal" onclick="Daily.journal()"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="3" width="15" height="18" rx="2"/><path d="M8 3v18M3 7h4m-4 5h4m-4 5h4m5-9h5m-5 4h5"/></svg><span>Дневник</span></button>
 </nav>
 <!-- Карточка карты: выезжающий снизу лист -->
 <div id="cardModal" class="sheet-backdrop" onclick="UI.closeCard()">
@@ -114,6 +147,7 @@
 <script src="js/book.js"></script>
 <script src="js/author.js"></script>
 <script src="js/spread-library.js"></script>
+<script src="js/home.js"></script>
 
 </body>
 </html>

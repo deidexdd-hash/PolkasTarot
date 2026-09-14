@@ -1,0 +1,35 @@
+name: Главная — Chromium и WebKit
+on:
+  pull_request:
+    paths:
+      - index.html
+      - css/**
+      - js/home.js
+      - img/editorial/**
+      - tools/test-home-browser.js
+      - .github/workflows/home-design.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  layout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Установить инструменты
+        run: npm --prefix tools install --no-audit --no-fund
+      - name: Установить Chromium и WebKit
+        run: tools/node_modules/.bin/playwright install --with-deps chromium webkit
+      - name: Проверить главную и переходы
+        run: node tools/test-home-browser.js
+      - name: Сохранить снимки экрана
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-design-screenshots
+          path: screenshots/home/
+          retention-days: 7
