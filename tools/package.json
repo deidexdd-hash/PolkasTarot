@@ -4,9 +4,10 @@
   "private": true,
   "description": "Проверочные скрипты PolkasTarot. Лежат отдельно от корня, чтобы хостинг не принял статический сайт за Node-проект. jsdom нужен для прогона приложения, jimp — чтобы уменьшать картинки, когда Викисклад отдаёт только крупные копии; оба на чистом JS. playwright только для проверки вёрстки и снимков — он тянет браузеры, поэтому вынесен в optionalDependencies и в CI пропускается через --omit=optional.",
   "scripts": {
-    "test": "node test-spread-library.js && node test-spread-library-dom.js && node test-workbook.js && node test-author.js && node test-book.js && node test-academy.js && node test-journal.js && node test-images.js && node test-workbook-dom.js && node e2e.js && node e2e.js --broken-storage",
+    "test": "node test-home-dom.js && node test-spread-library.js && node test-spread-library-dom.js && node test-workbook.js && node test-author.js && node test-book.js && node test-academy.js && node test-journal.js && node test-images.js && node test-workbook-dom.js && node e2e.js && node e2e.js --broken-storage",
     "audit": "node audit.js",
-    "shots": "node screenshots.js"
+    "shots": "node screenshots.js",
+    "test:home-browser": "node test-home-browser.js"
   },
   "devDependencies": {
     "jsdom": "^26.0.0",
