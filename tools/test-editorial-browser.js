@@ -35,6 +35,8 @@ const routes=['study','train','compare','stats','deck','modal','book','chapter',
      const selector=route==='journal'?'#history-sidebar .editorial-hero':'#spread-container .editorial-hero';
      await page.locator(selector).waitFor({state:'visible'});
      await page.locator(selector+' img').evaluate(async img=>{await img.decode();});
+     assert(await page.locator('.reading-studio').isHidden(),engineName+' '+route+' home question leaks into interior');
+     assert(await page.locator('#questionInput').isHidden(),engineName+' '+route+' home input must stay on home');
      assert.equal(await page.locator('body').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(245, 241, 232)',engineName+' '+route+' body theme');
      assert.equal(await page.locator('meta[name="theme-color"]').getAttribute('content'),'#f5f1e8');
      const measurement=await page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth,overflow:Array.from(document.querySelectorAll('body *')).map(el=>{const r=el.getBoundingClientRect();return {tag:el.tagName,id:el.id,cls:el.className?.baseVal??el.className,left:r.left,right:r.right,width:r.width,scroll:el.scrollWidth,client:el.clientWidth};}).filter(r=>r.width>0&&(r.right>innerWidth+.5||r.left<-.5||r.scroll>r.client+1)).slice(0,25)}));
@@ -50,6 +52,8 @@ const routes=['study','train','compare','stats','deck','modal','book','chapter',
      }
      for(const field of await page.locator('#spread-container input:not([type=checkbox]),#spread-container textarea,#spread-container select').all())if(await field.isVisible())assert(parseFloat(await field.evaluate(el=>getComputedStyle(el).fontSize))>=16,engineName+' '+route+' readable input');
      if([390,1440].includes(width)&&['study','deck','modal','book','chapter','cards','layouts','reading','daily','journal'].includes(route)){
+      // App.scrollToResults schedules its scroll after 300 ms; let it settle before capture.
+      await page.waitForTimeout(350);
       if(route!=='modal'){
        const images=page.locator(selector+' img, .editorial-tile-photo img');
        for(const img of await images.all()){await img.evaluate(async el=>{el.loading='eager';await el.decode();});await img.scrollIntoViewIfNeeded();}

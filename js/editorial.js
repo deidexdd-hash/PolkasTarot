@@ -124,9 +124,16 @@ window.Editorial = {
     init() {
         this.wrap(App, 'setView', ([key]) => { document.body.dataset.page = key; });
         this.wrap(App, 'showHome', () => { document.body.dataset.page = 'home'; Daily.select('home'); });
-        this.wrap(UI, 'renderSpread', args => this.decorate(args[2]?.count === 1 ? 'daily' : 'reading', {compact:true}));
+        this.wrap(UI, 'renderSpread', args => {
+            this.decorate(args[2]?.count === 1 ? 'daily' : 'reading', {compact:true});
+            const table = document.querySelector('#spread-container .spread-table'), guide = document.querySelector('#spread-container .layout-reading-guide');
+            if (table && guide) table.after(guide);
+        });
         this.wrap(Academy, 'gallery', () => this.decorate('deck'));
-        this.wrap(Academy, 'home', () => { this.decorate('study'); this.tiles(); });
+        this.wrap(Academy, 'home', () => {
+            const intro = document.querySelector('#academyContent > p:first-child');
+            this.decorate('study', {text:intro?.textContent}); intro?.remove(); this.tiles();
+        });
         this.wrap(Academy, 'train', () => this.decorate('train', {compact:true}));
         this.wrap(Academy, 'compare', () => this.decorate('compare', {compact:true}));
         this.wrap(Academy, 'stats', () => this.decorate('stats'));
