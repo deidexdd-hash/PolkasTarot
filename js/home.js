@@ -22,7 +22,7 @@ window.Home = {
         if (Object.hasOwn(routes, target)) routes[target]();
     },
     theme() {
-        const color = document.body.classList.contains('reading-active') ? '#171219' : '#f5f1e8';
+        const color = '#f5f1e8';
         document.querySelectorAll('meta[name="theme-color"]').forEach(meta => meta.setAttribute('content', color));
     },
     icon(config) {
