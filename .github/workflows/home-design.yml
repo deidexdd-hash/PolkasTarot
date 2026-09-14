@@ -1,12 +1,13 @@
-name: Главная — Chromium и WebKit
+name: Главная и разделы — Chromium и WebKit
 on:
   pull_request:
     paths:
       - index.html
       - css/**
-      - js/home.js
+      - js/**
       - img/editorial/**
       - tools/test-home-browser.js
+      - tools/test-editorial-browser.js
       - .github/workflows/home-design.yml
   workflow_dispatch:
 permissions:
@@ -26,10 +27,12 @@ jobs:
         run: tools/node_modules/.bin/playwright install --with-deps chromium webkit
       - name: Проверить главную и переходы
         run: node tools/test-home-browser.js
+      - name: Проверить все внутренние разделы
+        run: node tools/test-editorial-browser.js
       - name: Сохранить снимки экрана
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: home-design-screenshots
-          path: screenshots/home/
+          path: screenshots/
           retention-days: 7

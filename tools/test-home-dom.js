@@ -31,7 +31,7 @@ async function until(test){for(let i=0;i<120;i++){if(test())return;await new Pro
   assert.equal($('#homeMenu').hidden,true);assert.equal(w.document.activeElement,$('#homeMenuToggle'));
   $('#homeMenuToggle').click();$('#questionInput').focus();assert.equal($('#homeMenu').hidden,true);
   $('#homeMenuToggle').click();$('#homeMenu [onclick="Home.go(\'book\')"]').click();
-  await until(()=>$('#bookContents .book-row'));assert.equal($('#homeMenu').hidden,true);assert.equal($('meta[name="theme-color"]').content,'#171219');
+  await until(()=>$('#bookContents .book-row'));assert.equal($('#homeMenu').hidden,true);assert.equal($('meta[name="theme-color"]').content,'#f5f1e8');
   assert.equal(w.getComputedStyle($('.home-book-feature')).display,'none');
   assert.notEqual(w.getComputedStyle($('.book-actions .primary-button')).display,'none');
   $('.brand').click();assert.equal($('meta[name="theme-color"]').content,'#f5f1e8');assert(!w.document.body.classList.contains('reading-active'));
@@ -45,6 +45,6 @@ async function until(test){for(let i=0;i<120;i++){if(test())return;await new Pro
   $('.brand').click();$('#homeDaily').click();assert.equal(w.State.history.length,count,'Card of the day is reused');
   $('.brand').click();w.Home.go('layouts');await until(()=>$('.layout-tile'));assert.equal(all('.layout-tile').length,20);
   assert.deepEqual(errors,[]);
-  console.log('PASS HOME DOM: local responsive images, eight live scheme icons, menu and keyboard focus, light/dark transitions, exact question handoff, book, atlas, daily reuse, catalog and diary');
+  console.log('PASS HOME DOM: local responsive images, eight live scheme icons, menu and keyboard focus, shared light theme, exact question handoff, book, atlas, daily reuse, catalog and diary');
  }finally{w.close();}
 })().catch(e=>{console.error(e);process.exit(1);});

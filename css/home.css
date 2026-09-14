@@ -1,4 +1,4 @@
-/* A paper-and-espresso home; the established dark reading surfaces keep their palette. */
+/* Editorial homepage composition; editorial.css extends the palette across all readers. */
 body:not(.reading-active){color-scheme:light;--bg:#f5f1e8;--surface:#faf7f0;--surface-sunk:#ece6da;--label:#302c24;--label-2:#686154;--label-3:#746b5b;--accent:#76603d;--accent-soft:#76603d12;--separator:#4c402b30;--nav-bg:#f5f1e8f5;--sheet-bg:#faf7f0;--fill:#4c402b08;--fill-strong:#4c402b12;background:var(--bg)}
 .nav-bar{background:var(--nav-bg)}
 .nav-row{max-width:1408px;min-height:92px;padding:16px 48px;gap:28px}
