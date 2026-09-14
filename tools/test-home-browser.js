@@ -36,6 +36,9 @@ const server=http.createServer((req,res)=>{
      return images.map(img=>{const r=img.getBoundingClientRect();return {src:img.getAttribute('src'),width:r.width,height:r.height};});
     });
     for(const photo of photos)assert(photo.width>40&&photo.height>40,name+' '+width+' collapsed image: '+JSON.stringify(photo));
+    const hero=await page.locator('.home-hero-visual').evaluate(el=>{const r=el.getBoundingClientRect(),i=el.querySelector('img').getBoundingClientRect();return {ratio:r.width/r.height,frameHeight:r.height,imageHeight:i.height};});
+    assert(Math.abs(hero.ratio-(width<700?1.13:.8))<.02,name+' '+width+' incorrect hero crop: '+JSON.stringify(hero));
+    assert(Math.abs(hero.frameHeight-hero.imageHeight)<1,name+' '+width+' image escapes hero frame');
     await fits('home '+width);
     assert(await page.locator('#homeStartReading').isVisible());assert(await page.locator('#questionInput').isVisible());
     assert(await page.locator('#homeStartReading').evaluate(el=>el.getBoundingClientRect().height>=44));
