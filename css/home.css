@@ -37,7 +37,8 @@ body:not(.reading-active) .home-primary:hover{background:#484b39;color:#fff}
 .home-link{display:inline-flex;align-items:center;justify-content:space-between;gap:20px;min-height:44px;padding:10px 0;border:0;border-bottom:1px solid var(--separator);background:none;color:var(--label);font:inherit;font-size:14px;text-align:left;text-decoration:none;white-space:normal}
 .home-hero .button-note{text-align:left;font-size:12px;margin-top:18px;color:var(--label-2)}
 .home-hero-visual.studio-art{display:block;height:auto;margin:0;aspect-ratio:4/5;position:relative;isolation:auto}
-.home-hero-visual>img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 57%;border-radius:180px 180px 3px 3px}
+/* Keep the photo inside its crop frame in both Chromium and WebKit. */
+.home-hero-visual>img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;object-position:50% 57%;border-radius:180px 180px 3px 3px}
 .home-hero-visual figcaption{position:absolute;bottom:28px;left:-28px;width:210px;padding:22px 24px;border:1px solid #f9f5eb8c;background:#f9f5ebe8;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);color:#302c24}
 .home-hero-visual figcaption span{display:block;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#76603d;margin-bottom:10px}
 .home-hero-visual figcaption strong{font:400 25px/1.25 Georgia,serif}
