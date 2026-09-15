@@ -27,6 +27,7 @@ jobs:
         run: |
           node tools/test-personal-dom.js
           node tools/test-continue-dom.js
+          node tools/test-creator-dom.js
       - name: Установить Chromium и WebKit
         run: tools/node_modules/.bin/playwright install --with-deps chromium webkit
       - name: Проверить главную и переходы
