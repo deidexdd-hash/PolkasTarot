@@ -1,0 +1,15 @@
+.continue-work { margin:28px 0 42px; padding:26px 0; border-bottom:1px solid #d8d0c2 }
+.continue-work[hidden] { display:none!important }
+.continue-work h2 { margin:8px 0 22px; font:400 clamp(28px,4vw,42px)/1.15 Georgia,serif; color:#302c24 }
+.continue-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px }
+.continue-card { display:flex; flex-direction:column; align-items:flex-start; gap:12px; min-width:0; padding:22px; border:1px solid #d8d0c2; border-radius:16px; background:#eee8db; color:#302c24; text-align:left; cursor:pointer }
+.continue-card small { color:#76603d; font-size:12px; letter-spacing:.06em }
+.continue-card strong { font:400 24px/1.25 Georgia,serif; overflow-wrap:anywhere }
+.continue-card span { font-size:15px; line-height:1.5; color:#6e675a }
+.continue-card:focus-visible { outline:2px solid #76603d; outline-offset:4px }
+.continue-source { padding:18px; margin:20px 0; border:1px solid #d8d0c2; border-radius:16px; background:#eee8db }
+.continue-source p { margin:0 0 10px; line-height:1.6 }
+.continue-source button { text-align:left; white-space:normal; min-height:44px }
+.continue-related { border-top:1px solid #d8d0c2; margin-top:24px; padding-top:16px }
+.continue-related button { display:block; text-align:left; min-height:44px; white-space:normal; margin:8px 0 }
+@media(max-width:699px) { .continue-work { margin-top:14px; padding-top:12px }.continue-grid { grid-template-columns:1fr }.continue-card { padding:18px; gap:8px }.continue-card strong { font-size:22px } }

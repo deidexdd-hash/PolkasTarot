@@ -24,7 +24,9 @@ jobs:
       - name: Установить инструменты
         run: npm --prefix tools install --no-audit --no-fund
       - name: Проверить библиотеку, прогресс и дневник
-        run: node tools/test-personal-dom.js
+        run: |
+          node tools/test-personal-dom.js
+          node tools/test-continue-dom.js
       - name: Установить Chromium и WebKit
         run: tools/node_modules/.bin/playwright install --with-deps chromium webkit
       - name: Проверить главную и переходы

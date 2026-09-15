@@ -48,6 +48,7 @@ window.Book = {
     practice(itemId,preset=null){
         if(!App.deckReady())return;
         const item=State.history.find(x=>x.id===itemId&&x.bookPractice===true);
+        this.practiceSource=item?.sourceReadingId||preset?.sourceReadingId||null;
         this.practiceId=item?.id||null;this.practiceChapter=item?.bookChapter||preset?.chapter||this.current?.id||'prologue';
         this.practicePrompt=item?.bookExercise||preset?.exercise||null;
         this.shell();App.setLink(null);this.current=null;
@@ -67,6 +68,7 @@ window.Book = {
         let item=State.history.find(x=>x.id===this.practiceId);
         if(!item){const cfg={...Spreads.types.daily,title:'Карта как зеркало'};item=Journal.create('daily',[{cardId:c.code,name:c.name,img:c.img,orientation:'direct',label:'Мой образ'}],cfg,'',App.today(),'manual');item.bookPractice=true;item.bookChapter=this.practiceChapter;item.tags='книга, зеркало';State.history.unshift(item);this.practiceId=item.id;document.getElementById('mirrorCard').disabled=true;}
         for(const key of ['question','firstLook','notes','followUp'])item[key]=document.getElementById('mirror-'+key).value.slice(0,10000);
+        if(this.practiceSource)item.sourceReadingId=this.practiceSource;
         if(this.practicePrompt)item.bookExercise=JSON.parse(JSON.stringify(this.practicePrompt));
         item.updatedAt=new Date().toISOString();const saved=HistoryStore.save();UI.renderHistory();document.getElementById('mirrorStatus').textContent=saved?'Практика сохранена в дневнике. Можно вернуться и дополнить ответы.':'Не сохранено на устройстве. Экспортируйте дневник до закрытия вкладки.';
     }

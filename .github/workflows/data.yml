@@ -54,6 +54,7 @@ jobs:
           node tools/test-home-dom.js
           node tools/test-editorial-dom.js
           node tools/test-personal-dom.js
+          node tools/test-continue-dom.js
           node tools/test-spread-library.js
           node tools/test-spread-library-dom.js
           node tools/test-workbook.js
