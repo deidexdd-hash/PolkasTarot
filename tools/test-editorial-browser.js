@@ -46,6 +46,7 @@ const routes=['study','train','compare','stats','deck','modal','book','chapter',
      const photo=await page.locator(selector+' img').evaluate(el=>{const r=el.getBoundingClientRect();return {width:r.width,height:r.height,loaded:el.complete&&el.naturalWidth>0};});
      assert(photo.loaded&&photo.width>40&&photo.height>40,engineName+' '+route+' photograph');
      for(const button of await page.locator('#spread-container .primary-button').all())assert(await button.isVisible(),engineName+' '+route+' hidden primary action');
+     if(route==='course'){assert.equal(await page.locator('.personal-course-row').first().evaluate(el=>getComputedStyle(el).display),'block');}
      if(route==='card-detail'){await page.getByRole('button',{name:'Увеличить карту',exact:true}).click();await page.locator('#personalZoom img').evaluate(img=>img.decode());assert(await page.locator('#personalZoom').isVisible());await page.getByRole('button',{name:'Закрыть',exact:true}).click();await page.locator('#personalZoom').waitFor({state:'detached'});assert.equal(await page.locator('#personalZoom').count(),0);}
      if(route==='train')assert(await page.locator('#showTrainingAnswer').isVisible());
      if(route==='modal'){
