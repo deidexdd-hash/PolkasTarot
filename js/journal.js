@@ -76,6 +76,7 @@ window.Journal = {
         if (item?.dailyPractice != null && typeof item.dailyPractice !== 'boolean') return false;
         if (!item || item.schemaVersion !== 2 || typeof item.id !== 'string' || item.id.length > 100 || !Spreads.types[item.spreadKey]) return false;
         if (!Array.isArray(item.cards) || item.cards.length < 1 || item.cards.length > 12) return false;
+        if (item.sourceReadingId != null && (typeof item.sourceReadingId !== 'string' || item.sourceReadingId.length > 100 || item.sourceReadingId === item.id)) return false;
         const cfg = item.config;
         if (!cfg || cfg.count !== item.cards.length || typeof cfg.grid !== 'string' || !/^repeat\(([1-9]|1[0-2]), 1fr\)$/.test(cfg.grid) || !Array.isArray(cfg.areas) || cfg.areas.length > 12 || !cfg.areas.every(a => typeof a === 'string' && /^["'p\d.\s]+$/.test(a))) return false;
         if (typeof cfg.title !== 'string' || (cfg.description != null && typeof cfg.description !== 'string')) return false;
