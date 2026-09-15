@@ -8,7 +8,7 @@ const server=http.createServer((req,res)=>{
  if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile()){res.writeHead(404);res.end();return;}
  res.setHeader('Content-Type',mime[path.extname(file)]||'application/octet-stream');fs.createReadStream(file).pipe(res);
 });
-const routes=['study','train','compare','stats','deck','modal','book','chapter','cards','lessons','pairs','courts','cases','lenormand','practices','layouts','guide','manual','reading','daily','mirror','journal'];
+const routes=['study','train','compare','stats','deck','modal','book','chapter','cards','lessons','pairs','courts','cases','lenormand','practices','layouts','guide','manual','reading','daily','mirror','journal','library','course','lesson','step','list'];
 (async()=>{
  fs.mkdirSync(out,{recursive:true});await new Promise(r=>server.listen(0,'127.0.0.1',r));
  for(const [engineName,engine] of Object.entries({chromium,webkit})){
@@ -23,6 +23,7 @@ const routes=['study','train','compare','stats','deck','modal','book','chapter',
      await page.evaluate(async route=>{
       UI.closeCard();
       switch(route){
+       case 'library':await Personal.hub();break;case 'course':await Personal.course();break;case 'lesson':await Author.load();await Author.open('lessons',Author.data.lessons[0].id);break;case 'step':case 'list':App.doSpread('threecards',{question:'Мой шаг'});Personal.view(route);break;
        case 'study':Academy.home();break;case 'train':Academy.train();break;case 'compare':Academy.compare();break;case 'stats':Academy.stats();break;
        case 'deck':App.showDeck();break;case 'modal':App.showDeck();Academy.detail('major_arcana.02');break;
        case 'book':await Book.open();break;case 'chapter':await Book.open('13');break;
@@ -51,7 +52,7 @@ const routes=['study','train','compare','stats','deck','modal','book','chapter',
       const sheet=await page.locator('.sheet').evaluate(el=>({scroll:el.scrollWidth,width:el.clientWidth}));assert(sheet.scroll<=sheet.width,engineName+' modal overflow');
      }
      for(const field of await page.locator('#spread-container input:not([type=checkbox]),#spread-container textarea,#spread-container select').all())if(await field.isVisible())assert(parseFloat(await field.evaluate(el=>getComputedStyle(el).fontSize))>=16,engineName+' '+route+' readable input');
-     if([390,1440].includes(width)&&['study','deck','modal','book','chapter','cards','layouts','reading','daily','journal'].includes(route)){
+     if([390,1440].includes(width)&&['study','deck','modal','book','chapter','cards','layouts','reading','daily','journal','library','course','lesson','step','list'].includes(route)){
       // App.scrollToResults schedules its scroll after 300 ms; let it settle before capture.
       await page.waitForTimeout(350);
       if(route!=='modal'){
