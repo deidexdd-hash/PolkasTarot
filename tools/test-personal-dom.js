@@ -38,7 +38,14 @@ async function until(test){for(let i=0;i<150;i++){if(test())return;await new Pro
   $('.personal-card-path button').click();await until(()=>$('#authorBody .author-card-image'));
   all('#authorBody button').find(b=>b.textContent==='Моя практика с картой').click();assert($('#mirrorCard'));
   $('#mirror-notes').value='Моя ассоциация';$('#mirror-notes').dispatchEvent(new w.Event('input'));assert(w.State.history[0].bookPractice);
+  await w.Personal.hub();
+  const input=$('#bookContent input[type=file]');const imported={type:'polkas-personal',version:1,data:{favorites:['book:13'],completed:[lesson.id]}};
+  Object.defineProperty(input,'files',{configurable:true,value:[{size:200,text:async()=>JSON.stringify(imported)}]});
+  await input.onchange();assert(w.Personal.state.favorites.includes('book:13'));const merged=w.Personal.state.favorites.length;
+  await input.onchange();assert.equal(w.Personal.state.favorites.length,merged,'import deduplicates');
+  imported.data.favorites=['unknown:bad'];await input.onchange();assert.equal(w.Personal.state.favorites.length,merged,'invalid backup does not replace state');
   const before=w.Personal.state.favorites.length;Object.defineProperty(w,'localStorage',{value:{getItem(){throw Error('blocked')},setItem(){throw Error('blocked')}}});
+  imported.data.favorites=['book:12'];await input.onchange();assert.equal(w.Personal.state.favorites.length,before,'failed persistence rolls back import');
   assert.equal(w.Personal.save(),false);w.Personal.read();assert.equal(w.Personal.state.favorites.length,before);
   assert.deepEqual(errors,[]);console.log('PASS PERSONAL: global search, favorites persistence, lesson progress, card navigation, author-to-practice flow, diary reopening, escaping and blocked storage');
  }finally{w.close();}
