@@ -1,0 +1,14 @@
+.creator-link {color:#76603d;text-decoration:none;text-underline-offset:4px}
+.creator-link:hover {text-decoration:underline}
+.creator-link:focus-visible {outline:2px solid #76603d;outline-offset:4px;border-radius:3px}
+.creator-byline {font-size:14px!important;line-height:1.6!important;margin:16px 0 0!important;letter-spacing:0!important}
+.creator-welcome {margin:20px 0 28px;padding:20px 24px;border:1px solid #d8d0c2;border-radius:16px;background:#eee8db;line-height:1.7}
+.creator-welcome summary {font-size:17px;cursor:pointer;min-height:44px;align-content:center}
+.creator-welcome p {max-width:70ch}
+.creator-signature {font-family:Georgia,serif;font-style:italic;margin-top:28px}
+.creator-prose {max-width:760px;margin-inline:auto}
+.creator-prose section {margin:32px 0 48px}
+.home-author-credit {font-size:14px;margin:16px 0;color:#76603d}
+#homeMenu>.creator-link {display:block;padding:16px 0;min-height:44px;box-sizing:border-box}
+footer .creator-footer {font-size:14px;line-height:1.7;max-width:460px;text-transform:none;letter-spacing:normal}
+@media(max-width:699px){.creator-welcome{padding:16px}.creator-prose section{margin:24px 0 36px}}

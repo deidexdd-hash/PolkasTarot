@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="description" content="Polkas Tarot — карты, авторская книга и личный дневник. 20 раскладов для внимательного разговора с собой.">
+    <meta name="author" content="Екатерина Белая">
+    <meta name="description" content="Polkas Tarot — книга и курс Екатерины Белой, карты и личный дневник. 20 раскладов для внимательного разговора с собой.">
     <meta name="theme-color" content="#f5f1e8">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -19,6 +20,7 @@
     <link rel="stylesheet" href="css/editorial.css">
 <link rel="stylesheet" href="css/personal.css">
 <link rel="stylesheet" href="css/continue.css">
+<link rel="stylesheet" href="css/creator.css">
 </head>
 <body>
 
@@ -52,6 +54,7 @@
         <div class="studio-copy">
             <p class="home-kicker home-only">Искусство быть ближе к себе</p>
             <h1 id="studio-title">Сначала —<br><em>к себе.</em></h1>
+            <p class="home-author-credit home-only"><a class="creator-link" data-creator-link href="#about=author">Книга и курс Екатерины Белой · об авторе ↗</a></p>
             <p class="studio-description">Карты, книга и небольшие практики,<br>чтобы увидеть свой вопрос яснее.</p>
             <div class="question-row">
                 <label class="question-field" for="questionInput">
@@ -94,7 +97,7 @@
 
     <section class="home-book-feature home-only" aria-labelledby="homeBookTitle">
         <figure class="home-book-photo"><img src="img/editorial/mirror-book-1280.webp" srcset="img/editorial/mirror-book-640.webp 640w, img/editorial/mirror-book-1280.webp 1280w" sizes="(max-width: 699px) calc(100vw - 44px), (max-width: 1408px) 47vw, 688px" width="1280" height="853" loading="lazy" decoding="async" alt="Книга «Карта как зеркало» в тканевом переплёте рядом с овальным зеркалом"></figure>
-        <div class="home-book-copy"><p class="home-kicker">02 / Авторская книга</p><h2 id="homeBookTitle">Карта<br>как зеркало</h2><p>От первого образа — к собственному прочтению. Книга о том, как замечать детали, задавать вопросы и находить связь с личным опытом.</p><button class="home-link" id="homeReadBook" onclick="Book.open()">Открыть книгу <span aria-hidden="true">↗</span></button><span class="home-book-meta">34 главы · Чтение на сайте · Практики</span></div>
+        <div class="home-book-copy"><p class="home-kicker">02 / Авторская книга</p><h2 id="homeBookTitle">Карта<br>как зеркало</h2><p>От первого образа — к собственному прочтению. Книга о том, как замечать детали, задавать вопросы и находить связь с личным опытом.</p><button class="home-link" id="homeReadBook" onclick="Book.open()">Открыть книгу <span aria-hidden="true">↗</span></button><span class="home-book-meta">Екатерина Белая · 34 главы · Практики</span></div>
     </section>
     <section class="home-atlas home-only" aria-labelledby="homeAtlasTitle">
         <div class="home-atlas-copy"><p class="home-kicker">Знакомство с образами</p><h2 id="homeAtlasTitle">Не нужно знать<br>всё заранее.</h2><p>Рассмотри одну карту. Заметь деталь. Сохрани свою ассоциацию — и только потом загляни в толкование.</p><button class="home-link" id="homeOpenAtlas" onclick="App.showDeck()">Исследовать 78 карт <span aria-hidden="true">↗</span></button></div>
@@ -125,7 +128,7 @@
 </div>
 
 <footer role="contentinfo">
-    <span class="footer-brand">polkas tarot</span><p>Для размышления и развлечения</p><span>РАЙДЕР — УЭЙТ — СМИТ · 78 КАРТ</span>
+    <span class="footer-brand">polkas tarot</span><p class="creator-footer">Автор книги и курса — <a class="creator-link" data-creator-link href="#about=author">Екатерина Белая</a><br>«Карта как зеркало»</p><p>Для размышления и развлечения</p><span>РАЙДЕР — УЭЙТ — СМИТ · 78 КАРТ</span>
 </footer>
 
 <!-- Core Scripts -->
@@ -154,6 +157,7 @@
 <script src="js/editorial.js"></script>
 <script src="js/personal.js"></script>
 <script src="js/continue.js"></script>
+<script src="js/creator.js"></script>
 
 </body>
 </html>
